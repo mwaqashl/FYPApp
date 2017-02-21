@@ -1,17 +1,11 @@
-//
-//  WalletManager.swift
-//  Penzy
-//
-//  Created by Waqas Hussain on 30/08/2016.
-//  Copyright © 2016 TechCollage. All rights reserved.
-//
+
 
 import Foundation
 import Firebase
 
 class WalletManager {
     
-    private static var singleTonInstance = WalletManager()
+    fileprivate static var singleTonInstance = WalletManager()
     
     static func sharedInstance() -> WalletManager {
         return singleTonInstance
@@ -25,11 +19,22 @@ class WalletManager {
      :param: Newly made Wallet object
      
      */
-    func addWallet(wallet: UserWallet) {
+    func addWallet(_ wallet: UserWallet) -> String {
         let ref = FIRDatabase.database().reference()
         
-        let walletRef = ref.child("WalletInfo").childByAutoId()
+        
+        var walletRef = ref.child("WalletInfo")
+        
+        if wallet.isPersonal == true {
+            walletRef = walletRef.child(wallet.creatorID)
+        }
+        else {
+            walletRef = walletRef.childByAutoId()
+        }
+        
         let walletDet = ref.child("Wallets").child(walletRef.key)
+        
+        
         wallet.id = walletRef.key
         var data : NSMutableDictionary = [
             "name" : wallet.name,
@@ -43,7 +48,6 @@ class WalletManager {
             "icon" : wallet.icon,
             "color": wallet.color.stringRepresentation,
             "isOpen" : wallet.isOpen,
-            "isTravel" : wallet.isTravel,
             "currency" : wallet.currencyID,
             "creator" : wallet.creatorID,
             "balance" : wallet.balance,
@@ -54,17 +58,16 @@ class WalletManager {
         ]
         
         walletDet.setValue(data)
-        UserManager.sharedInstance().addUserFriends(wallet.creatorID, friends: wallet.memberTypes.keys.sort())
+        UserManager.sharedInstance().addUserFriends(wallet.creatorID, friends: wallet.memberTypes.keys.sorted())
+        UserManager.sharedInstance().addWalletInUser(wallet.creatorID, walletID: wallet.id, isPersonal: wallet.isPersonal)
+        
         for (member,type) in wallet.memberTypes {
-            
             addMemberToWallet(wallet, member: member,type: type)
-            
         }
-//        for category in wallet.categories! {
-//            
-//            addCategoryToWallet(category!, walletID: walletRef.key)
-//            
-//        }
+        for category in wallet.categories {
+            addCategoryToWallet(category, walletID: walletRef.key)
+        }
+        return walletRef.key
     }
     
     /**
@@ -75,7 +78,8 @@ class WalletManager {
      :param: wallet to be deleted!
      
      */
-    func removeWallet(wallet: UserWallet) {
+    
+    func removeWallet(_ wallet: UserWallet) {
         
         let ref = FIRDatabase.database().reference()
         ref.child("Wallets/\(wallet.id)").removeValue()
@@ -92,24 +96,23 @@ class WalletManager {
      :param: updated wallet
      
      */
-    func updateWallet(wallet: UserWallet) {
+    func updateWallet(_ wallet: UserWallet) {
         
         let ref = FIRDatabase.database().reference()
         let walletRef = ref.child("Wallets/\(wallet.id)")
         
-        let data : NSMutableDictionary = [
+        let data = [
             "name" : wallet.name,
             "icon" : wallet.icon,
             "color": wallet.color.stringRepresentation,
             "status" : wallet.isOpen,
-            "isTravel" : wallet.isTravel,
             "currency" : wallet.currencyID,
             "creator" : wallet.creatorID,
             "creationDate" : wallet.creationDate,
             "isPersonal" : wallet.isPersonal
-        ]
+        ] as [String : Any]
         
-        walletRef.updateChildValues(data as [NSObject : AnyObject])
+        walletRef.updateChildValues(data)
         
         for (member,type) in wallet.memberTypes {
             addMemberToWallet(wallet, member: member, type: type)
@@ -128,7 +131,7 @@ class WalletManager {
      :param: wallet object, userId of member and membership type of user
      
      */
-    func addMemberToWallet(wallet: UserWallet, member: String, type: MemberType) {
+    func addMemberToWallet(_ wallet: UserWallet, member: String, type: MemberType) {
         
         let ref = FIRDatabase.database().reference()
         ref.child("WalletMembers/\(wallet.id)/\(member)").setValue(type.hashValue)
@@ -142,12 +145,10 @@ class WalletManager {
      :param: walletID for reference and memberID
      
      */
-    func removeMemberFromWallet(walletID: String, memberID: String) {
+    func removeMemberFromWallet(_ walletID: String, memberID: String) {
         
         let ref = FIRDatabase.database().reference()
         ref.child("WalletMembers/\(walletID)/\(memberID)").removeValue()
-        ref.child("WalletCategories/\(walletID)").removeValue()
-        
         UserManager.sharedInstance().removeWalletFromUser(memberID, walletID: walletID)
         
     }
@@ -160,7 +161,7 @@ class WalletManager {
      :param: walletID and Cateogory
      
      */
-    func addCategoryToWallet(category: Category, walletID: String) {
+    func addCategoryToWallet(_ category: Category, walletID: String) {
         
         let ref = FIRDatabase.database().reference()
         let catRef = ref.child("WalletCategories/\(walletID)")
@@ -187,7 +188,7 @@ class WalletManager {
      :param: Newly made Transaction
      
      */
-    func removeCategoryFromWallet(walletID: String, categoryID: String) {
+    func removeCategoryFromWallet(_ walletID: String, categoryID: String) {
         let ref = FIRDatabase.database().reference()
         ref.child("WalletCategories/\(walletID)/\(categoryID)").removeValue()
     }
@@ -201,16 +202,15 @@ class WalletManager {
 
 class CurrencyManager {
     
-    
-    private static var singleTonInstance = CurrencyManager()
+    fileprivate static var singleTonInstance = CurrencyManager()
     
     static func sharedInstance() -> CurrencyManager {
         return singleTonInstance
     }
     
-    func addCurrency(currency: Currency) {
+    func addCurrency(_ currency: Currency) {
         
-        let ref = FIRDatabase.database().reference().child("Currency").childByAutoId()
+        let ref = FIRDatabase.database().reference().child("Currencies").childByAutoId()
         
         let data = ["name": currency.name,
             "icon": currency.icon,
@@ -221,24 +221,24 @@ class CurrencyManager {
     
 }
 
-
 class CategoryManager {
     
-    
-    private static var singleTonInstance = CategoryManager()
+    fileprivate static var singleTonInstance = CategoryManager()
     
     static func sharedInstance() -> CategoryManager {
         return singleTonInstance
     }
     
-    func addCurrency(category: Category) {
+    func addDefaultCategory(_ category: Category) {
         
         let ref = FIRDatabase.database().reference().child("DefaultCategories").childByAutoId()
         
         let data = ["name": category.name,
                     "icon": category.icon,
-                    "color": category.color.stringRepresentation
-        ]
+                    "color": category.color.stringRepresentation,
+                    "isExpense": category.isExpense
+            
+        ] as [String : Any]
         ref.setValue(data)
     }
     

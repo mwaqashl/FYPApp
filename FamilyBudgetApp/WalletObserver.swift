@@ -1,47 +1,75 @@
-//
-//  WalletObserver.swift
-//  Penzy
-//
-//  Created by MacUser on 9/5/16.
-//  Copyright © 2016 TechCollage. All rights reserved.
-//
+
 
 import Foundation
 import Firebase
 
 class WalletObserver {
-    private var ref = FIRDatabase.database().reference()
-    private var _autoObserve : Bool = true
+    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var isObservingWallets = false
+    fileprivate var isObservingWallet : [String: Bool] = [:]
+    
+    fileprivate var _autoObserve : Bool = true
     var autoObserve : Bool {
         get { return _autoObserve } set {
             if newValue {
                 Resource.sharedInstance().userWallets.forEach({ (key, wallet) in
-                    WalletObserver.sharedInstance().startObservingWallet(wallet)
+                    WalletObserver.sharedInstance().startObserving(PartsOf : wallet)
                 })
             }else{
                 Resource.sharedInstance().userWallets.forEach({ (key, wallet) in
-                    WalletObserver.sharedInstance().stopObservingWallet(wallet)
+                    WalletObserver.sharedInstance().stopObserving(PartsOf : wallet)
                 })
             }
             _autoObserve = newValue
         }
     }
-    private var _autoObserveTransactions : Bool = true
+    fileprivate var _autoObserveTransactions : Bool = true
     var autoObserveTransactions : Bool {
         get { return _autoObserveTransactions } set {
             if newValue {
                 Resource.sharedInstance().userWallets.forEach({ (key, wallet) in
-                    WalletObserver.sharedInstance().startObservingTransactions(wallet)
+                    WalletObserver.sharedInstance().startObserving(TransactionsOf : wallet)
                 })
             }else{
                 Resource.sharedInstance().userWallets.forEach({ (key, wallet) in
-                    WalletObserver.sharedInstance().stopObservingTransactions(wallet)
+                    WalletObserver.sharedInstance().stopObserving(TransactionsOf : wallet)
                 })
             }
             _autoObserveTransactions = newValue
         }
     }
-    private static var singleInstance : WalletObserver?
+    fileprivate var _autoObserveBudgets : Bool = true
+    var autoObserveBudgets : Bool {
+        get { return _autoObserveBudgets } set {
+            if newValue {
+                Resource.sharedInstance().userWallets.forEach({ (key, wallet) in
+                    WalletObserver.sharedInstance().startObserving(BudgetsOf : wallet)
+                })
+            }else{
+                Resource.sharedInstance().userWallets.forEach({ (key, wallet) in
+                    WalletObserver.sharedInstance().stopObserving(BudgetsOf : wallet)
+                })
+            }
+            _autoObserveTransactions = newValue
+        }
+    }
+    fileprivate var _autoObserveTasks : Bool = true
+    var autoObserveTasks : Bool {
+        get { return _autoObserveTasks } set {
+            if newValue {
+                Resource.sharedInstance().userWallets.forEach({ (key, wallet) in
+                    WalletObserver.sharedInstance().startObserving(TasksOf : wallet)
+                })
+            }else{
+                Resource.sharedInstance().userWallets.forEach({ (key, wallet) in
+                    WalletObserver.sharedInstance().stopObserving(TasksOf : wallet)
+                })
+            }
+            _autoObserveTransactions = newValue
+        }
+    }
+    
+    fileprivate static var singleInstance : WalletObserver?
     class func sharedInstance() -> WalletObserver {
         guard let instance = WalletObserver.singleInstance else {
             WalletObserver.singleInstance = WalletObserver()
@@ -49,140 +77,179 @@ class WalletObserver {
         }
         return instance
     }
+    
     func startObserving(){
-        observeWalletAdded()
-        observeWalletDeleted()
-        observeWalletUpdated()
+        if !isObservingWallets {
+            observeWalletAdded()
+            observeWalletDeleted()
+            isObservingWallets = true
+        }
     }
-    func startObservingWallet(wallet :  UserWallet){
-        stopObservingWallet(wallet)
+    func stopObserving(){
+        FIRDatabase.database().reference().child("UserWallets").removeAllObservers()
+        FIRDatabase.database().reference().child("Wallets").removeAllObservers()
+        FIRDatabase.database().reference().child("WalletMembers").removeAllObservers()
+        FIRDatabase.database().reference().child("WalletCategories").removeAllObservers()
+    }
+    
+    func startObserving(PartsOf wallet :  UserWallet){
+        if let flag = isObservingWallet[wallet.id], flag {
+            return
+        }
         observeWalletMemberAdded(wallet);
         observeWalletMemberUpdated(wallet);
         observeWalletMemberRemoved(wallet);
         observeWalletCategoryAdded(wallet);
         observeWalletCategoryUpdated(wallet);
         observeWalletCategoryRemoved(wallet);
-        
+        isObservingWallet[wallet.id] = true
     }
-    func startObservingTransactions(ofWallet: UserWallet){
-        TransactionObserver.sharedInstance().startObservingTransaction(ofWallet: ofWallet)
-    }
-    func stopObservingTransactions(ofWallet : UserWallet){
-        TransactionObserver.sharedInstance().stopObservingTransaction(ofWallet: ofWallet)
-    }
-    func stopObservingWallet(wallet :  UserWallet){
-        FIRDatabase.database().reference().child("WalletMembers").child(wallet.id).removeAllObservers()
-        FIRDatabase.database().reference().child("WalletCategories").child(wallet.id).removeAllObservers()
-    }
-    func stopObserving(){
-        FIRDatabase.database().reference().child("Wallets").removeAllObservers()
-        FIRDatabase.database().reference().child("WalletMembers").removeAllObservers()
-        FIRDatabase.database().reference().child("WalletCategories").removeAllObservers()
+    func stopObserving(PartsOf wallet :  UserWallet){
+        if let flag = isObservingWallet[wallet.id] , flag {
+            FIRDatabase.database().reference().child("WalletMembers").child(wallet.id).removeAllObservers()
+            FIRDatabase.database().reference().child("WalletCategories").child(wallet.id).removeAllObservers()
+            isObservingWallet[wallet.id] = false
+        }
     }
     
-    private func observeWalletAdded(){
-        let walletRef = ref.child("Wallets")
-        walletRef.observeEventType(FIRDataEventType.ChildAdded, withBlock:  { (snapshot) in
-            guard let dict = snapshot.value else {
-                return
-            }
-            let wallet = UserWallet(id: snapshot.key,
-                name: dict["name"] as! String, icon: dict["icon"] as! String, currencyID: dict["currency"] as! String, creatorID: dict["creator"] as! String, balance: dict["balance"] as! Double, totInc: dict["totIncome"] as! Double, totExp: dict["totExpense"] as! Double, creationDate: dict["creationDate"] as! Double, isPersonal: dict["isPersonal"] as! Bool, memberTypes: [:], categoryIDs: [], isOpen: dict["isOpen"] as! Bool, color: dict["color"] as! String)
-            Resource.sharedInstance().userWallets[snapshot.key] = wallet
-            if self.autoObserve { self.startObservingWallet(wallet) }
-            Delegate.sharedInstance().getWalletDelegates().forEach({ (walletDel) in
-                walletDel.walletAdded(wallet)
+    func startObserving(TransactionsOf Wallet: UserWallet){
+        TransactionObserver.sharedInstance().startObservingTransaction(ofWallet: Wallet.id)
+    }
+    func stopObserving(TransactionsOf Wallet : UserWallet){
+        TransactionObserver.sharedInstance().stopObservingTransaction(ofWallet: Wallet.id)
+    }
+    
+    func startObserving(BudgetsOf Wallet : UserWallet){
+        BudgetObserver.sharedInstance().startObserving(BudgetsOf: Wallet)
+    }
+    func stopObserving(BudgetsOf Wallet : UserWallet){
+        BudgetObserver.sharedInstance().stopObserving(BudgetsOf: Wallet)
+    }
+    
+    func startObserving(TasksOf Wallet : UserWallet){
+        
+    }
+    func stopObserving(TasksOf Wallet : UserWallet){
+        
+    }
+    
+    fileprivate func observeWalletAdded(){
+        let walletsRef = ref.child("UserWallets").child(Resource.sharedInstance().currentUserId!)
+        walletsRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+            let walletRef = self.ref.child("Wallets").child(snapshot.key)
+            walletRef.observe(FIRDataEventType.value, with: { (snapshot1) in
+                guard let dict = snapshot1.value as? [String: Any] else {
+                    print("Wallet value isnt a dictionary \(snapshot.key)")
+                    return
+                }
+                if Resource.sharedInstance().userWallets[snapshot1.key] != nil {
+                    let wallet = Resource.sharedInstance().userWallets[snapshot.key]!
+                    wallet.name = dict["name"] as! String
+                    wallet.icon = dict["icon"] as! String
+                    wallet.currencyID = dict["currency"] as! String
+                    wallet.creatorID = dict["creator"] as! String
+                    wallet.balance = dict["balance"] as! Double
+                    wallet.totalIncome = dict["totIncome"] as! Double
+                    wallet.totalExpense = dict["totExpense"] as! Double
+                    wallet.creationDate = Date(timeIntervalSince1970 : (dict["creationDate"] as! Double)/1000)
+                    wallet.isPersonal = dict["isPersonal"] as! Bool
+                    wallet.isOpen = dict["isOpen"] as! Bool
+                    wallet.color = UIColor(string: dict["color"] as! String)
+                    Resource.sharedInstance().userWallets[snapshot1.key] = wallet
+                    Delegate.sharedInstance().getWalletDelegates().forEach({ (walletDel) in
+                        walletDel.walletUpdated(wallet)
+                    })
+                }else{
+                    let wallet = UserWallet(id: snapshot1.key,
+                                            name: dict["name"] as! String, icon: dict["icon"] as! String, currencyID: dict["currency"] as! String, creatorID: dict["creator"] as! String, balance: dict["balance"] as! Double, totInc: dict["totIncome"] as! Double, totExp: dict["totExpense"] as! Double, creationDate: (dict["creationDate"] as! Double)/1000, isPersonal: dict["isPersonal"] as! Bool, memberTypes: [:], categoryIDs: [], isOpen: dict["isOpen"] as! Bool, color: dict["color"] as! String)
+                    Resource.sharedInstance().userWallets[snapshot1.key] = wallet
+                    if self.autoObserve { self.startObserving(PartsOf : wallet) }
+                    if self.autoObserveTransactions { self.startObserving(TransactionsOf : wallet) }
+                    if self.autoObserveTasks { self.startObserving(TasksOf: wallet) }
+                    if self.autoObserveBudgets { self.startObserving(BudgetsOf: wallet) }
+                    
+                    Delegate.sharedInstance().getWalletDelegates().forEach({ (walletDel) in
+                        walletDel.walletAdded(wallet)
+                    })
+                }
+                
             })
         })
     }
-    private func observeWalletUpdated() {
-        let walletRef = ref.child("Wallets")
-        walletRef.observeEventType(FIRDataEventType.ChildChanged, withBlock:  { (snapshot) in
-            guard let dict = snapshot.value else {
-                return
-            }
-            let wallet = Resource.sharedInstance().userWallets[snapshot.key]!
-            wallet.name = dict["name"] as! String
-            wallet.icon = dict["icon"] as! String
-            wallet.currencyID = dict["currency"] as! String
-            wallet.creatorID = dict["creator"] as! String
-            wallet.balance = dict["balance"] as! Double
-            wallet.totalIncome = dict["totIncome"] as! Double
-            wallet.totalExpense = dict["totExpense"] as! Double
-            wallet.creationDate = NSDate(timeIntervalSince1970 : (dict["creationDate"] as! Double)/1000)
-            wallet.isPersonal = dict["isPersonal"] as! Bool
-            wallet.isOpen = dict["isOpen"] as! Bool
-            wallet.color = UIColor(string: dict["color"] as! String)
-            Resource.sharedInstance().userWallets[snapshot.key] = wallet
-            Delegate.sharedInstance().getWalletDelegates().forEach({ (walletDel) in
-                walletDel.walletUpdated(wallet)
-            })
-        })
-    }
-    private func observeWalletDeleted(){
-        let walletRef = ref.child("Wallets")
-        walletRef.observeEventType(FIRDataEventType.ChildRemoved, withBlock:  { (snapshot) in
+    fileprivate func observeWalletDeleted(){
+        let walletsRef = ref.child("UserWallets").child(Resource.sharedInstance().currentUserId!)
+        walletsRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
             guard let wallet = Resource.sharedInstance().userWallets[snapshot.key]  else {
                 return
             }
-            self.stopObservingWallet(wallet)
+            self.stopObserving(PartsOf : wallet)
+            self.stopObserving(TasksOf: wallet)
+            self.startObserving(BudgetsOf: wallet)
+            self.stopObserving(TransactionsOf: wallet)
             Resource.sharedInstance().userWallets[snapshot.key] = nil
             Delegate.sharedInstance().getWalletDelegates().forEach({ (walletDel) in
                 walletDel.WalletDeleted(wallet)
             })
         })
     }
-    private func observeWalletMemberAdded(wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
+    fileprivate func observeWalletMemberAdded(_ wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let walletRef = ref.child("WalletMembers").child(wallet.id)
-        walletRef.observeEventType(FIRDataEventType.ChildAdded, withBlock:  { (snapshot) in
+        walletRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
             Resource.sharedInstance().userWallets[wallet.id]?.addMember(snapshot.key, type: helperFunctions.getMemberType(snapshot.value as! Int))
-            guard let user = Resource.sharedInstance().users[snapshot.key] else {
-                return
-            }
             Delegate.sharedInstance().getWalletMemberDelegates().forEach({ (walletMemDel) in
-                walletMemDel.memberAdded(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                if let user = Resource.sharedInstance().users[snapshot.key] {
+                    walletMemDel.memberAdded(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                }else{
+                    let user = User(id: snapshot.key, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+                    walletMemDel.memberAdded(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                }
             })
         })
     }
-    private func observeWalletMemberUpdated(wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
+    fileprivate func observeWalletMemberUpdated(_ wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let walletRef = ref.child("WalletMembers").child(wallet.id)
-        walletRef.observeEventType(FIRDataEventType.ChildChanged, withBlock:  { (snapshot) in
+        walletRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
             Resource.sharedInstance().userWallets[wallet.id]?.memberTypes[snapshot.key] = helperFunctions.getMemberType(snapshot.value as! Int)
-            guard let user = Resource.sharedInstance().users[snapshot.key] else {
-                return
-            }
             Delegate.sharedInstance().getWalletMemberDelegates().forEach({ (walletMemDel) in
-                walletMemDel.memberUpdated(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                if let user = Resource.sharedInstance().users[snapshot.key] {
+                    walletMemDel.memberUpdated(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                }else{
+                    let user = User(id: snapshot.key, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+                    walletMemDel.memberUpdated(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                }
             })
         })
     }
-    private func observeWalletMemberRemoved(wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
+    fileprivate func observeWalletMemberRemoved(_ wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let walletRef = ref.child("WalletMembers").child(wallet.id)
-        walletRef.observeEventType(FIRDataEventType.ChildRemoved, withBlock:  { (snapshot) in
+        walletRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
             Resource.sharedInstance().userWallets[wallet.id]?.memberTypes[snapshot.key] = nil
-            guard let user = Resource.sharedInstance().users[snapshot.key] else {
-                return
-            }
             Delegate.sharedInstance().getWalletMemberDelegates().forEach({ (walletMemDel) in
-                walletMemDel.memberLeft(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                if let user = Resource.sharedInstance().users[snapshot.key] {
+                    walletMemDel.memberLeft(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                }else{
+                    let user = User(id: snapshot.key, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+                    walletMemDel.memberLeft(user, ofType : helperFunctions.getMemberType(snapshot.value as! Int), wallet: wallet)
+                }
             })
+            
         })
     }
-    private func observeWalletCategoryAdded(wallet : Wallet){
+    fileprivate func observeWalletCategoryAdded(_ wallet : Wallet){
         let walletRef = ref.child("WalletCategories").child(wallet.id)
-        walletRef.observeEventType(FIRDataEventType.ChildAdded, withBlock:  { (snapshot) in
+        walletRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return
             }
@@ -194,9 +261,9 @@ class WalletObserver {
             })
         })
     }
-    private func observeWalletCategoryUpdated(wallet : Wallet){
+    fileprivate func observeWalletCategoryUpdated(_ wallet : Wallet){
         let walletRef = ref.child("WalletCategories").child(wallet.id)
-        walletRef.observeEventType(FIRDataEventType.ChildChanged, withBlock:  { (snapshot) in
+        walletRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return
             }
@@ -207,9 +274,9 @@ class WalletObserver {
             })
         })
     }
-    private func observeWalletCategoryRemoved(wallet : Wallet){
+    fileprivate func observeWalletCategoryRemoved(_ wallet : Wallet){
         let walletRef = ref.child("WalletCategories").child(wallet.id)
-        walletRef.observeEventType(FIRDataEventType.ChildRemoved, withBlock:  { (snapshot) in
+        walletRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return
             }

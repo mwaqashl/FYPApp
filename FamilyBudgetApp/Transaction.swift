@@ -1,10 +1,4 @@
-//
-//  Transaction.swift
-//  AccBook
-//
-//  Created by MacUser on 8/17/16.
-//  Copyright © 2016 Collage. All rights reserved.
-//
+
 
 import Foundation
 import Firebase
@@ -13,56 +7,68 @@ class Transaction {
     
     var id : String
     var amount : Double
-    var category : Category? {
-        return Resource.sharedInstance().categories[categoryId]
+    var category : Category {
+        if let category = Resource.sharedInstance().categories[categoryId]{
+            return category
+        }
+        return Category(id: categoryId, name: "Loading...", icon: "ꀔ", isDefault: true, isExpense: true, color: textColor.stringRepresentation)
     }
     var categoryId : String
     var comments : String?
-    var date : NSDate
-    var venue : [String:AnyObject]?
-    var pictureURLs : [String]?
-    var transactionBy : User? {
-        return Resource.sharedInstance().users[transactionById]
+    var date : Date
+    var transactionBy : User {
+        if let user = Resource.sharedInstance().users[transactionById] {
+            return user
+        }
+        return User(id: transactionById, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
     }
     var transactionById : String
-    var currency : Currency? {
-        return Resource.sharedInstance().currencies[currencyId]
+    var currency : Currency {
+        if let cur = Resource.sharedInstance().currencies[currencyId] {
+            return cur
+        }
+        return Currency(id: currencyId, name: "Currency", icon: "ꀕ", code: "CUR")
     }
     var currencyId :  String
     var isExpense : Bool
     var walletID: String
-    var wallet : UserWallet? {
-        return Resource.sharedInstance().userWallets[walletID]
+    var wallet : UserWallet {
+        if let _wallet = Resource.sharedInstance().userWallets[walletID] {
+            return _wallet
+        }
+        return UserWallet(id: walletID, name: "Wallet Name", icon: "ꁅ", currencyID: currencyId, creatorID: "", balance: 0.0, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [:], categoryIDs: [], isOpen: true, color: textColor.stringRepresentation)
     }
     
+    var amountnp : Double {
+        return self.isExpense ? -self.amount : self.amount
+    }
     
-    init(transactionId : String, amount : Double, categoryId : String, comments : String?, date : Double, venue : [String:AnyObject]?, pictureURLs : [String]?, transactionById : String, currencyId : String, isExpense : Bool, walletID: String) {
+    init(transactionId : String, amount : Double, categoryId : String, comments : String?, date : Double, transactionById : String, currencyId : String, isExpense : Bool, walletID: String) {
         self.id = transactionId
         self.amount = amount
         self.categoryId = categoryId
         self.comments = comments
         self.currencyId = currencyId
-        self.date = NSDate(timeIntervalSince1970: date/1000)
-        self.venue = venue
+        self.date = Date(timeIntervalSince1970: date)
         self.isExpense = isExpense
-        self.pictureURLs = pictureURLs
         self.transactionById = transactionById
         self.walletID = walletID
     }
-    func getImage(urlS: String, completion : (NSData) -> ()) {
-        let fileManager = NSFileManager.defaultManager()
-        let url = fileManager.URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)[0]
-        let imageNSURL = url.URLByAppendingPathComponent("images/userImages/\(self.id)/\(urlS)")
-        if fileManager.fileExistsAtPath(imageNSURL.absoluteString) {
-            let data = NSData(contentsOfURL: imageNSURL)
+    func getImage(_ urlS: String, completion : @escaping (Data) -> ()) {
+        
+        let fileManager = FileManager.default
+        let url = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let imageNSURL = url.appendingPathComponent("images/userImages/\(self.id)/\(urlS)")
+        if fileManager.fileExists(atPath: imageNSURL.absoluteString) {
+            let data = try? Data(contentsOf: imageNSURL)
             completion(data!)
         }else{
-            let imageRef = FIRStorage.storage().referenceForURL("gs://penzy-120d0.appspot.com").child("images").child("transactionImages").child(self.id).child(urlS)
-            imageRef.writeToFile(imageNSURL, completion: { (urlRef, error) in
+            let imageRef = FIRStorage.storage().reference(forURL: "gs://penzy-120d0.appspot.com").child("images").child("transactionImages").child(self.id).child(urlS)
+            imageRef.write(toFile: imageNSURL, completion: { (urlRef, error) in
                 guard error == nil else {
                     return
                 }
-                let data = NSData(contentsOfURL: urlRef!)!
+                let data = try! Data(contentsOf: urlRef!)
                 completion(data)
             })
         }
@@ -71,56 +77,44 @@ class Transaction {
     
 }
 
-
-class RecurringTransaction : Transaction {
-    
-    var recurringDays : Int
-    
-    init(days: Int, transaction: Transaction) {
-        
-        self.recurringDays = days
-        super.init(transactionId: transaction.id, amount: transaction.amount, categoryId: transaction.categoryId, comments: transaction.comments, date: transaction.date.timeIntervalSince1970, venue: transaction.venue, pictureURLs: transaction.pictureURLs, transactionById: transaction.transactionById, currencyId: transaction.currencyId, isExpense: transaction.isExpense, walletID: transaction.walletID)
-    }
-    
-}
-
-
 class TransactionRequest {
     
-    var payee: User? {
-        return Resource.sharedInstance().users[payeeId]
+    var payee: User {
+        if let user = Resource.sharedInstance().users[payeeId]{
+            return user
+        }
+        return User(id: payeeId, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
     }
     var payeeId : String
     var requestID: String
-    var transaction: Transaction? {
-        return Resource.sharedInstance().transactions[transactionId]
+    var transaction: Transaction {
+        if let trans = Resource.sharedInstance().transactions[transactionId]{
+            return trans
+        }
+        return Transaction(transactionId: transactionId, amount: 20, categoryId: "", comments: "", date: Date().timeIntervalSince1970, transactionById: transactionId, currencyId: "", isExpense: true, walletID: "")
     }
     var transactionId : String
-    var wallet: Wallet? {
-        return Resource.sharedInstance().userWallets[walletId]
+    var wallet: Wallet {
+        if let _wallet = Resource.sharedInstance().userWallets[walletId]{
+            return _wallet
+        }
+        return Wallet(id: walletId, name: "Wallet Name", icon: "ꁅ", creatorID: "", creationDate: Date().timeIntervalSince1970, memberTypes: [:], isOpen: true, color: textColor.stringRepresentation)
     }
     var walletId : String
     
     init(id: String, payeeId: String, transactionId: String, walletId: String) {
-        
         self.payeeId = payeeId
         self.requestID = id
         self.transactionId = transactionId
         self.walletId = walletId
-        
     }
 }
 
 protocol TransactionDelegate {
-    func transactionAdded(transaction : Transaction)
-    func transactionUpdated(transaction :  Transaction)
-    func transactionDeleted(transaction :  Transaction)
-}
-protocol ScheduledTransactionDelegate {
-    func transactionAdded(transaction : RecurringTransaction)
-    func transactionDeleted(transaction : RecurringTransaction)
-    func transactionUpdated(transaction : RecurringTransaction)
+    func transactionAdded(_ transaction : Transaction)
+    func transactionUpdated(_ transaction :  Transaction)
+    func transactionDeleted(_ transaction :  Transaction)
 }
 protocol TransactionRequestDelegate {
-    func transactionRequestArrived(request : TransactionRequest)
+    func transactionRequestArrived(_ request : TransactionRequest)
 }

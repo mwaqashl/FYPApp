@@ -1,17 +1,11 @@
-//
-//  BudgetManager.swift
-//  Penzy
-//
-//  Created by Waqas Hussain on 31/08/2016.
-//  Copyright © 2016 TechCollage. All rights reserved.
-//
+
 
 import Foundation
 import Firebase
 
 class BudgetManager {
     
-    private static var singleTonInstance = BudgetManager()
+    fileprivate static var singleTonInstance = BudgetManager()
     
     static func sharedInstance() -> BudgetManager {
         return singleTonInstance
@@ -24,10 +18,10 @@ class BudgetManager {
      :param: budget to add
      
      */
-    func addNewBudget(budget: Budget) {
+    func addNewBudget(_ budget: Budget) {
         
         let ref = FIRDatabase.database().reference()
-        let budRef = ref.child("Budgets").childByAutoId()
+        let budRef = ref.child("Budgets").child(budget.walletID).childByAutoId()
         
         let data : NSMutableDictionary = [
             
@@ -36,18 +30,11 @@ class BudgetManager {
             "period": budget.period,
             "lastRenewed": budget.lastRenewed.timeIntervalSince1970*1000,
             "isOpen": budget.isOpen,
-            "cyclesRelated": budget.cyclesRelated,
             "walletID": budget.walletID
         ]
         
         if budget.comments != nil {
             data["comments"] = budget.comments
-        }
-        if budget.extraFunds != nil {
-            data["extraFunds"] = budget.extraFunds
-        }
-        if budget.recurring != nil {
-            data["recurring"] = budget.recurring
         }
         
         budRef.setValue(data)
@@ -63,10 +50,10 @@ class BudgetManager {
      :param: Budget to Remove
      
      */
-    func removeBudgetFromWallet(budget: Budget) {
+    func removeBudgetFromWallet(_ budget: Budget) {
         
         let ref = FIRDatabase.database().reference()
-        ref.child("Budgets/\(budget.id)").removeValue()
+        ref.child("Budgets/\(budget.walletID)/\(budget.id)").removeValue()
         ref.child("BudgetCategories/\(budget.id)").removeValue()
         ref.child("BudgetMembers/\(budget.id)").removeValue()
         
@@ -78,32 +65,25 @@ class BudgetManager {
      :param: Budget to Update
      
      */
-    func updateBudgetInWallet(budget: Budget) {
+    func updateBudgetInWallet(_ budget: Budget) {
         
         let ref = FIRDatabase.database().reference()
-        let budRef = ref.child("Budgets/\(budget.id)")
+        let budRef = ref.child("Budgets/\(budget.walletID)/\(budget.id)")
         
-        let data : NSMutableDictionary = [
+        var data : [String:Any] = [
             
             "allocAmount": budget.allocAmount,
             "title": budget.title,
             "period": budget.period,
             "lastRenewed": budget.lastRenewed.timeIntervalSince1970*1000,
             "isOpen": budget.isOpen,
-            "cyclesRelated": budget.cyclesRelated
         ]
         
         if budget.comments != nil {
             data["comments"] = budget.comments
         }
-        if budget.extraFunds != nil {
-            data["extraFunds"] = budget.extraFunds
-        }
-        if budget.recurring != nil {
-            data["recurring"] = budget.recurring
-        }
         
-        budRef.updateChildValues(data as [NSObject : AnyObject])
+        budRef.updateChildValues(data)
         
     }
     
@@ -113,7 +93,7 @@ class BudgetManager {
      :param: BudgetID For reference and categoryIDs for updation
      
      */
-    func addCategoriesToBudget(budgetID: String, categories: [String]) {
+    func addCategoriesToBudget(_ budgetID: String, categories: [String]) {
         
         let ref = FIRDatabase.database().reference()
         let catRef = ref.child("BudgetCategories/\(budgetID)")
@@ -133,7 +113,7 @@ class BudgetManager {
      :param: BudgetID For reference and memberIDs for updation
      
      */
-    func addMembersToBudget(budgetID: String, members: [String]) {
+    func addMembersToBudget(_ budgetID: String, members: [String]) {
         
         let ref = FIRDatabase.database().reference()
         let memRef = ref.child("BudgetMembers/\(budgetID)")

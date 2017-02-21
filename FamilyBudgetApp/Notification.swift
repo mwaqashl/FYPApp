@@ -1,10 +1,3 @@
-//
-//  Notification.swift
-//  Penzy
-//
-//  Created by Waqas Hussain on 09/09/2016.
-//  Copyright © 2016 TechCollage. All rights reserved.
-//
 
 import Foundation
 
@@ -34,6 +27,6 @@ class Notification {
     
 }
 protocol NotificationDelegate {
-    func notificationAdded(notif : Notification)
-    func notificationDeleted(notif: Notification)
+    func notificationAdded(_ notif : Notification)
+    func notificationDeleted(_ notif: Notification)
 }

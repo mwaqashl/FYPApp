@@ -1,16 +1,8 @@
-//
-//  BudgetObserver.swift
-//  Penzy
-//
-//  Created by MacUser on 9/6/16.
-//  Copyright © 2016 TechCollage. All rights reserved.
-//
-
 import Foundation
 import Firebase
 
 class BudgetObserver {
-    private let FIRKeys = ["Budgets", //0
+    fileprivate let FIRKeys = ["Budgets", //0
                            "BudgetMembers", //1
                            "BudgetCategories", //2
                            "allocAmount", //3
@@ -23,8 +15,8 @@ class BudgetObserver {
                            "extraFunds", //10
                            "isOpen", //11
                            "walletID" ] //12
-    private var ref = FIRDatabase.database().reference()
-    private static var singleInstance : BudgetObserver?
+    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate static var singleInstance : BudgetObserver?
     class func sharedInstance() -> BudgetObserver {
         guard let instance = BudgetObserver.singleInstance else {
             BudgetObserver.singleInstance = BudgetObserver()
@@ -32,7 +24,8 @@ class BudgetObserver {
         }
         return instance
     }
-    private var _autoObserve : Bool = true
+    fileprivate var _autoObserve : Bool = true
+    fileprivate var isObservingBudgetsOf : [String] = []
     var autoObserve : Bool {
         get { return _autoObserve } set {
             if newValue {
@@ -47,12 +40,15 @@ class BudgetObserver {
             _autoObserve = newValue
         }
     }
-    func startObserving(){
-        observeBudgetAdded()
-        observeBudgetDeleted()
-        observeBudgetUpdated()
+    func startObserving(BudgetsOf wallet : UserWallet){
+        if !isObservingBudgetsOf.contains(wallet.id){
+            observeBudget(AddedOf : wallet)
+            observeBudget(DeletedOf : wallet)
+            observeBudget(UpdatedOf : wallet)
+            isObservingBudgetsOf.append(wallet.id)
+        }
     }
-    func startObservingBudget(budget : Budget){
+    func startObservingBudget(_ budget : Budget){
         stopObservingBudget(budget)
         observeBudgetMemberAdded(budget);
         observeBudgetMemberUpdated(budget);
@@ -61,22 +57,25 @@ class BudgetObserver {
         observeBudgetCategoryUpdated(budget);
         observeBudgetCategoryRemoved(budget);
     }
-    func stopObservingBudget(budget :  Budget){
+    func stopObservingBudget(_ budget :  Budget){
         FIRDatabase.database().reference().child(FIRKeys[1]).child(budget.id).removeAllObservers()
         FIRDatabase.database().reference().child(FIRKeys[2]).child(budget.id).removeAllObservers()
     }
-    func stopObserving(){
-        FIRDatabase.database().reference().child(FIRKeys[0]).removeAllObservers()
-        FIRDatabase.database().reference().child(FIRKeys[1]).removeAllObservers()
-        FIRDatabase.database().reference().child(FIRKeys[2]).removeAllObservers()
+    func stopObserving(BudgetsOf wallet : UserWallet){
+        FIRDatabase.database().reference().child(FIRKeys[0]).child(wallet.id).removeAllObservers()
+        FIRDatabase.database().reference().child(FIRKeys[1]).child(wallet.id).removeAllObservers()
+        FIRDatabase.database().reference().child(FIRKeys[2]).child(wallet.id).removeAllObservers()
+        if isObservingBudgetsOf.contains(wallet.id){
+            isObservingBudgetsOf.remove(at: isObservingBudgetsOf.index(of: wallet.id)!)
+        }
     }
-    private func observeBudgetAdded(){
-        let budgetRef = ref.child(FIRKeys[0])
-        budgetRef.observeEventType(FIRDataEventType.ChildAdded, withBlock:  { (snapshot) in
-            guard let dict = snapshot.value else {
+    fileprivate func observeBudget(AddedOf wallet : UserWallet){
+        let budgetRef = ref.child(FIRKeys[0]).child(wallet.id)
+        budgetRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+            guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
-            let budget = Budget(budgetId: snapshot.key, allocAmount: dict[self.FIRKeys[3]] as! Double,  title: dict[self.FIRKeys[4]] as! String, period: dict[self.FIRKeys[5]] as! Int, lastRenewed: (dict[self.FIRKeys[6]] as! Double), comments: dict[self.FIRKeys[7]] as? String, recurring: dict[self.FIRKeys[9]] as? Int, cyclesRelated: dict[self.FIRKeys[8]] as! Bool, extraFunds: dict[self.FIRKeys[10]] as? Double, isOpen: dict[self.FIRKeys[11]] as! Bool, categoryIDs: [], memberIDs: [], walletID: dict[self.FIRKeys[12]] as! String)
+            let budget = Budget(budgetId: snapshot.key, allocAmount: dict[self.FIRKeys[3]] as! Double,  title: dict[self.FIRKeys[4]] as! String, period: dict[self.FIRKeys[5]] as! Int, lastRenewed: (dict[self.FIRKeys[6]] as! Double)/1000, comments: dict[self.FIRKeys[7]] as? String, isOpen: dict[self.FIRKeys[11]] as! Bool, categoryIDs: [], memberIDs: [], walletID: dict[self.FIRKeys[12]] as! String)
             Resource.sharedInstance().budgets[snapshot.key] = budget
             if self.autoObserve { self.observeBudgetMemberAdded(budget); self.observeBudgetMemberUpdated(budget); self.observeBudgetMemberRemoved(budget);
                 self.observeBudgetCategoryAdded(budget); self.observeBudgetCategoryUpdated(budget); self.observeBudgetCategoryRemoved(budget); }
@@ -85,21 +84,18 @@ class BudgetObserver {
             })
         })
     }
-    private func observeBudgetUpdated(){
-        let budgetRef = ref.child(FIRKeys[0])
-        budgetRef.observeEventType(FIRDataEventType.ChildChanged, withBlock:  { (snapshot) in
-            guard let dict = snapshot.value else {
+    fileprivate func observeBudget(UpdatedOf wallet : UserWallet){
+        let budgetRef = ref.child(FIRKeys[0]).child(wallet.id)
+        budgetRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
+            guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
             let budget = Resource.sharedInstance().budgets[snapshot.key]!
             budget.title = dict[self.FIRKeys[4]] as! String
             budget.allocAmount = dict[self.FIRKeys[3]] as! Double
             budget.period = dict[self.FIRKeys[5]] as! Int
-            budget.lastRenewed = NSDate(timeIntervalSince1970 : (dict[self.FIRKeys[6]] as! Double)/1000)
+            budget.lastRenewed = Date(timeIntervalSince1970 : (dict[self.FIRKeys[6]] as! Double)/1000)
             budget.comments = dict[self.FIRKeys[7]] as? String
-            budget.recurring = dict[self.FIRKeys[9]] as? Int
-            budget.cyclesRelated = dict[self.FIRKeys[8]] as! Bool
-            budget.extraFunds = dict[self.FIRKeys[10]] as? Double
             budget.isOpen = dict[self.FIRKeys[11]] as! Bool
             Resource.sharedInstance().budgets[snapshot.key] = budget
             Delegate.sharedInstance().getBudgetDelegates().forEach({ (budgetDel) in
@@ -107,9 +103,9 @@ class BudgetObserver {
             })
         })
     }
-    private func observeBudgetDeleted(){
-        let budgetRef = ref.child(FIRKeys[0])
-        budgetRef.observeEventType(FIRDataEventType.ChildRemoved, withBlock:  { (snapshot) in
+    fileprivate func observeBudget(DeletedOf wallet : UserWallet){
+        let budgetRef = ref.child(FIRKeys[0]).child(wallet.id)
+        budgetRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -123,9 +119,9 @@ class BudgetObserver {
             })
         })
     }
-    private func observeBudgetMemberAdded(budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
+    fileprivate func observeBudgetMemberAdded(_ budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let budgetRef = ref.child(FIRKeys[1]).child(budget.id)
-        budgetRef.observeEventType(FIRDataEventType.ChildAdded, withBlock:  { (snapshot) in
+        budgetRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -133,13 +129,16 @@ class BudgetObserver {
             Delegate.sharedInstance().getBudgetMemberDelegates().forEach({ (budgetMemDel) in
                 if let user = Resource.sharedInstance().users[snapshot.key] {
                     budgetMemDel.memberAdded(user, budget: budget)
+                }else{
+                    let user = User(id: snapshot.key, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+                    budgetMemDel.memberAdded(user, budget: budget)
                 }
             })
         })
     }
-    private func observeBudgetMemberUpdated(budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
+    fileprivate func observeBudgetMemberUpdated(_ budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let budgetRef = ref.child(FIRKeys[1]).child(budget.id)
-        budgetRef.observeEventType(FIRDataEventType.ChildChanged, withBlock:  { (snapshot) in
+        budgetRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -148,6 +147,9 @@ class BudgetObserver {
                 Delegate.sharedInstance().getBudgetMemberDelegates().forEach({ (budgetMemDel) in
                     if let user = Resource.sharedInstance().users[snapshot.key] {
                         budgetMemDel.memberAdded(user, budget: budget)
+                    }else{
+                        let user = User(id: snapshot.key, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+                        budgetMemDel.memberAdded(user, budget: budget)
                     }
                 })
             }else{
@@ -155,79 +157,93 @@ class BudgetObserver {
                 Delegate.sharedInstance().getBudgetMemberDelegates().forEach({ (budgetMemDel) in
                     if let user = Resource.sharedInstance().users[snapshot.key] {
                         budgetMemDel.memberLeft(user, budget: budget)
+                    }else{
+                        let user = User(id: snapshot.key, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+                        budgetMemDel.memberLeft(user, budget: budget)
                     }
                 })
             }
             
         })
     }
-    private func observeBudgetMemberRemoved(budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
+    fileprivate func observeBudgetMemberRemoved(_ budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let budgetRef = ref.child(FIRKeys[1]).child(budget.id)
-        budgetRef.observeEventType(FIRDataEventType.ChildRemoved, withBlock:  { (snapshot) in
+        budgetRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
             Resource.sharedInstance().budgets[budget.id]?.removeMember(snapshot.key)
-            Delegate.sharedInstance().getBudgetMemberDelegates().forEach({ (walletMemDel) in
+            Delegate.sharedInstance().getBudgetMemberDelegates().forEach({ (budgetMemDel) in
                 if let user = Resource.sharedInstance().users[snapshot.key] {
-                    walletMemDel.memberLeft(user, budget: budget)
+                    budgetMemDel.memberLeft(user, budget: budget)
+                }else{
+                    let user = User(id: snapshot.key, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+                    budgetMemDel.memberLeft(user, budget: budget)
                 }
             })
         })
     }
-    private func observeBudgetCategoryAdded(budget : Budget){
+    fileprivate func observeBudgetCategoryAdded(_ budget : Budget){
         let budgetRef = ref.child(FIRKeys[2]).child(budget.id)
-        budgetRef.observeEventType(FIRDataEventType.ChildAdded, withBlock:  { (snapshot) in
+        budgetRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
             guard (snapshot.value) != nil else {
                 return
             }
             if !(snapshot.value as! Bool) {return}
             Resource.sharedInstance().budgets[budget.id]?.addCategory(snapshot.key)
-            guard let category = Resource.sharedInstance().categories[snapshot.key] else {
-                return
-            }
-            Delegate.sharedInstance().getBudgetCategoryDelegates().forEach({ (walletCatDel) in
-                walletCatDel.categoryAdded(category, budget: budget)
+            Delegate.sharedInstance().getBudgetCategoryDelegates().forEach({ (budgetCatDel) in
+                if let category = Resource.sharedInstance().categories[snapshot.key] {
+                    budgetCatDel.categoryAdded(category, budget: budget)
+                }else{
+                    let category = Category(id: snapshot.key, name: "Loading...", icon: "ꀔ", isDefault: true, isExpense: true, color: textColor.stringRepresentation)
+                    budgetCatDel.categoryAdded(category, budget: budget)
+                }
             })
         })
     }
-    private func observeBudgetCategoryUpdated(budget : Budget){
+    fileprivate func observeBudgetCategoryUpdated(_ budget : Budget){
         let budgetRef = ref.child(FIRKeys[2]).child(budget.id)
-        budgetRef.observeEventType(FIRDataEventType.ChildChanged, withBlock:  { (snapshot) in
+        budgetRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
             if snapshot.value as! Bool {
                 Resource.sharedInstance().budgets[budget.id]?.addCategory(snapshot.key)
-                guard let category = Resource.sharedInstance().categories[snapshot.key] else {
-                    return
-                }
-                Delegate.sharedInstance().getBudgetCategoryDelegates().forEach({ (walletCatDel) in
-                    walletCatDel.categoryAdded(category, budget: budget)
+                Delegate.sharedInstance().getBudgetCategoryDelegates().forEach({ (budgetCatDel) in
+                    if let category = Resource.sharedInstance().categories[snapshot.key] {
+                        budgetCatDel.categoryAdded(category, budget: budget)
+                    }else{
+                        let category = Category(id: snapshot.key, name: "Loading...", icon: "ꀔ", isDefault: true, isExpense: true, color: textColor.stringRepresentation)
+                        budgetCatDel.categoryAdded(category, budget: budget)
+                    }
                 })
             }else{
                 Resource.sharedInstance().budgets[budget.id]?.removeCategory(snapshot.key)
-                guard let category = Resource.sharedInstance().categories[snapshot.key] else {
-                    return
-                }
-                Delegate.sharedInstance().getBudgetCategoryDelegates().forEach({ (walletCatDel) in
-                    walletCatDel.categoryRemoved(category, budget: budget)
+                Delegate.sharedInstance().getBudgetCategoryDelegates().forEach({ (budgetCatDel) in
+                    if let category = Resource.sharedInstance().categories[snapshot.key] {
+                        budgetCatDel.categoryRemoved(category, budget: budget)
+                    }else{
+                        let category = Category(id: snapshot.key, name: "Loading...", icon: "ꀔ", isDefault: true, isExpense: true, color: textColor.stringRepresentation)
+                        budgetCatDel.categoryRemoved(category, budget: budget)
+                    }
                 })
             }
         })
     }
-    private func observeBudgetCategoryRemoved(budget : Budget){
+    fileprivate func observeBudgetCategoryRemoved(_ budget : Budget){
         let budgetRef = ref.child(FIRKeys[2]).child(budget.id)
-        budgetRef.observeEventType(FIRDataEventType.ChildRemoved, withBlock:  { (snapshot) in
+        budgetRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
             guard (snapshot.value) != nil else {
                 return
             }
             Resource.sharedInstance().budgets[budget.id]?.removeCategory(snapshot.key)
-            guard let category = Resource.sharedInstance().categories[snapshot.key] else {
-                return
-            }
-            Delegate.sharedInstance().getBudgetCategoryDelegates().forEach({ (walletCatDel) in
-                walletCatDel.categoryRemoved(category, budget: budget)
+            Delegate.sharedInstance().getBudgetCategoryDelegates().forEach({ (budgetCatDel) in
+                if let category = Resource.sharedInstance().categories[snapshot.key] {
+                    budgetCatDel.categoryRemoved(category, budget: budget)
+                }else{
+                    let category = Category(id: snapshot.key, name: "Loading...", icon: "ꀔ", isDefault: true, isExpense: true, color: textColor.stringRepresentation)
+                    budgetCatDel.categoryRemoved(category, budget: budget)
+                }
             })
         })
     }

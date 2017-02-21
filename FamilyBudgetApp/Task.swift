@@ -1,17 +1,10 @@
 
 
-//  Task.swift
-//  AccBook
-//
-//  Created by MacUser on 8/18/16.
-//  Copyright © 2016 Collage. All rights reserved.
-//
-
 import Foundation
 import Firebase //only for storage
 
 enum TaskStatus {
-    case Open,Completed
+    case open,completed
 }
 
 class Task {
@@ -19,22 +12,32 @@ class Task {
     var id : String
     var title: String
     var category: Category? {
-        return Resource.sharedInstance().categories[categoryID]
+        if let category = Resource.sharedInstance().categories[categoryID]{
+            return category
+        }
+        return Category(id: categoryID, name: "Loading...", icon: "ꀔ", isDefault: true, isExpense: true, color: textColor.stringRepresentation)
     }
     var categoryID: String
     var amount: Double
     var comment: String?
-    var dueDate: NSDate
-    var startDate: NSDate
+    var dueDate: Date
+    var startDate: Date
     var creator: User? {
-        return Resource.sharedInstance().users[creatorID]
+        if let user = Resource.sharedInstance().users[creatorID] {
+            return user
+        }
+        return User(id: creatorID, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
     }
     var creatorID: String
-    var venue: [String : AnyObject]? // name,lat,long
-    var pictureURLs: [String]?
     var status: TaskStatus
     var doneBy: User? {
-        return doneByID != nil ? Resource.sharedInstance().users[doneByID!] : nil
+        if let user = (doneByID != nil ? Resource.sharedInstance().users[doneByID!] : nil){
+            return user
+        }
+        if let doneByid = doneByID {
+            return User(id: doneByid, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+        }
+        return nil
     }
     var doneByID: String?
     var payee: User? {
@@ -56,86 +59,113 @@ class Task {
         return Resource.sharedInstance().userWallets[walletID]
     }
     
-    init(taskID : String, title: String, categoryID: String, amount: Double, comment: String?, dueDate: Double, startDate: Double, creatorID: String, venue: [String:AnyObject]?, pictureURLs: [String]?, status: TaskStatus, doneByID: String?, payeeID: String?, memberIDs: [String], walletID: String) {
+    var timeLeft = 0.0 {
+        didSet {
+            timeLeftObserver?(self.timeLeft,self)
+        }
+    }
+    var timeLeftObserver : ((Double, Task) -> Void)?
+
+    
+    init(taskID : String, title: String, categoryID: String, amount: Double, comment: String?, dueDate: Double, startDate: Double, creatorID: String, status: TaskStatus, doneByID: String?, payeeID: String?, memberIDs: [String], walletID: String) {
         self.amount = amount
         self.categoryID = categoryID
         self.comment = comment
         self.creatorID = creatorID
         self.doneByID = doneByID
-        self.dueDate = NSDate(timeIntervalSince1970: dueDate/1000)
+        self.dueDate = Date(timeIntervalSince1970: dueDate)
         self.payeeID = payeeID
-        self.pictureURLs = pictureURLs
-        self.startDate = NSDate(timeIntervalSince1970: startDate/1000)
+        self.startDate = Date(timeIntervalSince1970: startDate)
         self.status = status
         self.id = taskID
         self.title = title
-        self.venue = venue
         self.memberIDs = memberIDs
         self.walletID = walletID
     }
-    func addMember(memberId : String){
+    
+    func addMember(_ memberId : String){
         if !memberIDs.contains(memberId) {
             memberIDs.append(memberId)
         }
     }
+    
     func getMemberIDs() -> [String] {
         return memberIDs
     }
-    func removeMember(memberId : String){
+    
+    func removeMember(_ memberId : String){
         for i in 0..<memberIDs.count {
             if memberIDs[i] == memberId {
-                memberIDs.removeAtIndex(i)
+                memberIDs.remove(at: i)
                 return
             }
         }
     }
     
-    func getImage(urlS: String, completion : (NSData) -> ()) {
-        let fileManager = NSFileManager.defaultManager()
-        let url = fileManager.URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)[0]
-        let imageNSURL = url.URLByAppendingPathComponent("images/userImages/\(self.id)/\(urlS)")
-        if fileManager.fileExistsAtPath(imageNSURL.absoluteString) {
-            let data = NSData(contentsOfURL: imageNSURL)
+    @objc func startObservingTimeLeft() {
+        
+        print("Start Observing timeleft")
+        let times : [Double] = [5*60, 10*60, 30*60, 60*60, 24*60*60, 7*24*60*60, 7*24*60*60, 31*24*60*60, 365*24*60*60]
+        
+        timeLeft = dueDate.timeIntervalSince(Date())
+        
+        var timeInterval : Double = 0
+        
+        var index = 0
+        for i in 0..<times.count {
+            if timeLeft < times[i] {
+                break
+            }
+            index = i
+        }
+        
+        if index > 0 {
+            let div = Int(timeLeft/times[index])
+            let rem = timeLeft - Double(div)*(times[index])
+            
+            timeInterval = rem
+        }
+        else {
+            timeInterval = timeLeft
+        }
+        
+        if timeInterval > 0 {
+            print("Timer Start of ", timeInterval)
+            Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(Task.startObservingTimeLeft), userInfo: nil, repeats: false)
+        }
+        
+    }
+    
+    func getImage(_ urlS: String, completion : @escaping (Data) -> ()) {
+        if urlS == "dp-male" || urlS == "dp-female" {
+            completion(UIImagePNGRepresentation(UIImage(named: urlS)!)!)
+        }
+        let fileManager = FileManager.default
+        let url = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let imageNSURL = url.appendingPathComponent("images/userImages/\(self.id)/\(urlS)")
+        if fileManager.fileExists(atPath: imageNSURL.absoluteString) {
+            let data = try? Data(contentsOf: imageNSURL)
             completion(data!)
         }else{
-            let imageRef = FIRStorage.storage().referenceForURL("gs://penzy-120d0.appspot.com").child("images").child("taskImages").child(self.id).child(urlS)
-            imageRef.writeToFile(imageNSURL, completion: { (urlRef, error) in
+            let imageRef = FIRStorage.storage().reference(forURL: "gs://penzy-120d0.appspot.com").child("images").child("taskImages").child(self.id).child(urlS)
+            imageRef.write(toFile: imageNSURL, completion: { (urlRef, error) in
                 guard error == nil else {
                     return
                 }
-                let data = NSData(contentsOfURL: urlRef!)!
+                let data = try! Data(contentsOf: urlRef!)
                 completion(data)
             })
         }
     }
 }
 
-
-class RecurringTask: Task {
-    
-    var recurringDays: Int
-    
-    init(task: Task, noOfDays: Int) {
-        self.recurringDays = noOfDays
-        super.init(taskID: task.id, title: task.title, categoryID: task.categoryID, amount: task.amount, comment: task.comment, dueDate: task.dueDate.timeIntervalSince1970, startDate: task.startDate.timeIntervalSince1970, creatorID: task.creatorID, venue: task.venue, pictureURLs: task.pictureURLs, status: task.status, doneByID: task.doneByID, payeeID: task.payeeID, memberIDs: task.memberIDs, walletID: task.walletID)
-    }
-}
-
 protocol TaskDelegate {
-    func taskAdded(task: Task)
-    func taskUpdated(task: Task)
-    func taskDeleted(task: Task)
+    func taskAdded(_ task: Task)
+    func taskUpdated(_ task: Task)
+    func taskDeleted(_ task: Task)
 }
-protocol ScheduledTaskDelegate {
-    func scheduledTaskAdded(task : RecurringTask)
-    func scheduledTaskUpdated(task: RecurringTask)
-    func scheduledTaskDeleted(task: RecurringTask)
-}
+
 protocol TaskMemberDelegate {
-    func memberAdded(member : User, task : Task)
-    func memberLeft(member : User, task : Task)
-}
-protocol ScheduledTaskMemberDelegate {
-    func memberAdded(member : User, task : RecurringTask)
-    func memberLeft(member : User, task : RecurringTask)
+    func memberAdded(_ member : User, task : Task)
+    func memberLeft(_ member : User, task : Task)
 }

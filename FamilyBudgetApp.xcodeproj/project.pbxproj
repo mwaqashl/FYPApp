@@ -8,37 +8,40 @@
 
 /* Begin PBXBuildFile section */
 		543F485DAE600F08C8532E77 /* Pods_FamilyBudgetApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */; };
+		770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */; };
 		7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B51E57231C006A25AF /* AppDelegate.swift */; };
 		7742C7B81E57231C006A25AF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B71E57231C006A25AF /* ViewController.swift */; };
 		7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7B91E57231C006A25AF /* Main.storyboard */; };
 		7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BC1E57231C006A25AF /* Assets.xcassets */; };
 		7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */; };
-		7742C7E11E57236A006A25AF /* UserObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7C71E57236A006A25AF /* UserObserver.swift */; };
-		7742C7E21E57236A006A25AF /* WalletObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7C81E57236A006A25AF /* WalletObserver.swift */; };
-		7742C7E31E57236A006A25AF /* BudgetObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7C91E57236A006A25AF /* BudgetObserver.swift */; };
-		7742C7E41E57236A006A25AF /* TaskObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7CA1E57236A006A25AF /* TaskObserver.swift */; };
-		7742C7E51E57236A006A25AF /* TransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7CB1E57236A006A25AF /* TransactionObserver.swift */; };
-		7742C7E61E57236A006A25AF /* HelperObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7CC1E57236A006A25AF /* HelperObserver.swift */; };
-		7742C7E71E57236A006A25AF /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7CD1E57236A006A25AF /* NotificationObserver.swift */; };
-		7742C7E81E57236A006A25AF /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7CF1E57236A006A25AF /* NotificationManager.swift */; };
-		7742C7E91E57236A006A25AF /* TaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D01E57236A006A25AF /* TaskManager.swift */; };
-		7742C7EA1E57236A006A25AF /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D11E57236A006A25AF /* UserManager.swift */; };
-		7742C7EB1E57236A006A25AF /* BudgetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D21E57236A006A25AF /* BudgetManager.swift */; };
-		7742C7EC1E57236A006A25AF /* TransactionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D31E57236A006A25AF /* TransactionManager.swift */; };
-		7742C7ED1E57236A006A25AF /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D41E57236A006A25AF /* WalletManager.swift */; };
-		7742C7EE1E57236A006A25AF /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D61E57236A006A25AF /* Auth.swift */; };
-		7742C7EF1E57236A006A25AF /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D71E57236A006A25AF /* Resource.swift */; };
-		7742C7F01E57236A006A25AF /* Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D81E57236A006A25AF /* Delegate.swift */; };
-		7742C7F11E57236A006A25AF /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7D91E57236A006A25AF /* Notification.swift */; };
-		7742C7F21E57236A006A25AF /* Budget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7DA1E57236A006A25AF /* Budget.swift */; };
-		7742C7F31E57236A006A25AF /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7DB1E57236A006A25AF /* Task.swift */; };
-		7742C7F41E57236A006A25AF /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7DC1E57236A006A25AF /* Transaction.swift */; };
-		7742C7F51E57236A006A25AF /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7DD1E57236A006A25AF /* User.swift */; };
-		7742C7F61E57236A006A25AF /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7DE1E57236A006A25AF /* Wallet.swift */; };
+		775C2A101E5B11AD00E409B6 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FB1E5B11AD00E409B6 /* Auth.swift */; };
+		775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FC1E5B11AD00E409B6 /* Budget.swift */; };
+		775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */; };
+		775C2A131E5B11AD00E409B6 /* BudgetObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FE1E5B11AD00E409B6 /* BudgetObserver.swift */; };
+		775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FF1E5B11AD00E409B6 /* Delegate.swift */; };
+		775C2A151E5B11AD00E409B6 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A001E5B11AD00E409B6 /* Notification.swift */; };
+		775C2A161E5B11AD00E409B6 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A011E5B11AD00E409B6 /* NotificationManager.swift */; };
+		775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A021E5B11AD00E409B6 /* NotificationObserver.swift */; };
+		775C2A181E5B11AD00E409B6 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A031E5B11AD00E409B6 /* Resource.swift */; };
+		775C2A191E5B11AD00E409B6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A041E5B11AD00E409B6 /* Task.swift */; };
+		775C2A1A1E5B11AD00E409B6 /* TaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A051E5B11AD00E409B6 /* TaskManager.swift */; };
+		775C2A1B1E5B11AD00E409B6 /* TaskObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A061E5B11AD00E409B6 /* TaskObserver.swift */; };
+		775C2A1C1E5B11AD00E409B6 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A071E5B11AD00E409B6 /* Transaction.swift */; };
+		775C2A1D1E5B11AD00E409B6 /* TransactionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A081E5B11AD00E409B6 /* TransactionManager.swift */; };
+		775C2A1E1E5B11AD00E409B6 /* TransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A091E5B11AD00E409B6 /* TransactionObserver.swift */; };
+		775C2A1F1E5B11AD00E409B6 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A0A1E5B11AD00E409B6 /* User.swift */; };
+		775C2A201E5B11AD00E409B6 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A0B1E5B11AD00E409B6 /* UserManager.swift */; };
+		775C2A211E5B11AD00E409B6 /* UserObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A0C1E5B11AD00E409B6 /* UserObserver.swift */; };
+		775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A0D1E5B11AD00E409B6 /* Wallet.swift */; };
+		775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A0E1E5B11AD00E409B6 /* WalletManager.swift */; };
+		775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A0F1E5B11AD00E409B6 /* WalletObserver.swift */; };
+		775C2A261E5B173300E409B6 /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A251E5B173300E409B6 /* Assets.swift */; };
+		775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A271E5B37BB00E409B6 /* HelperObserver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
+		770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7742C7B21E57231C006A25AF /* FamilyBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7742C7B51E57231C006A25AF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7742C7B71E57231C006A25AF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -46,28 +49,29 @@
 		7742C7BC1E57231C006A25AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7742C7BF1E57231C006A25AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7742C7C11E57231C006A25AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7742C7C71E57236A006A25AF /* UserObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserObserver.swift; sourceTree = "<group>"; };
-		7742C7C81E57236A006A25AF /* WalletObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletObserver.swift; sourceTree = "<group>"; };
-		7742C7C91E57236A006A25AF /* BudgetObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetObserver.swift; sourceTree = "<group>"; };
-		7742C7CA1E57236A006A25AF /* TaskObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskObserver.swift; sourceTree = "<group>"; };
-		7742C7CB1E57236A006A25AF /* TransactionObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionObserver.swift; sourceTree = "<group>"; };
-		7742C7CC1E57236A006A25AF /* HelperObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperObserver.swift; sourceTree = "<group>"; };
-		7742C7CD1E57236A006A25AF /* NotificationObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationObserver.swift; sourceTree = "<group>"; };
-		7742C7CF1E57236A006A25AF /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
-		7742C7D01E57236A006A25AF /* TaskManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManager.swift; sourceTree = "<group>"; };
-		7742C7D11E57236A006A25AF /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
-		7742C7D21E57236A006A25AF /* BudgetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetManager.swift; sourceTree = "<group>"; };
-		7742C7D31E57236A006A25AF /* TransactionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionManager.swift; sourceTree = "<group>"; };
-		7742C7D41E57236A006A25AF /* WalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletManager.swift; sourceTree = "<group>"; };
-		7742C7D61E57236A006A25AF /* Auth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
-		7742C7D71E57236A006A25AF /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
-		7742C7D81E57236A006A25AF /* Delegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Delegate.swift; sourceTree = "<group>"; };
-		7742C7D91E57236A006A25AF /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
-		7742C7DA1E57236A006A25AF /* Budget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Budget.swift; sourceTree = "<group>"; };
-		7742C7DB1E57236A006A25AF /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
-		7742C7DC1E57236A006A25AF /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
-		7742C7DD1E57236A006A25AF /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		7742C7DE1E57236A006A25AF /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
+		775C29FB1E5B11AD00E409B6 /* Auth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Auth.swift; path = FamilyBudgetApp/Auth.swift; sourceTree = SOURCE_ROOT; };
+		775C29FC1E5B11AD00E409B6 /* Budget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Budget.swift; path = FamilyBudgetApp/Budget.swift; sourceTree = SOURCE_ROOT; };
+		775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BudgetManager.swift; path = FamilyBudgetApp/BudgetManager.swift; sourceTree = SOURCE_ROOT; };
+		775C29FE1E5B11AD00E409B6 /* BudgetObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BudgetObserver.swift; path = FamilyBudgetApp/BudgetObserver.swift; sourceTree = SOURCE_ROOT; };
+		775C29FF1E5B11AD00E409B6 /* Delegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Delegate.swift; path = FamilyBudgetApp/Delegate.swift; sourceTree = SOURCE_ROOT; };
+		775C2A001E5B11AD00E409B6 /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Notification.swift; path = FamilyBudgetApp/Notification.swift; sourceTree = SOURCE_ROOT; };
+		775C2A011E5B11AD00E409B6 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationManager.swift; path = FamilyBudgetApp/NotificationManager.swift; sourceTree = SOURCE_ROOT; };
+		775C2A021E5B11AD00E409B6 /* NotificationObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationObserver.swift; path = FamilyBudgetApp/NotificationObserver.swift; sourceTree = SOURCE_ROOT; };
+		775C2A031E5B11AD00E409B6 /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Resource.swift; path = FamilyBudgetApp/Resource.swift; sourceTree = SOURCE_ROOT; };
+		775C2A041E5B11AD00E409B6 /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Task.swift; path = FamilyBudgetApp/Task.swift; sourceTree = SOURCE_ROOT; };
+		775C2A051E5B11AD00E409B6 /* TaskManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TaskManager.swift; path = FamilyBudgetApp/TaskManager.swift; sourceTree = SOURCE_ROOT; };
+		775C2A061E5B11AD00E409B6 /* TaskObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TaskObserver.swift; path = FamilyBudgetApp/TaskObserver.swift; sourceTree = SOURCE_ROOT; };
+		775C2A071E5B11AD00E409B6 /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Transaction.swift; path = FamilyBudgetApp/Transaction.swift; sourceTree = SOURCE_ROOT; };
+		775C2A081E5B11AD00E409B6 /* TransactionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TransactionManager.swift; path = FamilyBudgetApp/TransactionManager.swift; sourceTree = SOURCE_ROOT; };
+		775C2A091E5B11AD00E409B6 /* TransactionObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TransactionObserver.swift; path = FamilyBudgetApp/TransactionObserver.swift; sourceTree = SOURCE_ROOT; };
+		775C2A0A1E5B11AD00E409B6 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = FamilyBudgetApp/User.swift; sourceTree = SOURCE_ROOT; };
+		775C2A0B1E5B11AD00E409B6 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserManager.swift; path = FamilyBudgetApp/UserManager.swift; sourceTree = SOURCE_ROOT; };
+		775C2A0C1E5B11AD00E409B6 /* UserObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserObserver.swift; path = FamilyBudgetApp/UserObserver.swift; sourceTree = SOURCE_ROOT; };
+		775C2A0D1E5B11AD00E409B6 /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Wallet.swift; path = FamilyBudgetApp/Wallet.swift; sourceTree = SOURCE_ROOT; };
+		775C2A0E1E5B11AD00E409B6 /* WalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WalletManager.swift; path = FamilyBudgetApp/WalletManager.swift; sourceTree = SOURCE_ROOT; };
+		775C2A0F1E5B11AD00E409B6 /* WalletObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WalletObserver.swift; path = FamilyBudgetApp/WalletObserver.swift; sourceTree = SOURCE_ROOT; };
+		775C2A251E5B173300E409B6 /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Assets.swift; path = FamilyBudgetApp/Assets.swift; sourceTree = SOURCE_ROOT; };
+		775C2A271E5B37BB00E409B6 /* HelperObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperObserver.swift; sourceTree = SOURCE_ROOT; };
 		8A8B1FA4EAEBCFC2910F799F /* Pods-FamilyBudgetApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.release.xcconfig"; sourceTree = "<group>"; };
 		9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FamilyBudgetApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -118,6 +122,7 @@
 				7742C7B71E57231C006A25AF /* ViewController.swift */,
 				7742C7B91E57231C006A25AF /* Main.storyboard */,
 				7742C7BC1E57231C006A25AF /* Assets.xcassets */,
+				770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */,
 				7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */,
 				7742C7E01E57236A006A25AF /* API */,
 				7742C7C11E57231C006A25AF /* Info.plist */,
@@ -128,13 +133,13 @@
 		7742C7CE1E57236A006A25AF /* ObserverClasses */ = {
 			isa = PBXGroup;
 			children = (
-				7742C7C71E57236A006A25AF /* UserObserver.swift */,
-				7742C7C81E57236A006A25AF /* WalletObserver.swift */,
-				7742C7C91E57236A006A25AF /* BudgetObserver.swift */,
-				7742C7CA1E57236A006A25AF /* TaskObserver.swift */,
-				7742C7CB1E57236A006A25AF /* TransactionObserver.swift */,
-				7742C7CC1E57236A006A25AF /* HelperObserver.swift */,
-				7742C7CD1E57236A006A25AF /* NotificationObserver.swift */,
+				775C29FE1E5B11AD00E409B6 /* BudgetObserver.swift */,
+				775C2A021E5B11AD00E409B6 /* NotificationObserver.swift */,
+				775C2A061E5B11AD00E409B6 /* TaskObserver.swift */,
+				775C2A271E5B37BB00E409B6 /* HelperObserver.swift */,
+				775C2A091E5B11AD00E409B6 /* TransactionObserver.swift */,
+				775C2A0C1E5B11AD00E409B6 /* UserObserver.swift */,
+				775C2A0F1E5B11AD00E409B6 /* WalletObserver.swift */,
 			);
 			name = ObserverClasses;
 			sourceTree = "<group>";
@@ -142,12 +147,12 @@
 		7742C7D51E57236A006A25AF /* ModelManagers */ = {
 			isa = PBXGroup;
 			children = (
-				7742C7CF1E57236A006A25AF /* NotificationManager.swift */,
-				7742C7D01E57236A006A25AF /* TaskManager.swift */,
-				7742C7D11E57236A006A25AF /* UserManager.swift */,
-				7742C7D21E57236A006A25AF /* BudgetManager.swift */,
-				7742C7D31E57236A006A25AF /* TransactionManager.swift */,
-				7742C7D41E57236A006A25AF /* WalletManager.swift */,
+				775C2A011E5B11AD00E409B6 /* NotificationManager.swift */,
+				775C2A051E5B11AD00E409B6 /* TaskManager.swift */,
+				775C2A081E5B11AD00E409B6 /* TransactionManager.swift */,
+				775C2A0B1E5B11AD00E409B6 /* UserManager.swift */,
+				775C2A0E1E5B11AD00E409B6 /* WalletManager.swift */,
+				775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */,
 			);
 			name = ModelManagers;
 			sourceTree = "<group>";
@@ -155,12 +160,12 @@
 		7742C7DF1E57236A006A25AF /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				7742C7D91E57236A006A25AF /* Notification.swift */,
-				7742C7DA1E57236A006A25AF /* Budget.swift */,
-				7742C7DB1E57236A006A25AF /* Task.swift */,
-				7742C7DC1E57236A006A25AF /* Transaction.swift */,
-				7742C7DD1E57236A006A25AF /* User.swift */,
-				7742C7DE1E57236A006A25AF /* Wallet.swift */,
+				775C2A001E5B11AD00E409B6 /* Notification.swift */,
+				775C29FC1E5B11AD00E409B6 /* Budget.swift */,
+				775C2A041E5B11AD00E409B6 /* Task.swift */,
+				775C2A071E5B11AD00E409B6 /* Transaction.swift */,
+				775C2A0A1E5B11AD00E409B6 /* User.swift */,
+				775C2A0D1E5B11AD00E409B6 /* Wallet.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -168,11 +173,12 @@
 		7742C7E01E57236A006A25AF /* API */ = {
 			isa = PBXGroup;
 			children = (
+				775C29FB1E5B11AD00E409B6 /* Auth.swift */,
+				775C29FF1E5B11AD00E409B6 /* Delegate.swift */,
+				775C2A031E5B11AD00E409B6 /* Resource.swift */,
+				775C2A251E5B173300E409B6 /* Assets.swift */,
 				7742C7CE1E57236A006A25AF /* ObserverClasses */,
 				7742C7D51E57236A006A25AF /* ModelManagers */,
-				7742C7D61E57236A006A25AF /* Auth.swift */,
-				7742C7D71E57236A006A25AF /* Resource.swift */,
-				7742C7D81E57236A006A25AF /* Delegate.swift */,
 				7742C7DF1E57236A006A25AF /* Models */,
 			);
 			name = API;
@@ -223,6 +229,7 @@
 					7742C7B11E57231C006A25AF = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = M9MSRMULXS;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -251,6 +258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */,
+				770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */,
 				7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */,
 				7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */,
 			);
@@ -311,30 +319,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7742C7F61E57236A006A25AF /* Wallet.swift in Sources */,
-				7742C7F41E57236A006A25AF /* Transaction.swift in Sources */,
-				7742C7ED1E57236A006A25AF /* WalletManager.swift in Sources */,
-				7742C7E21E57236A006A25AF /* WalletObserver.swift in Sources */,
-				7742C7F21E57236A006A25AF /* Budget.swift in Sources */,
-				7742C7E51E57236A006A25AF /* TransactionObserver.swift in Sources */,
-				7742C7E81E57236A006A25AF /* NotificationManager.swift in Sources */,
-				7742C7E91E57236A006A25AF /* TaskManager.swift in Sources */,
-				7742C7EB1E57236A006A25AF /* BudgetManager.swift in Sources */,
-				7742C7E11E57236A006A25AF /* UserObserver.swift in Sources */,
-				7742C7EE1E57236A006A25AF /* Auth.swift in Sources */,
-				7742C7E41E57236A006A25AF /* TaskObserver.swift in Sources */,
-				7742C7EA1E57236A006A25AF /* UserManager.swift in Sources */,
-				7742C7E31E57236A006A25AF /* BudgetObserver.swift in Sources */,
+				775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */,
+				775C2A181E5B11AD00E409B6 /* Resource.swift in Sources */,
+				775C2A261E5B173300E409B6 /* Assets.swift in Sources */,
+				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
+				775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */,
+				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
+				775C2A1C1E5B11AD00E409B6 /* Transaction.swift in Sources */,
+				775C2A101E5B11AD00E409B6 /* Auth.swift in Sources */,
+				775C2A1D1E5B11AD00E409B6 /* TransactionManager.swift in Sources */,
+				775C2A1A1E5B11AD00E409B6 /* TaskManager.swift in Sources */,
+				775C2A201E5B11AD00E409B6 /* UserManager.swift in Sources */,
+				775C2A131E5B11AD00E409B6 /* BudgetObserver.swift in Sources */,
+				775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */,
+				775C2A1E1E5B11AD00E409B6 /* TransactionObserver.swift in Sources */,
+				775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */,
+				775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */,
 				7742C7B81E57231C006A25AF /* ViewController.swift in Sources */,
-				7742C7F11E57236A006A25AF /* Notification.swift in Sources */,
-				7742C7F01E57236A006A25AF /* Delegate.swift in Sources */,
-				7742C7EC1E57236A006A25AF /* TransactionManager.swift in Sources */,
+				775C2A1F1E5B11AD00E409B6 /* User.swift in Sources */,
+				775C2A211E5B11AD00E409B6 /* UserObserver.swift in Sources */,
+				775C2A161E5B11AD00E409B6 /* NotificationManager.swift in Sources */,
 				7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */,
-				7742C7E61E57236A006A25AF /* HelperObserver.swift in Sources */,
-				7742C7E71E57236A006A25AF /* NotificationObserver.swift in Sources */,
-				7742C7F31E57236A006A25AF /* Task.swift in Sources */,
-				7742C7EF1E57236A006A25AF /* Resource.swift in Sources */,
-				7742C7F51E57236A006A25AF /* User.swift in Sources */,
+				775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */,
+				775C2A151E5B11AD00E409B6 /* Notification.swift in Sources */,
+				775C2A1B1E5B11AD00E409B6 /* TaskObserver.swift in Sources */,
+				775C2A191E5B11AD00E409B6 /* Task.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,7 +468,7 @@
 				DEVELOPMENT_TEAM = M9MSRMULXS;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.technollage.FamilyBudgetApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -473,7 +482,7 @@
 				DEVELOPMENT_TEAM = M9MSRMULXS;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.technollage.FamilyBudgetApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

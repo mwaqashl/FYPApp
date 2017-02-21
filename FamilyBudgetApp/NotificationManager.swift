@@ -1,10 +1,3 @@
-//
-//  NotificationManager.swift
-//  Penzy
-//
-//  Created by Waqas Hussain on 09/09/2016.
-//  Copyright © 2016 TechCollage. All rights reserved.
-//
 
 import Foundation
 import Firebase
@@ -34,21 +27,19 @@ import Firebase
  - "User"
  
 
- 
- 
  */
 
 class NotificationManager {
     
-    private static var singleTonInstance = NotificationManager()
-    private let ref = FIRDatabase.database().reference()
+    fileprivate static var singleTonInstance = NotificationManager()
+    fileprivate let ref = FIRDatabase.database().reference()
     
     static func sharedInstance() -> NotificationManager {
         return singleTonInstance
     }
     
     
-    func addNewNotification(notification: Notification) {
+    func addNewNotification(_ notification: Notification) {
         
         let notRef = ref.child("Notifications").childByAutoId()
         

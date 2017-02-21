@@ -1,18 +1,11 @@
-//
-//  TransactionManager.swift
-//  Penzy
-//
-//  Created by Waqas Hussain on 31/08/2016.
-//  Copyright © 2016 TechCollage. All rights reserved.
-//
 
 import Foundation
 import Firebase
 
 class TransactionManager {
     
-    private var ref = FIRDatabase.database().reference()
-    private static var singleTonInstance = TransactionManager()
+    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate static var singleTonInstance = TransactionManager()
     
     static func sharedInstance() -> TransactionManager {
         return singleTonInstance
@@ -26,14 +19,14 @@ class TransactionManager {
      :param: Newly made Transaction
      
      */
-    func AddTransactionInWallet(transaction: Transaction) {
+    func AddTransactionInWallet(_ transaction: Transaction) {
         
         let transRef = ref.child("Transactions/\(transaction.walletID)").childByAutoId()
         
         let data : NSMutableDictionary = [
             "amount":transaction.amount,
             "categoryID":transaction.categoryId,
-            "date":FIRServerValue.timestamp(),
+            "date":transaction.date.timeIntervalSince1970*1000,
             "transactionBy": transaction.transactionById,
             "currency": transaction.currencyId,
             "isExpense": transaction.isExpense
@@ -43,35 +36,7 @@ class TransactionManager {
             data["comments"] = transaction.comments
         }
         
-        if transaction.venue != nil {
-        
-            let venue : NSMutableDictionary = [
-                "name": transaction.venue!["name"]!
-            ]
-            
-            if transaction.venue!["lat"] != nil {
-                venue["lat"] = transaction.venue!["lat"]!
-                venue["long"] = transaction.venue!["long"]!
-            }
-            
-            data["venue"] = venue
-        }
-        
-        if transaction.pictureURLs != nil {
-            data["pictureURLs"] = transaction.pictureURLs
-        }
-        
         transRef.setValue(data)
-        
-        // If transaction is a recurring Transaction
-        if let transaction = transaction as? RecurringTransaction {
-            data.removeObjectForKey("date")
-            data["lastDate"] = transaction.date
-            data["recurringDays"] = transaction.recurringDays
-            
-            ref.child("RecurringTransactions/\(transaction.walletID)").childByAutoId().setValue(data)
-        }
-        
         updateWalletFromTransaction(transaction)
         
     }
@@ -83,7 +48,7 @@ class TransactionManager {
      :param: Transaction object
      
      */
-    private func updateWalletFromTransaction(transaction: Transaction) {
+    fileprivate func updateWalletFromTransaction(_ transaction: Transaction) {
         
         let walletRef = ref.child("Wallets/\(transaction.walletID)")
         
@@ -103,15 +68,15 @@ class TransactionManager {
                     totInc += transaction.amount
                 }
                 
-                walletData["balance"] = balance
-                walletData["totIncome"] = totInc
-                walletData["totExpense"] = totExp
+                walletData["balance"] = balance as AnyObject?
+                walletData["totIncome"] = totInc as AnyObject?
+                walletData["totExpense"] = totExp as AnyObject?
                 
                 currentData.value = walletData
                 
-                return FIRTransactionResult.successWithValue(currentData)
+                return FIRTransactionResult.success(withValue: currentData)
             }
-            return FIRTransactionResult.successWithValue(currentData)
+            return FIRTransactionResult.success(withValue: currentData)
 
         }) { (error, committed, snapshot) in
             if let error = error {
@@ -130,155 +95,88 @@ class TransactionManager {
      :param: updated transaction object
      
      */
-    func updateTransactionInWallet(transaction: Transaction) {
+    func updateTransactionInWallet(_ transaction: Transaction) {
         
-        var transRef = ref.child("Transactions/\(transaction.walletID)/\(transaction.id))")
+        let transRef = ref.child("Transactions/\(transaction.walletID)/\(transaction.id)")
         
-        if (transaction is RecurringTransaction) {
+        if let oldTrans = Resource.sharedInstance().transactions[transaction.id] {
             
-            transRef = ref.child("RecurringTransactions/\(transaction.walletID)/\(transaction.id))")
-            
-            let data : NSMutableDictionary = [
-                "amount":transaction.amount,
-                "categoryID":transaction.categoryId,
-                "date":transaction.date.timeIntervalSince1970*1000,
-                "currency": transaction.currencyId,
-                "isExpense": transaction.isExpense
-            ]
-            
-            if transaction.comments != nil {
-                data["comments"] = transaction.comments
-            }
-            
-            if transaction.venue != nil {
+            if oldTrans.amount == transaction.amount {
                 
-                let venue : NSMutableDictionary = [
-                    "name": transaction.venue!["name"]!
+                var data : [String:Any] = [
+                    "amount":transaction.amount,
+                    "categoryID":transaction.categoryId,
+                    "date":transaction.date.timeIntervalSince1970*1000,
+                    "currency": transaction.currencyId,
+                    "isExpense": transaction.isExpense
                 ]
                 
-                if transaction.venue!["lat"] != nil {
-                    venue["lat"] = transaction.venue!["lat"]!
-                    venue["long"] = transaction.venue!["long"]!
+                if transaction.comments != nil {
+                    data["comments"] = transaction.comments
                 }
+                                
+                transRef.updateChildValues(data)
                 
-                data["venue"] = venue
             }
-            
-            if transaction.pictureURLs != nil {
-                data["pictureURLs"] = transaction.pictureURLs
-            }
-            
-            transRef.updateChildValues(data as [NSObject : AnyObject])
-            
-        }
-        else {
-            
-            if let oldTrans = Resource.sharedInstance().transactions[transaction.id] {
+            else {
                 
-                if oldTrans.amount == transaction.amount {
+                transRef.runTransactionBlock({ (currentData) -> FIRTransactionResult in
                     
-                    let data : NSMutableDictionary = [
-                        "amount":transaction.amount,
-                        "categoryID":transaction.categoryId,
-                        "date":transaction.date.timeIntervalSince1970*1000,
-                        "currency": transaction.currencyId,
-                        "isExpense": transaction.isExpense
-                    ]
-                    
-                    if transaction.comments != nil {
-                        data["comments"] = transaction.comments
-                    }
-                    
-                    if transaction.venue != nil {
+                    if var walletData = currentData.value as? [String:Any] {
                         
-                        let venue : NSMutableDictionary = [
-                            "name": transaction.venue!["name"]!
-                        ]
+                        walletData["amount"] = transaction.amount
+                        walletData["categoryID"] = transaction.categoryId
+                        walletData["date"] = transaction.date.timeIntervalSince1970*1000
+                        walletData["currency"] = transaction.currencyId
+                        walletData["isExpense"] = transaction.isExpense
                         
-                        if transaction.venue!["lat"] != nil {
-                            venue["lat"] = transaction.venue!["lat"]!
-                            venue["long"] = transaction.venue!["long"]!
+                        if transaction.comments != nil {
+                            walletData["comments"] = transaction.comments
                         }
                         
-                        data["venue"] = venue
-                    }
-                    
-                    if transaction.pictureURLs != nil {
-                        data["pictureURLs"] = transaction.pictureURLs
-                    }
-                    
-                    transRef.updateChildValues(data as [NSObject : AnyObject])
-                    
-                }
-                else {
-                    
-                    transRef.runTransactionBlock({ (currentData) -> FIRTransactionResult in
+                        var balance = walletData["balance"] as! Double
+                        var totExp = walletData["totExpense"] as! Double
+                        var totInc = walletData["totIncome"] as! Double
                         
-                        if var walletData = currentData.value as? [String:AnyObject] {
-                            
-                            walletData["amount"] = transaction.amount
-                            walletData["categoryID"] = transaction.categoryId
-                            walletData["date"] = transaction.date.timeIntervalSince1970*1000
-                            walletData["currency"] = transaction.currencyId
-                            walletData["isExpense"] = transaction.isExpense
-                            
-                            if transaction.comments != nil {
-                                walletData["comments"] = transaction.comments
-                            }
-                            
-                            if transaction.venue != nil {
-                                
-                                let venue : NSMutableDictionary = [
-                                    "name": transaction.venue!["name"]!
-                                ]
-                                
-                                if transaction.venue!["lat"] != nil {
-                                    venue["lat"] = transaction.venue!["lat"]!
-                                    venue["long"] = transaction.venue!["long"]!
-                                }
-                                
-                                walletData["venue"] = venue
-                            }
-                            
-                            if transaction.pictureURLs != nil {
-                                walletData["pictureURLs"] = transaction.pictureURLs
-                            }
-                            
-                            var balance = walletData["balance"] as! Double
-                            var totExp = walletData["totExpense"] as! Double
-                            var totInc = walletData["totIncome"] as! Double
-                            
-                            if transaction.isExpense {
-                                balance -= transaction.amount - oldTrans.amount
-                                totExp += transaction.amount - oldTrans.amount
-                            }
-                            else {
-                                balance += transaction.amount - oldTrans.amount
-                                totInc += transaction.amount - oldTrans.amount
-                            }
-                            
-                            walletData["balance"] = balance
-                            walletData["totIncome"] = totInc
-                            walletData["totExpense"] = totExp
-                            
-                            return FIRTransactionResult.successWithValue(currentData)
+                        balance -= oldTrans.amountnp
+                        balance += transaction.amountnp
+                        if oldTrans.isExpense && transaction.isExpense {
+                            totExp += transaction.amountnp - oldTrans.amountnp
+                        }
+                        else if !oldTrans.isExpense && transaction.isExpense {
+                            totInc -= oldTrans.amount
+                            totExp += transaction.amount
+                        }
+                        else if oldTrans.isExpense && !transaction.isExpense {
+                            totExp -= oldTrans.amount
+                            totInc += transaction.amount
+                        }
+                        else {
+                            totInc += transaction.amountnp - oldTrans.amountnp
                         }
                         
-                        return FIRTransactionResult.successWithValue(currentData)
+                        walletData["balance"] = balance
+                        walletData["totIncome"] = totInc
+                        walletData["totExpense"] = totExp
                         
-                        }, andCompletionBlock: { (error, commit, data) in
-                            
-                            if error != nil {
-                                print(error?.localizedDescription)
-                            }
-                            
-                    })
+                        return FIRTransactionResult.success(withValue: currentData)
+                    }
                     
-                }
+                    return FIRTransactionResult.success(withValue: currentData)
+                    
+                }, andCompletionBlock: { (error, commit, data) in
+                    
+                    if error != nil {
+                        print(error?.localizedDescription)
+                    }
+                    
+                })
                 
             }
             
         }
+        
+        
         
     }
     
@@ -287,13 +185,12 @@ class TransactionManager {
      Deletes the transaction from database and perfrorm required changes in wallet !
      
      */
-    func removeTransactionInWallet(transaction: Transaction, wallet: UserWallet) {
-        
-        ref.child("Transactions/\(wallet.id)\(transaction)").removeValue()
+    func removeTransactionInWallet(_ transaction: Transaction, wallet: UserWallet) {
+        ref.child("Transactions/\(wallet.id)/\(transaction.id)").removeValue()
         
         ref.child("Wallets").child(wallet.id).runTransactionBlock { (currentData) -> FIRTransactionResult in
             
-            if var walletData = currentData.value as? [String:AnyObject] {
+            if var walletData = currentData.value as? [String:Any] {
                 
                 if transaction.isExpense {
                     walletData["balance"] = wallet.balance + transaction.amount
@@ -305,16 +202,16 @@ class TransactionManager {
                 }
                 
                 currentData.value = walletData
-                return FIRTransactionResult.successWithValue(currentData)
+                return FIRTransactionResult.success(withValue: currentData)
             }
             
-            return FIRTransactionResult.successWithValue(currentData)
+            return FIRTransactionResult.success(withValue: currentData)
         }
         
     }
     
     // Working !
-    func requestTransaction(request: TransactionRequest) {
+    func requestTransaction(_ request: TransactionRequest) {
         
         let reqRef = ref.child("TransactionRequests").child(request.payeeId).childByAutoId()
         
@@ -322,7 +219,7 @@ class TransactionManager {
         
     }
     
-    func removeRequestTransaction(request: TransactionRequest) {
+    func removeRequestTransaction(_ request: TransactionRequest) {
         
         ref.child("TransactionRequests").child(request.payeeId).child(request.requestID).removeValue()
     }

@@ -1,15 +1,9 @@
-//
-//  Wallet.swift
-//  AccBook
-//
-//  Created by MacUser on 8/16/16.
-//  Copyright © 2016 Collage. All rights reserved.
-//
 
 import Foundation
+import UIKit
 
 enum MemberType {
-    case Member, Admin, Owner
+    case member, admin, owner
 }
 class Currency {
     var id : String
@@ -49,10 +43,14 @@ class Wallet {
     var name : String
     var icon : String
     var color : UIColor
-    var isTravel = false
-    var creator : User? // computed
+    var creator : User {
+        if let user = Resource.sharedInstance().users[creatorID]{
+            return user
+        }
+        return User(id: creatorID, email: "user@abc.com", userName: "Loading...", imageURL: "dp-male", gender: 2)
+    }
     var creatorID: String
-    var creationDate : NSDate
+    var creationDate : Date
     var members : [User] {
         var _members : [User] = []
         for (key,value) in Resource.sharedInstance().users {
@@ -70,15 +68,15 @@ class Wallet {
         self.name = name
         self.icon = icon
         self.creatorID = creatorID
-        self.creationDate = NSDate(timeIntervalSince1970 : creationDate/1000)
+        self.creationDate = Date(timeIntervalSince1970 : creationDate)
         self.memberTypes = memberTypes
         self.isOpen = isOpen
         self.color = UIColor(string: color)
     }
-    func setIcon(iconNo: Int) {
+    func setIcon(_ iconNo: Int) {
         icon = "\(UnicodeScalar(iconNo))"
     }
-    func addMember(id : String , type : MemberType){
+    func addMember(_ id : String , type : MemberType){
         if (memberTypes[id] == nil) {
             memberTypes[id] = type
         }
@@ -93,7 +91,7 @@ class UserWallet : Wallet {
     var totalExpense : Double
     var totalIncome : Double
     var isPersonal : Bool
-    private var categoryIDs: [String]
+    fileprivate var categoryIDs: [String]
     
     
     var budgetIDs : [String] {
@@ -161,8 +159,11 @@ class UserWallet : Wallet {
         }
         return _transactions
     }
-    var currency : Currency? {
-        return Resource.sharedInstance().currencies[currencyID]
+    var currency : Currency {
+        if let _currency = Resource.sharedInstance().currencies[currencyID]{
+            return _currency
+        }
+        return Currency(id: currencyID, name: "Loading...", icon: "ꀕ", code: "CUR")
     }
     
     init(id: String, name: String, icon: String, currencyID: String, creatorID: String, balance: Double, totInc: Double, totExp: Double, creationDate: Double, isPersonal: Bool, memberTypes: [String: MemberType], categoryIDs: [String], isOpen: Bool, color : String) {
@@ -174,15 +175,15 @@ class UserWallet : Wallet {
         self.categoryIDs = categoryIDs
         super.init(id: id, name: name, icon: icon, creatorID: creatorID, creationDate: creationDate, memberTypes: memberTypes, isOpen: isOpen, color: color)
     }
-    func addCategory(category: String) {
+    func addCategory(_ category: String) {
         if !categoryIDs.contains(category) {
             categoryIDs.append(category)
         }
     }
-    func removeCategory(category : String){
+    func removeCategory(_ category : String){
         for i in 0..<categoryIDs.count {
             if categoryIDs[i] == category {
-                categoryIDs.removeAtIndex(i)
+                categoryIDs.remove(at: i)
                 return
             }
         }
@@ -193,42 +194,44 @@ class UserWallet : Wallet {
 }
 extension UIColor{
     var stringRepresentation : String {
-        let color = self.CGColor
+        let color = self.cgColor
         
-        let numComponents = CGColorGetNumberOfComponents(color);
+        let numComponents = color.numberOfComponents;
         
         if numComponents == 4 {
-            let components = CGColorGetComponents(color);
-            let red = components[0];
-            let green = components[1];
-            let blue = components[2];
-            let alpha = components[3];
-            return "\(red):\(green):\(blue):\(alpha)"
+            let components = color.components;
+            let red = components?[0];
+            let green = components?[1];
+            let blue = components?[2];
+            let alpha = components?[3];
+            return "\(red!):\(green!):\(blue!):\(alpha!)"
         }
         return ""
     }
     convenience init(string : String) {
-        let comps = string.componentsSeparatedByString(":")
+        let comps = string.components(separatedBy: ":")
         if comps.count == 4 {
-            self.init(red: CGFloat(Double(comps[0])!), green: CGFloat(Double(comps[1])!), blue: CGFloat(Double(comps[2])!), alpha: CGFloat(Double(comps[3])!))
+            self.init(red: CGFloat(Double(comps[0])!)/255, green: CGFloat(Double(comps[1])!)/255, blue: CGFloat(Double(comps[2])!)/255, alpha: CGFloat(Double(comps[3])!))
         }else{
             self.init()
         }
     }
 }
 protocol WalletDelegate {
-    func walletAdded(wallet : UserWallet)
-    func walletUpdated(wallet : UserWallet)
-    func WalletDeleted(wallet : UserWallet)
+    func walletAdded(_ wallet : UserWallet)
+    func walletUpdated(_ wallet : UserWallet)
+    func WalletDeleted(_ wallet : UserWallet)
 }
 protocol WalletMemberDelegate {
-    func memberAdded(member : User, ofType : MemberType, wallet : Wallet)
-    func memberLeft(member : User,ofType : MemberType, wallet : Wallet)
-    func memberUpdated(member :  User, ofType : MemberType, wallet : Wallet)
+    func memberAdded(_ member : User, ofType : MemberType, wallet : Wallet)
+    func memberLeft(_ member : User,ofType : MemberType, wallet : Wallet)
+    func memberUpdated(_ member :  User, ofType : MemberType, wallet : Wallet)
 }
 protocol WalletCategoryDelegate {
-    func categoryAdded(category: Category, wallet : Wallet)
-    func categoryUpdated(category: Category, wallet : Wallet)
-    func categoryRemoved(category: Category, wallet : Wallet)
+    func categoryAdded(_ category: Category, wallet : Wallet)
+    func categoryUpdated(_ category: Category, wallet : Wallet)
+    func categoryRemoved(_ category: Category, wallet : Wallet)
 }
+
+
 
