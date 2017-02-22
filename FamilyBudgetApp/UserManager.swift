@@ -38,7 +38,6 @@ class UserManager {
     func addNewUser(_ user: CurrentUser) {
         
         let userInfo = ref.child("UserInfo").child(user.getUserID())
-        let userDetail = ref.child("UserDetails/\(userInfo.key)")
         
         let data : NSMutableDictionary = [
             
@@ -48,7 +47,6 @@ class UserManager {
             "gender": user.gender
         ]
         
-        userInfo.setValue(data)
         
         if user.birthdate != nil {
             data["birthDate"] = user.birthdate!.timeIntervalSince1970*1000
@@ -56,7 +54,7 @@ class UserManager {
         data["deviceID"] = user.deviceID
         data["lastSeen"] = FIRServerValue.timestamp()
         
-        userDetail.setValue(data)
+        userInfo.setValue(data)
         
     }
     
@@ -64,7 +62,6 @@ class UserManager {
     func updateUserState(_ user: User) {
         
         let userInfo = ref.child("UserInfo/\(user.getUserID())")
-        let userDetail = ref.child("UserDetails/\(user.getUserID())")
         
         let data : NSDictionary = [
             "userName": user.userName,
@@ -72,38 +69,37 @@ class UserManager {
             "gender" : user.gender
         ]
         
-        userInfo.updateChildValues(data as! [AnyHashable:Any])
         data.setValue(FIRServerValue.timestamp(), forKey: "lastSeen")
         
-        userDetail.updateChildValues(data as! [AnyHashable : Any])
-        
+        userInfo.updateChildValues(data as! [AnyHashable:Any])
+
     }
     
     // Add a new Wallet to User in Database ! required argument is a CurrentUser Object.
     func addWalletInUser(_ userID: String, walletID: String, isPersonal: Bool) {
         
-        ref.child("UserWallets/\(userID)/\(walletID)").setValue(isPersonal)
+        ref.child("UserInfo/\(userID)/UserWallets/").setValue([walletID:isPersonal])
         
     }
     
     // remove wallet from user ! required argument is a userID and WalletID. call this when person is removed from wallet
     func removeWalletFromUser(_ userID: String, walletID: String) {
         
-        ref.child("UserWallets/\(userID)/\(walletID)").removeValue()
+        ref.child("UserInfo/\(userID)/UserWallets/\(walletID)").removeValue()
         
     }
     
     // Add a new task for user in Database ! required argument is a userID and task.
     func addTaskToUser(_ userID: String, task: Task) {
         
-        ref.child("UserTasks/\(userID)/\(task.walletID)/\(task.id)").setValue(true)
+        ref.child("Wallets/\(task.walletID)/Tasks/\(task.id)").setValue(true)
         
     }
     
     // Remove task from user in Database ! required argument is a userID and task.
     func removeTaskFromUser(_ userID: String, task: Task) {
         
-        ref.child("UserTasks/\(userID)/\(task.walletID)/\(task.id)").removeValue()
+        ref.child("Wallets/\(task.walletID)/Tasks/\(task.id)").removeValue()
         
     }
     
@@ -120,22 +116,15 @@ class UserManager {
     // call this function when user logged in to set device to active mode
     func userLoggedIn(_ user: String) {
         // add the device in deviceIDs
-        let deviceRef = ref.child("UserDetails").child(user).child("devices")
+        let deviceRef = ref.child("UserInfo").child(user)
         if let deviceToken = defaultSettings.value(forKey: "deviceToken") as? String {
-            deviceRef.updateChildValues([deviceToken : true])
+            deviceRef.updateChildValues(["deviceID":deviceToken,"lastSeen": FIRServerValue.timestamp()])
         }
-        
-        // update the users lastSeen value
-        let userDetail = ref.child("UserDetails/\(user)")
-        let data : NSDictionary = [
-            "lastSeen": FIRServerValue.timestamp()
-        ]
-        userDetail.updateChildValues(data as! [AnyHashable: Any])
     }
     
     // call this function when user logged out to set device to inactive mode
     func userLoggedOut(_ user: String) {
-        let deviceRef = ref.child("UserDetails").child(user).child("devices")
+        let deviceRef = ref.child("UserInfo").child(user).child("deviceID")
         if let deviceToken = defaultSettings.value(forKey: "deviceToken") as? String {
             deviceRef.child(deviceToken).removeValue()
         }

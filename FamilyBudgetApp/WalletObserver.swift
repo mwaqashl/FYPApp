@@ -99,9 +99,6 @@ class WalletObserver {
         observeWalletMemberAdded(wallet);
         observeWalletMemberUpdated(wallet);
         observeWalletMemberRemoved(wallet);
-        observeWalletCategoryAdded(wallet);
-        observeWalletCategoryUpdated(wallet);
-        observeWalletCategoryRemoved(wallet);
         isObservingWallet[wallet.id] = true
     }
     func stopObserving(PartsOf wallet :  UserWallet){
@@ -161,7 +158,7 @@ class WalletObserver {
                     })
                 }else{
                     let wallet = UserWallet(id: snapshot1.key,
-                                            name: dict["name"] as! String, icon: dict["icon"] as! String, currencyID: dict["currency"] as! String, creatorID: dict["creator"] as! String, balance: dict["balance"] as! Double, totInc: dict["totIncome"] as! Double, totExp: dict["totExpense"] as! Double, creationDate: (dict["creationDate"] as! Double)/1000, isPersonal: dict["isPersonal"] as! Bool, memberTypes: [:], categoryIDs: [], isOpen: dict["isOpen"] as! Bool, color: dict["color"] as! String)
+                                            name: dict["name"] as! String, icon: dict["icon"] as! String, currencyID: dict["currency"] as! String, creatorID: dict["creator"] as! String, balance: dict["balance"] as! Double, totInc: dict["totIncome"] as! Double, totExp: dict["totExpense"] as! Double, creationDate: (dict["creationDate"] as! Double)/1000, isPersonal: dict["isPersonal"] as! Bool, memberTypes: [:], isOpen: dict["isOpen"] as! Bool, color: dict["color"] as! String)
                     Resource.sharedInstance().userWallets[snapshot1.key] = wallet
                     if self.autoObserve { self.startObserving(PartsOf : wallet) }
                     if self.autoObserveTransactions { self.startObserving(TransactionsOf : wallet) }
@@ -247,45 +244,6 @@ class WalletObserver {
             
         })
     }
-    fileprivate func observeWalletCategoryAdded(_ wallet : Wallet){
-        let walletRef = ref.child("WalletCategories").child(wallet.id)
-        walletRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
-            guard let dict = snapshot.value as? NSDictionary else {
-                return
-            }
-            let category = Category(id: snapshot.key, name: dict["name"] as! String, icon: dict["icon"] as! String, isDefault: false, isExpense: dict["isExpense"] as! Bool, color: dict["color"] as! String)
-            Resource.sharedInstance().userWallets[wallet.id]?.addCategory(snapshot.key)
-            Resource.sharedInstance().categories[snapshot.key] = category
-            Delegate.sharedInstance().getWalletCategoryDelegates().forEach({ (walletCatDel) in
-                walletCatDel.categoryAdded(category, wallet: wallet)
-            })
-        })
-    }
-    fileprivate func observeWalletCategoryUpdated(_ wallet : Wallet){
-        let walletRef = ref.child("WalletCategories").child(wallet.id)
-        walletRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
-            guard let dict = snapshot.value as? NSDictionary else {
-                return
-            }
-            let category = Category(id: snapshot.key, name: dict["name"] as! String, icon: dict["icon"] as! String, isDefault: false, isExpense: dict["isExpense"] as! Bool, color: dict["color"] as! String)
-            Resource.sharedInstance().categories[snapshot.key] = category
-            Delegate.sharedInstance().getWalletCategoryDelegates().forEach({ (walletCatDel) in
-                walletCatDel.categoryUpdated(category, wallet: wallet)
-            })
-        })
-    }
-    fileprivate func observeWalletCategoryRemoved(_ wallet : Wallet){
-        let walletRef = ref.child("WalletCategories").child(wallet.id)
-        walletRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
-            guard let dict = snapshot.value as? NSDictionary else {
-                return
-            }
-            let category = Category(id: snapshot.key, name: dict["name"] as! String, icon: dict["icon"] as! String, isDefault: false, isExpense: dict["isExpense"] as! Bool, color: dict["color"] as! String)
-            Resource.sharedInstance().userWallets[wallet.id]?.removeCategory(snapshot.key)
-            Resource.sharedInstance().categories[snapshot.key] = nil
-            Delegate.sharedInstance().getWalletCategoryDelegates().forEach({ (walletCatDel) in
-                walletCatDel.categoryRemoved(category, wallet: wallet)
-            })
-        })
-    }
+    
+    
 }

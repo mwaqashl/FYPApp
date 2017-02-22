@@ -21,7 +21,7 @@ class BudgetManager {
     func addNewBudget(_ budget: Budget) {
         
         let ref = FIRDatabase.database().reference()
-        let budRef = ref.child("Budgets").child(budget.walletID).childByAutoId()
+        let budRef = ref.child("Wallets/Budgets").child(budget.walletID).childByAutoId()
         
         let data : NSMutableDictionary = [
             
@@ -51,12 +51,10 @@ class BudgetManager {
      
      */
     func removeBudgetFromWallet(_ budget: Budget) {
-        
         let ref = FIRDatabase.database().reference()
-        ref.child("Budgets/\(budget.walletID)/\(budget.id)").removeValue()
+        ref.child("Wallets/Budgets/\(budget.walletID)/\(budget.id)").removeValue()
         ref.child("BudgetCategories/\(budget.id)").removeValue()
         ref.child("BudgetMembers/\(budget.id)").removeValue()
-        
     }
     
     /**

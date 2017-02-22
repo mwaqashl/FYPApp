@@ -64,7 +64,7 @@ class HelperObservers  {
                 return
             }
             let wallet = UserWallet(id: snap.key,
-                                    name: dict["name"] as! String, icon: dict["icon"] as! String, currencyID: dict["currency"] as! String, creatorID: dict["creator"] as! String, balance: dict["balance"] as! Double, totInc: dict["totIncome"] as! Double, totExp: dict["totExpense"] as! Double, creationDate: dict["creationDate"] as! Double, isPersonal: dict["isPersonal"] as! Bool, memberTypes: [:], categoryIDs: [], isOpen: dict["isOpen"] as! Bool, color: dict["color"] as! String)
+                                    name: dict["name"] as! String, icon: dict["icon"] as! String, currencyID: dict["currency"] as! String, creatorID: dict["creator"] as! String, balance: dict["balance"] as! Double, totInc: dict["totIncome"] as! Double, totExp: dict["totExpense"] as! Double, creationDate: dict["creationDate"] as! Double, isPersonal: dict["isPersonal"] as! Bool, memberTypes: [:], isOpen: dict["isOpen"] as! Bool, color: dict["color"] as! String)
             Resource.sharedInstance().userWallets[snap.key] = wallet
             Delegate.sharedInstance().getWalletDelegates().forEach({ (walletDel) in
                 walletDel.walletAdded(wallet)

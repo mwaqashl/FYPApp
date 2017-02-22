@@ -36,7 +36,7 @@ class Transaction {
         if let _wallet = Resource.sharedInstance().userWallets[walletID] {
             return _wallet
         }
-        return UserWallet(id: walletID, name: "Wallet Name", icon: "ꁅ", currencyID: currencyId, creatorID: "", balance: 0.0, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [:], categoryIDs: [], isOpen: true, color: textColor.stringRepresentation)
+        return UserWallet(id: walletID, name: "Wallet Name", icon: "ꁅ", currencyID: currencyId, creatorID: "", balance: 0.0, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [:], isOpen: true, color: textColor.stringRepresentation)
     }
     
     var amountnp : Double {

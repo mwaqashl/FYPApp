@@ -91,8 +91,6 @@ class UserWallet : Wallet {
     var totalExpense : Double
     var totalIncome : Double
     var isPersonal : Bool
-    fileprivate var categoryIDs: [String]
-    
     
     var budgetIDs : [String] {
         var budgetIdss : [String] = []
@@ -122,16 +120,6 @@ class UserWallet : Wallet {
         return taskIds
     }
     
-    
-    var categories : [Category] {
-        var _categories : [Category] = []
-        for (key,value) in Resource.sharedInstance().categories {
-            if categoryIDs.contains(key) {
-                _categories.append(value)
-            }
-        }
-        return _categories
-    }
     var tasks : [Task] {
         var _tasks : [Task] = []
         for (key,value) in Resource.sharedInstance().tasks {
@@ -166,30 +154,13 @@ class UserWallet : Wallet {
         return Currency(id: currencyID, name: "Loading...", icon: "ꀕ", code: "CUR")
     }
     
-    init(id: String, name: String, icon: String, currencyID: String, creatorID: String, balance: Double, totInc: Double, totExp: Double, creationDate: Double, isPersonal: Bool, memberTypes: [String: MemberType], categoryIDs: [String], isOpen: Bool, color : String) {
+    init(id: String, name: String, icon: String, currencyID: String, creatorID: String, balance: Double, totInc: Double, totExp: Double, creationDate: Double, isPersonal: Bool, memberTypes: [String: MemberType], isOpen: Bool, color : String) {
         self.currencyID = currencyID
         self.balance = balance
         self.totalIncome = totInc
         self.totalExpense = totExp
         self.isPersonal = isPersonal
-        self.categoryIDs = categoryIDs
         super.init(id: id, name: name, icon: icon, creatorID: creatorID, creationDate: creationDate, memberTypes: memberTypes, isOpen: isOpen, color: color)
-    }
-    func addCategory(_ category: String) {
-        if !categoryIDs.contains(category) {
-            categoryIDs.append(category)
-        }
-    }
-    func removeCategory(_ category : String){
-        for i in 0..<categoryIDs.count {
-            if categoryIDs[i] == category {
-                categoryIDs.remove(at: i)
-                return
-            }
-        }
-    }
-    func getCategoryIDs() -> [String]{
-        return categoryIDs
     }
 }
 extension UIColor{

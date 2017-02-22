@@ -46,13 +46,18 @@ import Firebase
                 
                 self.authUser = newUser
                 UserManager.sharedInstance().addNewUser(newUser)
+                self.isAuthenticated = true
                 callback(true)
             }
         })
         
     }
     
-    
+    func signIn(email: String, password: String, callback: (CurrentUser)->Void) {
+        
+        
+        
+    }
     
     
     

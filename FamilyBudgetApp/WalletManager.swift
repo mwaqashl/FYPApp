@@ -23,7 +23,7 @@ class WalletManager {
         let ref = FIRDatabase.database().reference()
         
         
-        var walletRef = ref.child("WalletInfo")
+        var walletRef = ref.child("Wallets")
         
         if wallet.isPersonal == true {
             walletRef = walletRef.child(wallet.creatorID)
@@ -32,18 +32,8 @@ class WalletManager {
             walletRef = walletRef.childByAutoId()
         }
         
-        let walletDet = ref.child("Wallets").child(walletRef.key)
-        
-        
         wallet.id = walletRef.key
-        var data : NSMutableDictionary = [
-            "name" : wallet.name,
-            "icon" : wallet.icon
-        ]
-        
-        walletRef.setValue(data)
-        
-        data = [
+        let data : NSMutableDictionary = [
             "name" : wallet.name,
             "icon" : wallet.icon,
             "color": wallet.color.stringRepresentation,
@@ -57,15 +47,12 @@ class WalletManager {
             "isPersonal" : wallet.isPersonal
         ]
         
-        walletDet.setValue(data)
+        walletRef.setValue(data)
         UserManager.sharedInstance().addUserFriends(wallet.creatorID, friends: wallet.memberTypes.keys.sorted())
         UserManager.sharedInstance().addWalletInUser(wallet.creatorID, walletID: wallet.id, isPersonal: wallet.isPersonal)
         
         for (member,type) in wallet.memberTypes {
             addMemberToWallet(wallet, member: member,type: type)
-        }
-        for category in wallet.categories {
-            addCategoryToWallet(category, walletID: walletRef.key)
         }
         return walletRef.key
     }
@@ -73,7 +60,6 @@ class WalletManager {
     /**
      Delete a Wallet
      Call this method when a user Deletes a wallet and wants to delete data from database.
-     
      
      :param: wallet to be deleted!
      
@@ -117,9 +103,6 @@ class WalletManager {
         for (member,type) in wallet.memberTypes {
             addMemberToWallet(wallet, member: member, type: type)
         }
-        for category in wallet.categories {
-            addCategoryToWallet(category, walletID: walletRef.key)
-        }
 
     }
     
@@ -134,7 +117,7 @@ class WalletManager {
     func addMemberToWallet(_ wallet: UserWallet, member: String, type: MemberType) {
         
         let ref = FIRDatabase.database().reference()
-        ref.child("WalletMembers/\(wallet.id)/\(member)").setValue(type.hashValue)
+        ref.child("Wallets/\(wallet.id)/WalletMembers/\(member)").setValue(type.hashValue)
         UserManager.sharedInstance().addWalletInUser(member, walletID: wallet.id, isPersonal: wallet.isPersonal)
     }
     
@@ -148,52 +131,11 @@ class WalletManager {
     func removeMemberFromWallet(_ walletID: String, memberID: String) {
         
         let ref = FIRDatabase.database().reference()
-        ref.child("WalletMembers/\(walletID)/\(memberID)").removeValue()
+        ref.child("Wallets/\(walletID)/WalletMembers/\(memberID)").removeValue()
         UserManager.sharedInstance().removeWalletFromUser(memberID, walletID: walletID)
         
     }
     
-    /**
-     Add category.
-     Call this method when a new category is added to wallet
-     
-     
-     :param: walletID and Cateogory
-     
-     */
-    func addCategoryToWallet(_ category: Category, walletID: String) {
-        
-        let ref = FIRDatabase.database().reference()
-        let catRef = ref.child("WalletCategories/\(walletID)")
-        
-        if category.isDefault {
-            catRef.child(category.id).setValue(true)
-        }
-        else {
-            catRef.childByAutoId().setValue([
-                
-                "name":category.name,
-                "icon":category.icon,
-                "color": category.color.stringRepresentation,
-                "isExpense":category.isExpense
-            ])
-        }
-    }
-    
-    /**
-     Delete Category.
-     Call this method when a category is removed from wallet
-     
-     
-     :param: Newly made Transaction
-     
-     */
-    func removeCategoryFromWallet(_ walletID: String, categoryID: String) {
-        let ref = FIRDatabase.database().reference()
-        ref.child("WalletCategories/\(walletID)/\(categoryID)").removeValue()
-    }
-    
-    // Share Wallet Remaining.
     
     
     
