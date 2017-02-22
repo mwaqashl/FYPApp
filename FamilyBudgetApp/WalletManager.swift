@@ -117,7 +117,7 @@ class WalletManager {
     func addMemberToWallet(_ wallet: UserWallet, member: String, type: MemberType) {
         
         let ref = FIRDatabase.database().reference()
-        ref.child("Wallets/\(wallet.id)/WalletMembers/\(member)").setValue(type.hashValue)
+        ref.child("WalletMembers/\(wallet.id)/\(member)").setValue(type.hashValue)
         UserManager.sharedInstance().addWalletInUser(member, walletID: wallet.id, isPersonal: wallet.isPersonal)
     }
     
@@ -131,14 +131,10 @@ class WalletManager {
     func removeMemberFromWallet(_ walletID: String, memberID: String) {
         
         let ref = FIRDatabase.database().reference()
-        ref.child("Wallets/\(walletID)/WalletMembers/\(memberID)").removeValue()
+        ref.child("WalletMembers/\(walletID)/\(memberID)").removeValue()
         UserManager.sharedInstance().removeWalletFromUser(memberID, walletID: walletID)
         
     }
-    
-    
-    
-    
 }
 
 
