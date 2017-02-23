@@ -31,12 +31,12 @@ import Firebase
     }
     
     
-    func createUser(email: String, password: String, user: CurrentUser, callback: @escaping (Bool)->Void) {
+    func createUser(email: String, password: String, user: CurrentUser, callback: @escaping (Error?) -> Void) {
         
         FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (firuser, err) in
             if err != nil {
                 print(err!.localizedDescription)
-                callback(false)
+                callback(err!)
                 
             }
             else {
@@ -46,13 +46,13 @@ import Firebase
                 self.authUser = newUser
                 UserManager.sharedInstance().addNewUser(newUser)
                 self.isAuthenticated = true
-                callback(true)
+                callback(nil)
             }
         })
         
     }
     
-    func signIn(email: String, password: String, callback: @escaping (CurrentUser?)->Void) {
+    func signIn(email: String, password: String, callback: @escaping (Error?)->Void) {
         
         FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
             
@@ -61,8 +61,8 @@ import Firebase
                 print(error?.localizedDescription ?? "Some Garbar ")
                 self.isAuthenticated = false
                 self.authUser = nil
-                callback(nil)
-                
+                callback(error)
+                return
                 
             }
             else {
@@ -82,93 +82,47 @@ import Firebase
                     self.isAuthenticated = true
                     self.authUser = thisUser
                     
-                    callback(thisUser)
+                    //for getting currentWalletID
+                    if let walletID = defaultSettings.value(forKey: "walletID") as? String {
+                        Resource.sharedInstance().currentWalletID = walletID
+                    }else{
+                        defaultSettings.setValue(thisUser.getUserID(), forKey: "walletID")
+                        Resource.sharedInstance().currentWalletID = thisUser.getUserID()
+                    }
+                    
+                    
+//                    if (defaultSettings.value(forKey: "lastUserIDs") as! [String]).contains(thisUser.getUserID()){
+//                        
+//                        Resource.sharedInstance().currentUserId = user!.uid
+//                        UserManager.sharedInstance().userLoggedIn(thisUser.getUserID())
+//                        self.callback(nil)
+//                        
+//                    }else{
+//                        
+//                        Resource.sharedInstance().currentUserId = user!.uid
+//                        HelperObservers.sharedInstance().getUserAndWallet({ (success) in
+//                            if success {
+//                                
+//                                //did for quick logging in; refer to DefaultKeys for detail;
+//                                var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String])
+//                                users.append(thisUser.getUserID())
+//                                defaultSettings.setValue(users, forKey: "lastUserIDs")
+//                                self.callback(nil)
+//                                
+//                            }else{
+//                                
+//                                self.authUser = thisUser
+//                                self.callback(true)
+//                                
+//                            }
+//                        })
+//                    }
                     
                 })
                 
             }
+            
         })
     }
-    
-    
-    
-        // GoolgeSignIn Delegate Functions
-//    internal func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
-//        do{
-//            try FIRAuth.auth()?.signOut()
-//            Resource.sharedInstance().reset()
-//        }catch let error as NSError {
-//            print(error)
-//        }
-//    }
-//    
-//    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-//        // sign in to firebase using credentials
-//        if error != nil {
-//            print(error.localizedDescription)
-//            return
-//        }
-//        defaultSettings.setValue("g", forKey: "authProvider")
-//        let authentication = user.authentication
-//        let credential = FIRGoogleAuthProvider.credential(withIDToken: (authentication?.idToken)!,accessToken: (authentication?.accessToken)!)
-//        FIRAuth.auth()?.signIn(with: credential, completion: { (firuser, error) in
-//            self.isAuthenticated = true
-//            if error != nil {
-//                print(error?.localizedDescription)
-//                return
-//            }
-//            
-//            let newUser = CurrentUser(id: firuser!.uid, email: user.profile.email!, userName: firuser!.displayName!, imageURL: user.profile.imageURL(withDimension: UInt.max).absoluteString, birthdate: nil, deviceIDs: nil, subscriptionType: .none, lastSubscription: nil)
-//            
-//            //for getting currentWalletID
-//            if var userDict = defaultSettings.value(forKey: "walletID") as? [String: String] {
-//                if let walletID = userDict[newUser.getUserID()]{
-//                    Resource.sharedInstance().currentWalletID = walletID
-//                }else{
-//                    Resource.sharedInstance().currentWalletID = newUser.getUserID()
-//                    userDict[newUser.getUserID()] = newUser.getUserID()
-//                    defaultSettings.setValue(userDict, forKey: "walletID")
-//                }
-//            }else{
-//                let userDict = [newUser.getUserID() : newUser.getUserID()]
-//                defaultSettings.setValue(userDict, forKey: "walletID")
-//                Resource.sharedInstance().currentWalletID = newUser.getUserID()
-//            }
-//            
-//            
-//            if (defaultSettings.value(forKey: "lastUserIDs") as! [String]).contains(newUser.getUserID()){
-//                
-//                Resource.sharedInstance().currentUserId = firuser!.uid
-//                UserManager.sharedInstance().userLoggedIn(newUser.getUserID())
-//                self.callback?(false)
-//                
-//            }else{
-//                
-//                Resource.sharedInstance().currentUserId = firuser!.uid
-//                HelperObservers.sharedInstance().getUserAndWallet({ (success) in
-//                    if success {
-//                        
-//                        //did for quick logging in; refer to DefaultKeys for detail;
-//                        var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String])
-//                        users.append(newUser.getUserID())
-//                        defaultSettings.setValue(users, forKey: "lastUserIDs")
-//                        self.callback?(false)
-//                        
-//                    }else{
-//                        
-//                        self.authUser = newUser
-//                        self.callback?(true)
-//                        
-//                    }
-//                })
-//            }
-//            
-//            
-//        })
-//        
-//    }
-    
-    
-    
     
 }

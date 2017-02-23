@@ -21,7 +21,7 @@ class TransactionManager {
      */
     func AddTransactionInWallet(_ transaction: Transaction) {
         
-        let transRef = ref.child("Wallets/\(transaction.walletID)/Transactions").childByAutoId()
+        let transRef = ref.child("Transactions/\(transaction.walletID)").childByAutoId()
         
         let data : NSMutableDictionary = [
             "amount":transaction.amount,
@@ -50,7 +50,7 @@ class TransactionManager {
      */
     fileprivate func updateWalletFromTransaction(_ transaction: Transaction) {
         
-        let walletRef = ref.child("Wallets/\(transaction.walletID)")
+        let walletRef = ref.child("Transaction/\(transaction.walletID)/\(transaction.id)")
         
         walletRef.runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
             if var walletData = currentData.value as? [String : AnyObject] {
@@ -84,7 +84,6 @@ class TransactionManager {
             }
         }
         
-        
     }
     
     
@@ -97,7 +96,7 @@ class TransactionManager {
      */
     func updateTransactionInWallet(_ transaction: Transaction) {
         
-        let transRef = ref.child("Wallets/\(transaction.walletID)/Transactions/\(transaction.id)")
+        let transRef = ref.child("Transactions/\(transaction.walletID)/\(transaction.id)")
         
         if let oldTrans = Resource.sharedInstance().transactions[transaction.id] {
             
@@ -186,7 +185,7 @@ class TransactionManager {
      
      */
     func removeTransactionInWallet(_ transaction: Transaction, wallet: UserWallet) {
-        ref.child("Wallets/\(wallet.id)/Transactions/\(transaction.id)").removeValue()
+        ref.child("Transactions/\(wallet.id)/\(transaction.id)").removeValue()
         
         ref.child("Wallets").child(wallet.id).runTransactionBlock { (currentData) -> FIRTransactionResult in
             

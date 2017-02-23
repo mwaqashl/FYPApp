@@ -32,8 +32,22 @@ class RegisterViewController: UIViewController {
     @IBAction func registerAction(_ sender: Any) {
         
         
+        let user = CurrentUser(id: "asd", email: email.text!, userName: userName.text!, imageURL: "asd", birthdate: Date().timeIntervalSince1970*1000, deviceID: nil, gender: 1)
         
-        
+        Auth.sharedInstance().createUser(email: email.text!, password: password.text!, user: user) { (err) in
+            
+            if err != nil {
+                
+                print(err?.localizedDescription)
+                
+            }
+            else {
+                
+                self.performSegue(withIdentifier: "home", sender: nil)
+                
+            }
+            
+        }
         
     }
 

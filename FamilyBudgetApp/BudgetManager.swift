@@ -21,14 +21,14 @@ class BudgetManager {
     func addNewBudget(_ budget: Budget) {
         
         let ref = FIRDatabase.database().reference()
-        let budRef = ref.child("Wallets/Budgets").child(budget.walletID).childByAutoId()
+        let budRef = ref.child("Budgets").child(budget.walletID).childByAutoId()
         
         let data : NSMutableDictionary = [
             
             "allocAmount": budget.allocAmount,
             "title": budget.title,
             "period": budget.period,
-            "lastRenewed": budget.lastRenewed.timeIntervalSince1970*1000,
+            "startDate": budget.startDate.timeIntervalSince1970*1000,
             "isOpen": budget.isOpen,
             "walletID": budget.walletID
         ]
@@ -52,7 +52,7 @@ class BudgetManager {
      */
     func removeBudgetFromWallet(_ budget: Budget) {
         let ref = FIRDatabase.database().reference()
-        ref.child("Wallets/Budgets/\(budget.walletID)/\(budget.id)").removeValue()
+        ref.child("Budgets/\(budget.walletID)/\(budget.id)").removeValue()
         ref.child("BudgetCategories/\(budget.id)").removeValue()
         ref.child("BudgetMembers/\(budget.id)").removeValue()
     }
@@ -73,7 +73,7 @@ class BudgetManager {
             "allocAmount": budget.allocAmount,
             "title": budget.title,
             "period": budget.period,
-            "lastRenewed": budget.lastRenewed.timeIntervalSince1970*1000,
+            "startDate": budget.startDate.timeIntervalSince1970*1000,
             "isOpen": budget.isOpen,
         ]
         

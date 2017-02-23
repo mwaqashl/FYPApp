@@ -37,7 +37,7 @@ class UserManager {
     // Add a new User in Database ! required argument is a CurrentUser Object.
     func addNewUser(_ user: CurrentUser) {
         
-        let userInfo = ref.child("UserInfo").child(user.getUserID())
+        let userInfo = ref.child("Users").child(user.getUserID())
         
         let data : NSMutableDictionary = [
             
@@ -61,7 +61,7 @@ class UserManager {
     // Update user in Database ! required argument is a user Object. Call this when user logs in or logsout
     func updateUserState(_ user: User) {
         
-        let userInfo = ref.child("UserInfo/\(user.getUserID())")
+        let userInfo = ref.child("Users/\(user.getUserID())")
         
         let data : NSDictionary = [
             "userName": user.userName,
@@ -78,29 +78,23 @@ class UserManager {
     // Add a new Wallet to User in Database ! required argument is a CurrentUser Object.
     func addWalletInUser(_ userID: String, walletID: String, isPersonal: Bool) {
         
-        ref.child("UserInfo/\(userID)/UserWallets/").setValue([walletID:isPersonal])
+        ref.child("UserWallets/\(userID)").setValue([walletID:isPersonal])
         
     }
     
     // remove wallet from user ! required argument is a userID and WalletID. call this when person is removed from wallet
     func removeWalletFromUser(_ userID: String, walletID: String) {
-        
-        ref.child("UserInfo/\(userID)/UserWallets/\(walletID)").removeValue()
-        
+        ref.child("UserWallets/\(userID)/\(walletID)").removeValue()
     }
     
     // Add a new task for user in Database ! required argument is a userID and task.
     func addTaskToUser(_ userID: String, task: Task) {
-        
-        ref.child("Wallets/\(task.walletID)/Tasks/\(task.id)").setValue(true)
-        
+        ref.child("Tasks/\(task.walletID)/\(task.id)").setValue(true)
     }
     
     // Remove task from user in Database ! required argument is a userID and task.
     func removeTaskFromUser(_ userID: String, task: Task) {
-        
-        ref.child("Wallets/\(task.walletID)/Tasks/\(task.id)").removeValue()
-        
+        ref.child("Tasks/\(task.walletID)/\(task.id)").removeValue()
     }
     
     // Add user friends to database ! for Rules management

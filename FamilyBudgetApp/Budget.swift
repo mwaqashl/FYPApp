@@ -8,7 +8,7 @@ class Budget {
     var allocAmount : Double
     var title : String
     var period : Int
-    var lastRenewed : Date
+    var startDate : Date
     var comments : String?
     var isOpen : Bool
     var categories : [Category] {
@@ -40,13 +40,13 @@ class Budget {
     }
     
     
-    init(budgetId : String, allocAmount : Double, title : String, period : Int, lastRenewed : Double, comments : String?, isOpen : Bool, categoryIDs: [String], memberIDs: [String], walletID: String) {
+    init(budgetId : String, allocAmount : Double, title : String, period : Int, startDate : Double, comments : String?, isOpen : Bool, categoryIDs: [String], memberIDs: [String], walletID: String) {
         
         self.id = budgetId
         self.allocAmount = allocAmount
         self.title = title
         self.period = period
-        self.lastRenewed = Date(timeIntervalSince1970: lastRenewed)
+        self.startDate = Date(timeIntervalSince1970: startDate)
         self.comments = comments
         self.isOpen = isOpen
         self.categoryIDs = categoryIDs
@@ -57,7 +57,7 @@ class Budget {
         let endDate = Calendar.current.date(byAdding: .day, value: {
             
             if self.period == 30 {
-                return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: self.lastRenewed), month: budgetHelper.getdate(required: "month", date: self.lastRenewed))
+                return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: self.startDate), month: budgetHelper.getdate(required: "month", date: self.startDate))
             }
             else if self.period == 7 {
                 return 7
@@ -66,15 +66,15 @@ class Budget {
                 return 15
             }
             else if self.period == 60 {
-                return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: self.lastRenewed), month: budgetHelper.getdate(required: "month", date: self.lastRenewed)) + budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: self.lastRenewed), month: (budgetHelper.getdate(required: "month", date: self.lastRenewed) + 1))
+                return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: self.startDate), month: budgetHelper.getdate(required: "month", date: self.startDate)) + budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: self.startDate), month: (budgetHelper.getdate(required: "month", date: self.startDate) + 1))
             }
             else {
                 return 365
             }
-            }(), to: self.lastRenewed)
+            }(), to: self.startDate)
         
         
-        return daysBetween(date1: lastRenewed, date2: endDate!)
+        return daysBetween(date1: startDate, date2: endDate!)
 
     }
     func daysBetween(date1: Date, date2: Date) -> Int {
@@ -147,7 +147,7 @@ class budgetHelper {
         let endDate = Calendar.current.date(byAdding: .day, value: {
             
             if budget.period == 30 {
-                return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: budget.lastRenewed), month: budgetHelper.getdate(required: "month", date: budget.lastRenewed))
+                return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: budget.startDate), month: budgetHelper.getdate(required: "month", date: budget.startDate))
             }
             else if budget.period == 7 {
                 return 7
@@ -156,12 +156,12 @@ class budgetHelper {
                 return 15
             }
             else if budget.period == 60 {
-                return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: budget.lastRenewed), month: budgetHelper.getdate(required: "month", date: budget.lastRenewed)) + budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: budget.lastRenewed), month: (budgetHelper.getdate(required: "month", date: budget.lastRenewed) + 1))
+                return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: budget.startDate), month: budgetHelper.getdate(required: "month", date: budget.startDate)) + budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: budget.startDate), month: (budgetHelper.getdate(required: "month", date: budget.startDate) + 1))
             }
             else {
                 return 365
             }
-        }(), to: budget.lastRenewed)
+        }(), to: budget.startDate)
         return endDate!
     }
     class func budgetTillDate(date: Date, budget: Budget) -> Double {
@@ -286,7 +286,7 @@ class budgetHelper {
                 let endDate = Calendar.current.date(byAdding: .day, value: {
                     
                     if Resource.sharedInstance().budgets[budgetID]?.period == 30 {
-                        return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!), month: budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!))
+                        return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!), month: budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!))
                     }
                     else if Resource.sharedInstance().budgets[budgetID]?.period == 7 {
                         return 7
@@ -295,14 +295,14 @@ class budgetHelper {
                         return 15
                     }
                     else if Resource.sharedInstance().budgets[budgetID]?.period == 60 {
-                        return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!), month: budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!)) + budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!), month: (budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!) + 1))
+                        return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!), month: budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!)) + budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!), month: (budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!) + 1))
                     }
                     else {
                         return 365
                     }
-                }(), to: Resource.sharedInstance().budgets[budgetID]!.lastRenewed)
+                }(), to: Resource.sharedInstance().budgets[budgetID]!.startDate)
                 
-                return transaction.date.isBetween(date: Resource.sharedInstance().budgets[budgetID]!.lastRenewed, andDate: endDate!)
+                return transaction.date.isBetween(date: Resource.sharedInstance().budgets[budgetID]!.startDate, andDate: endDate!)
             }.forEach { (id, transaction) in
                 print(transaction.id)
                 spendings = spendings + transaction.amount
@@ -326,7 +326,7 @@ class budgetHelper {
                 let endDate = Calendar.current.date(byAdding: .day, value: {
                     
                     if Resource.sharedInstance().budgets[budgetID]?.period == 30 {
-                        return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!), month: budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!))
+                        return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!), month: budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!))
                     }
                     else if Resource.sharedInstance().budgets[budgetID]?.period == 7 {
                         return 7
@@ -335,14 +335,14 @@ class budgetHelper {
                         return 15
                     }
                     else if Resource.sharedInstance().budgets[budgetID]?.period == 60 {
-                        return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!), month: budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!)) + budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!), month: (budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.lastRenewed)!) + 1))
+                        return budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!), month: budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!)) + budgetHelper.getDaysInMonth(year: budgetHelper.getdate(required: "year", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!), month: (budgetHelper.getdate(required: "month", date: (Resource.sharedInstance().budgets[budgetID]?.startDate)!) + 1))
                     }
                     else {
                         return 365
                     }
-                }(), to: Resource.sharedInstance().budgets[budgetID]!.lastRenewed)
+                }(), to: Resource.sharedInstance().budgets[budgetID]!.startDate)
                 
-                return transaction.date.isBetween(date: Resource.sharedInstance().budgets[budgetID]!.lastRenewed, andDate: endDate!)
+                return transaction.date.isBetween(date: Resource.sharedInstance().budgets[budgetID]!.startDate, andDate: endDate!)
             }.forEach { (id, transaction) in
                 print(transaction.id)
                 spendings = spendings + transaction.amount

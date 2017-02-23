@@ -15,7 +15,7 @@ class TaskManager {
     func addNewTask(_ task: Task) {
         
         let ref = FIRDatabase.database().reference()
-        let walletTasksRef = ref.child("Wallets/\(task.walletID)/Tasks")
+        let walletTasksRef = ref.child("Tasks/\(task.walletID)")
         let newTask = walletTasksRef.childByAutoId()
         task.id = newTask.key
         
@@ -55,7 +55,7 @@ class TaskManager {
     func deleteTask(_ task: Task) {
         let ref = FIRDatabase.database().reference()
         
-        ref.child("Wallets/\(task.walletID)/Tasks/\(task.id)").removeValue()
+        ref.child("Tasks/\(task.walletID)/\(task.id)").removeValue()
         
         for member in task.memberIDs {
             UserManager.sharedInstance().removeTaskFromUser(member, task: task)
@@ -71,7 +71,7 @@ class TaskManager {
         let ref = FIRDatabase.database().reference()
         
         
-        let taskRef = ref.child("Wallets/\(task.walletID)/Tasks/\(task.id)")
+        let taskRef = ref.child("Tasks/\(task.walletID)/\(task.id)")
         
         var data : [String:Any] = [
             "title": task.title,

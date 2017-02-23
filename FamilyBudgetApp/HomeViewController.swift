@@ -60,6 +60,17 @@ class HomeViewController: UIViewController {
     }
     
 
+    
+    @IBAction func addDataAction(_ sender: Any) {
+        
+        
+        let wallet = UserWallet(id: "asd", name: "Waqas's Wallet", icon: "a", currencyID: "asd", creatorID: Auth.sharedInstance().authUser!.getUserID(), balance: 10000, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970*1000, isPersonal: true, memberTypes: [Auth.sharedInstance().authUser!.getUserID() : MemberType.owner], isOpen: true, color: "10:188:228:1")
+        
+        WalletManager.sharedInstance().addWallet(wallet)
+        
+    }
+    
+    
     /*
     // MARK: - Navigation
 

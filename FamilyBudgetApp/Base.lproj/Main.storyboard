@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -94,13 +94,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2yj-ze-KrK">
-                                <rect key="frame" x="166" y="323" width="42" height="21"/>
+                                <rect key="frame" x="166" y="323.5" width="42" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hFA-ka-DZe">
-                                <rect key="frame" x="166" y="381" width="42" height="21"/>
+                                <rect key="frame" x="166" y="381" width="42" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -112,12 +112,21 @@
                                     <action selector="signoutAction:" destination="fsJ-T2-9ib" eventType="touchUpInside" id="hKa-7h-wSd"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rNG-Ee-gYb">
+                                <rect key="frame" x="155" y="164" width="64" height="30"/>
+                                <state key="normal" title="Add Data"/>
+                                <connections>
+                                    <action selector="addDataAction:" destination="fsJ-T2-9ib" eventType="touchUpInside" id="peg-Ya-BYF"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="hFA-ka-DZe" firstAttribute="top" secondItem="2yj-ze-KrK" secondAttribute="bottom" constant="37" id="1hw-G0-ONr"/>
                             <constraint firstItem="2yj-ze-KrK" firstAttribute="centerY" secondItem="bIy-Jy-wfg" secondAttribute="centerY" id="2yZ-sE-XRt"/>
+                            <constraint firstItem="rNG-Ee-gYb" firstAttribute="centerX" secondItem="bIy-Jy-wfg" secondAttribute="centerX" id="4nt-v2-DLd"/>
                             <constraint firstItem="zt4-t7-aRg" firstAttribute="centerX" secondItem="bIy-Jy-wfg" secondAttribute="centerX" id="6El-wJ-jAM"/>
+                            <constraint firstItem="rNG-Ee-gYb" firstAttribute="top" secondItem="jMW-8a-vUC" secondAttribute="bottom" constant="100" id="Ewc-9N-MAc"/>
                             <constraint firstItem="hFA-ka-DZe" firstAttribute="centerX" secondItem="2yj-ze-KrK" secondAttribute="centerX" id="dYE-py-w5t"/>
                             <constraint firstItem="tYH-mL-WJ9" firstAttribute="top" secondItem="zt4-t7-aRg" secondAttribute="bottom" constant="112" id="ki0-c9-1Z2"/>
                             <constraint firstItem="2yj-ze-KrK" firstAttribute="centerX" secondItem="bIy-Jy-wfg" secondAttribute="centerX" id="tpq-4c-AIh"/>
@@ -206,6 +215,7 @@
                         <outlet property="password" destination="IpU-So-csd" id="chE-Wg-40u"/>
                         <outlet property="repassword" destination="DiK-NU-HBw" id="Y7T-Fh-1kW"/>
                         <outlet property="userName" destination="hlD-v7-gBH" id="wVN-3n-RGt"/>
+                        <segue destination="cF6-2M-PdH" kind="show" identifier="home" id="lkG-gD-fu4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t2f-Bv-o94" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -215,7 +225,6 @@
         <!--Navigation Controller-->
         <scene sceneID="bO1-bp-w1W">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="mq6-YD-A56" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cF6-2M-PdH" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="LGX-Jo-cfT">
@@ -227,8 +236,12 @@
                         <segue destination="fsJ-T2-9ib" kind="relationship" relationship="rootViewController" id="faR-Aw-WBB"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mq6-YD-A56" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="32.799999999999997" y="49.925037481259373"/>
+            <point key="canvasLocation" x="1340" y="811"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="lkG-gD-fu4"/>
+    </inferredMetricsTieBreakers>
 </document>

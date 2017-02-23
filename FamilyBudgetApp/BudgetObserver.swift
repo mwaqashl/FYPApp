@@ -8,13 +8,10 @@ class BudgetObserver {
                            "allocAmount", //3
                            "title", //4
                            "period", //5
-                           "lastRenewed", //6
-                           "comments", //7
-                           "cyclesRelated", //8
-                           "recurring", //9
-                           "extraFunds", //10
-                           "isOpen", //11
-                           "walletID" ] //12
+                           "comments", //6
+                           "isOpen", //7
+                           "walletID", // 8
+                           "startDate"] //9
     fileprivate var ref = FIRDatabase.database().reference()
     fileprivate static var singleInstance : BudgetObserver?
     class func sharedInstance() -> BudgetObserver {
@@ -75,7 +72,7 @@ class BudgetObserver {
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
-            let budget = Budget(budgetId: snapshot.key, allocAmount: dict[self.FIRKeys[3]] as! Double,  title: dict[self.FIRKeys[4]] as! String, period: dict[self.FIRKeys[5]] as! Int, lastRenewed: (dict[self.FIRKeys[6]] as! Double)/1000, comments: dict[self.FIRKeys[7]] as? String, isOpen: dict[self.FIRKeys[11]] as! Bool, categoryIDs: [], memberIDs: [], walletID: dict[self.FIRKeys[12]] as! String)
+            let budget = Budget(budgetId: snapshot.key, allocAmount: dict[self.FIRKeys[3]] as! Double,  title: dict[self.FIRKeys[4]] as! String, period: dict[self.FIRKeys[5]] as! Int, startDate : (dict[self.FIRKeys[9]] as! Double)/1000, comments: dict[self.FIRKeys[6]] as? String, isOpen: dict[self.FIRKeys[7]] as! Bool, categoryIDs: [], memberIDs: [], walletID: dict[self.FIRKeys[8]] as! String)
             Resource.sharedInstance().budgets[snapshot.key] = budget
             if self.autoObserve { self.observeBudgetMemberAdded(budget); self.observeBudgetMemberUpdated(budget); self.observeBudgetMemberRemoved(budget);
                 self.observeBudgetCategoryAdded(budget); self.observeBudgetCategoryUpdated(budget); self.observeBudgetCategoryRemoved(budget); }
@@ -94,9 +91,8 @@ class BudgetObserver {
             budget.title = dict[self.FIRKeys[4]] as! String
             budget.allocAmount = dict[self.FIRKeys[3]] as! Double
             budget.period = dict[self.FIRKeys[5]] as! Int
-            budget.lastRenewed = Date(timeIntervalSince1970 : (dict[self.FIRKeys[6]] as! Double)/1000)
-            budget.comments = dict[self.FIRKeys[7]] as? String
-            budget.isOpen = dict[self.FIRKeys[11]] as! Bool
+            budget.comments = dict[self.FIRKeys[6]] as? String
+            budget.isOpen = dict[self.FIRKeys[7]] as! Bool
             Resource.sharedInstance().budgets[snapshot.key] = budget
             Delegate.sharedInstance().getBudgetDelegates().forEach({ (budgetDel) in
                 budgetDel.budgetUpdated(budget)

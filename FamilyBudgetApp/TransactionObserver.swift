@@ -10,15 +10,10 @@ class TransactionObserver {
         "amount", //4
         "categoryID", //5
         "comments", //6
-        "lastDate", //7
-        "pictureURL", //8
-        "transactionBy", //9
-        "currency", //10
-        "venue", //11
-        "recurringDays", //12
-        "isExpense", //13
-        "date", // 14
-        "lastDate"] //15
+        "transactionBy", //7
+        "currency", //8
+        "isExpense", //9
+        "date"] //10
     
     fileprivate var ref = FIRDatabase.database().reference()
     fileprivate static var singleInstance : TransactionObserver?
@@ -55,10 +50,10 @@ class TransactionObserver {
                 amount: dict[self.FIRKeys[4]] as! Double,
                 categoryId: dict[self.FIRKeys[5]] as! String,
                 comments: dict[self.FIRKeys[6]] as? String,
-                date: (dict[self.FIRKeys[14]] as! Double)/1000,
-                transactionById: dict[self.FIRKeys[9]] as! String,
-                currencyId: dict[self.FIRKeys[10]] as! String,
-                isExpense: dict[self.FIRKeys[13]] as! Bool,
+                date: (dict[self.FIRKeys[10]] as! Double)/1000,
+                transactionById: dict[self.FIRKeys[7]] as! String,
+                currencyId: dict[self.FIRKeys[8]] as! String,
+                isExpense: dict[self.FIRKeys[9]] as! Bool,
                 walletID: wallet)
             Resource.sharedInstance().transactions[snapshot.key] = transaction
             Delegate.sharedInstance().getTransactionDelegates().forEach({ (transactionDel) in
@@ -77,8 +72,8 @@ class TransactionObserver {
             transaction.amount = dict[self.FIRKeys[4]] as! Double
             transaction.categoryId = dict[self.FIRKeys[5]] as! String
             transaction.comments = dict[self.FIRKeys[6]] as? String
-            transaction.currencyId = dict[self.FIRKeys[10]] as! String
-            transaction.isExpense = dict[self.FIRKeys[13]] as! Bool
+            transaction.currencyId = dict[self.FIRKeys[8]] as! String
+            transaction.isExpense = dict[self.FIRKeys[9]] as! Bool
             Resource.sharedInstance().transactions[snapshot.key] = transaction
             Delegate.sharedInstance().getTransactionDelegates().forEach({ (transactionDel) in
                 transactionDel.transactionUpdated(transaction)
