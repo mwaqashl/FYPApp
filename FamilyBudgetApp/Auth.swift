@@ -8,7 +8,6 @@ import Firebase
     var authUser : CurrentUser?
     var isAuthenticated = false
     fileprivate static var singleTonInstance : Auth?
-    var callback: ((_ isNewUser: Bool) -> Void)?
     
     func logOutUser() -> NSError? {
         do{
@@ -42,7 +41,7 @@ import Firebase
             }
             else {
                 
-                let newUser = CurrentUser(id: firuser!.uid, email: email, userName: user.userName, imageURL: user.imageURL, birthdate: user.birthdate!.timeIntervalSince1970*1000, deviceID: user.deviceID, gender: user.gender)
+                let newUser = CurrentUser(id: firuser!.uid, email: email, userName: user.userName, imageURL: user.imageURL, birthdate: (user.birthdate?.timeIntervalSince1970)!*1000, deviceID: user.deviceID, gender: user.gender)
                 
                 self.authUser = newUser
                 UserManager.sharedInstance().addNewUser(newUser)
@@ -53,10 +52,42 @@ import Firebase
         
     }
     
-    func signIn(email: String, password: String, callback: (CurrentUser)->Void) {
+    func signIn(email: String, password: String, callback: @escaping (CurrentUser?)->Void) {
         
-        
-        
+        FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
+            
+            if error != nil {
+                
+                print(error?.localizedDescription ?? "Some Garbar ")
+                self.isAuthenticated = false
+                self.authUser = nil
+                callback(nil)
+                
+                
+            }
+            else {
+                
+                FIRDatabase.database().reference().child("UserInfo").child(user!.uid).observeSingleEvent(of: .value, with: { (snap) in
+                    
+                    guard let data = snap.value as? [String:Any] else {
+                        self.isAuthenticated = false
+                        self.authUser = nil
+                        
+                        return
+                        
+                    }
+                    
+                    let thisUser = CurrentUser(id: user!.uid, email: email, userName: data["userName"] as! String, imageURL: data["image"] as! String, birthdate: data["birthDate"] as? Double, deviceID: data["deviceID"] as? String, gender: data["gender"] as! Int)
+                    
+                    self.isAuthenticated = true
+                    self.authUser = thisUser
+                    
+                    callback(thisUser)
+                    
+                })
+                
+            }
+        })
     }
     
     

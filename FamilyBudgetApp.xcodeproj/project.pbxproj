@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04343C031E5EBDB500417C91 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04343C021E5EBDB500417C91 /* RegisterViewController.swift */; };
+		04343C051E5EBDC800417C91 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04343C041E5EBDC800417C91 /* HomeViewController.swift */; };
 		543F485DAE600F08C8532E77 /* Pods_FamilyBudgetApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */; };
 		770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */; };
 		7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B51E57231C006A25AF /* AppDelegate.swift */; };
@@ -40,6 +42,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		04343C021E5EBDB500417C91 /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
+		04343C041E5EBDC800417C91 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
 		770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7742C7B21E57231C006A25AF /* FamilyBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -120,6 +124,8 @@
 			children = (
 				7742C7B51E57231C006A25AF /* AppDelegate.swift */,
 				7742C7B71E57231C006A25AF /* ViewController.swift */,
+				04343C041E5EBDC800417C91 /* HomeViewController.swift */,
+				04343C021E5EBDB500417C91 /* RegisterViewController.swift */,
 				7742C7B91E57231C006A25AF /* Main.storyboard */,
 				7742C7BC1E57231C006A25AF /* Assets.xcassets */,
 				770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */,
@@ -333,6 +339,7 @@
 				775C2A131E5B11AD00E409B6 /* BudgetObserver.swift in Sources */,
 				775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */,
 				775C2A1E1E5B11AD00E409B6 /* TransactionObserver.swift in Sources */,
+				04343C051E5EBDC800417C91 /* HomeViewController.swift in Sources */,
 				775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */,
 				775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */,
 				7742C7B81E57231C006A25AF /* ViewController.swift in Sources */,
@@ -342,6 +349,7 @@
 				7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */,
 				775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */,
 				775C2A151E5B11AD00E409B6 /* Notification.swift in Sources */,
+				04343C031E5EBDB500417C91 /* RegisterViewController.swift in Sources */,
 				775C2A1B1E5B11AD00E409B6 /* TaskObserver.swift in Sources */,
 				775C2A191E5B11AD00E409B6 /* Task.swift in Sources */,
 			);
