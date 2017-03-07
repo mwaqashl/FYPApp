@@ -67,44 +67,6 @@ class ViewController: UIViewController {
         
     }
     
-    
-    
-    
-    
-    
-//    @IBAction func signupAction(_ sender: Any) {
-//        
-//        
-//        let user = CurrentUser(id: "asd", email: "whlakhani@gmail.com", userName: "Waqas Hussain", imageURL: "Asd", birthdate: Date().timeIntervalSince1970*1000, deviceID: nil, gender: 1)
-//        Auth.sharedInstance().createUser(email: "whlakhani@gmail.com", password: "imwaqas", user: user) { (success) in
-//            
-//            if success {
-//                
-//                self.lab1.text = Auth.sharedInstance().authUser?.userName
-//                self.lab2.text = Auth.sharedInstance().authUser?.getUserID()
-//                self.lab3.text = Auth.sharedInstance().authUser?.gender == 0 ? "Female":"Male"
-//                
-//                
-////            }
-////        }
-////        
-//        
-//        Auth.sharedInstance().signIn(email: "whlakhani@gmail.com", password: "imwaqas") { (user) in
-//            
-//            if user != nil {
-//                
-////                self.lab1.text = "Login Success"
-////                self.lab2.text = Auth.sharedInstance().authUser?.userName
-////                self.lab3.text = Auth.sharedInstance().authUser?.gender == 0 ? "Female":"Male"
-//                
-//            }
-//            
-//        }
-//        
-//        
-//        
-//    }
-    
 
 }
 

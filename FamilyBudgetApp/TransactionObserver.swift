@@ -4,16 +4,15 @@ import Firebase
 
 class TransactionObserver {
     fileprivate let FIRKeys = ["Transactions", //0
-        "RecurringTransactions", //1
-        "walletID", //2
-        "transactionID", //3
-        "amount", //4
-        "categoryID", //5
-        "comments", //6
-        "transactionBy", //7
-        "currency", //8
-        "isExpense", //9
-        "date"] //10
+        "walletID", //1
+        "transactionID", //2
+        "amount", //3
+        "categoryID", //4
+        "comments", //5
+        "transactionBy", //6
+        "currency", //7
+        "isExpense", //8
+        "date"] //9
     
     fileprivate var ref = FIRDatabase.database().reference()
     fileprivate static var singleInstance : TransactionObserver?
@@ -35,7 +34,6 @@ class TransactionObserver {
     }
     func stopObservingTransaction(ofWallet wallet : String){
         FIRDatabase.database().reference().child(FIRKeys[0]).child(wallet).removeAllObservers()
-        FIRDatabase.database().reference().child(FIRKeys[1]).child(wallet).removeAllObservers()
         if isObservingTransactionsOf.contains(wallet){
             isObservingTransactionsOf.remove(at: isObservingTransactionsOf.index(of: wallet)!)
         }
@@ -47,13 +45,13 @@ class TransactionObserver {
                 return
             }
             let transaction = Transaction(transactionId: snapshot.key,
-                amount: dict[self.FIRKeys[4]] as! Double,
-                categoryId: dict[self.FIRKeys[5]] as! String,
-                comments: dict[self.FIRKeys[6]] as? String,
-                date: (dict[self.FIRKeys[10]] as! Double)/1000,
-                transactionById: dict[self.FIRKeys[7]] as! String,
-                currencyId: dict[self.FIRKeys[8]] as! String,
-                isExpense: dict[self.FIRKeys[9]] as! Bool,
+                amount: dict[self.FIRKeys[3]] as! Double,
+                categoryId: dict[self.FIRKeys[4]] as! String,
+                comments: dict[self.FIRKeys[5]] as? String,
+                date: (dict[self.FIRKeys[9]] as! Double)/1000,
+                transactionById: dict[self.FIRKeys[6]] as! String,
+                currencyId: dict[self.FIRKeys[7]] as! String,
+                isExpense: dict[self.FIRKeys[8]] as! Bool,
                 walletID: wallet)
             Resource.sharedInstance().transactions[snapshot.key] = transaction
             Delegate.sharedInstance().getTransactionDelegates().forEach({ (transactionDel) in
@@ -69,11 +67,11 @@ class TransactionObserver {
                 return
             }
             let transaction = Resource.sharedInstance().transactions[snapshot.key]!
-            transaction.amount = dict[self.FIRKeys[4]] as! Double
-            transaction.categoryId = dict[self.FIRKeys[5]] as! String
-            transaction.comments = dict[self.FIRKeys[6]] as? String
-            transaction.currencyId = dict[self.FIRKeys[8]] as! String
-            transaction.isExpense = dict[self.FIRKeys[9]] as! Bool
+            transaction.amount = dict[self.FIRKeys[3]] as! Double
+            transaction.categoryId = dict[self.FIRKeys[4]] as! String
+            transaction.comments = dict[self.FIRKeys[5]] as? String
+            transaction.currencyId = dict[self.FIRKeys[7]] as! String
+            transaction.isExpense = dict[self.FIRKeys[8]] as! Bool
             Resource.sharedInstance().transactions[snapshot.key] = transaction
             Delegate.sharedInstance().getTransactionDelegates().forEach({ (transactionDel) in
                 transactionDel.transactionUpdated(transaction)
