@@ -9,6 +9,13 @@
 /* Begin PBXBuildFile section */
 		04343C031E5EBDB500417C91 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04343C021E5EBDB500417C91 /* RegisterViewController.swift */; };
 		04343C051E5EBDC800417C91 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04343C041E5EBDC800417C91 /* HomeViewController.swift */; };
+		044B713B1E81618200613ECA /* WalletSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B713A1E81618200613ECA /* WalletSetupViewController.swift */; };
+		044B713D1E8168AE00613ECA /* AllWalletsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B713C1E8168AE00613ECA /* AllWalletsViewController.swift */; };
+		044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B713E1E81764200613ECA /* WalletsCollectionViewCell.swift */; };
+		044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71401E81889A00613ECA /* TimelineViewController.swift */; };
+		044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71421E8188D600613ECA /* TimelineTableViewCell.swift */; };
+		044B71451E818EE100613ECA /* TransactionDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */; };
+		049908FC1E7FE610008238F4 /* HuzaifaStroyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */; };
 		543F485DAE600F08C8532E77 /* Pods_FamilyBudgetApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */; };
 		770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */; };
 		7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B51E57231C006A25AF /* AppDelegate.swift */; };
@@ -44,6 +51,13 @@
 /* Begin PBXFileReference section */
 		04343C021E5EBDB500417C91 /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		04343C041E5EBDC800417C91 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		044B713A1E81618200613ECA /* WalletSetupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSetupViewController.swift; sourceTree = "<group>"; };
+		044B713C1E8168AE00613ECA /* AllWalletsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AllWalletsViewController.swift; sourceTree = "<group>"; };
+		044B713E1E81764200613ECA /* WalletsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsCollectionViewCell.swift; sourceTree = "<group>"; };
+		044B71401E81889A00613ECA /* TimelineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
+		044B71421E8188D600613ECA /* TimelineTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineTableViewCell.swift; sourceTree = "<group>"; };
+		044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDescriptionViewController.swift; sourceTree = "<group>"; };
+		049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HuzaifaStroyboard.storyboard; sourceTree = "<group>"; };
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
 		770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7742C7B21E57231C006A25AF /* FamilyBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,15 +137,22 @@
 			isa = PBXGroup;
 			children = (
 				7742C7B51E57231C006A25AF /* AppDelegate.swift */,
-				7742C7B71E57231C006A25AF /* ViewController.swift */,
 				04343C041E5EBDC800417C91 /* HomeViewController.swift */,
+				7742C7B71E57231C006A25AF /* ViewController.swift */,
 				04343C021E5EBDB500417C91 /* RegisterViewController.swift */,
+				044B713A1E81618200613ECA /* WalletSetupViewController.swift */,
+				044B713C1E8168AE00613ECA /* AllWalletsViewController.swift */,
+				044B71401E81889A00613ECA /* TimelineViewController.swift */,
+				044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */,
 				7742C7B91E57231C006A25AF /* Main.storyboard */,
 				7742C7BC1E57231C006A25AF /* Assets.xcassets */,
 				770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */,
 				7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */,
 				7742C7E01E57236A006A25AF /* API */,
 				7742C7C11E57231C006A25AF /* Info.plist */,
+				049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */,
+				044B713E1E81764200613ECA /* WalletsCollectionViewCell.swift */,
+				044B71421E8188D600613ECA /* TimelineTableViewCell.swift */,
 			);
 			path = FamilyBudgetApp;
 			sourceTree = "<group>";
@@ -266,6 +287,7 @@
 				7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */,
 				770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */,
 				7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */,
+				049908FC1E7FE610008238F4 /* HuzaifaStroyboard.storyboard in Resources */,
 				7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -332,6 +354,7 @@
 				775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */,
 				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
 				775C2A1C1E5B11AD00E409B6 /* Transaction.swift in Sources */,
+				044B713D1E8168AE00613ECA /* AllWalletsViewController.swift in Sources */,
 				775C2A101E5B11AD00E409B6 /* Auth.swift in Sources */,
 				775C2A1D1E5B11AD00E409B6 /* TransactionManager.swift in Sources */,
 				775C2A1A1E5B11AD00E409B6 /* TaskManager.swift in Sources */,
@@ -340,9 +363,13 @@
 				775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */,
 				775C2A1E1E5B11AD00E409B6 /* TransactionObserver.swift in Sources */,
 				04343C051E5EBDC800417C91 /* HomeViewController.swift in Sources */,
+				044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */,
 				775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */,
+				044B71451E818EE100613ECA /* TransactionDescriptionViewController.swift in Sources */,
 				775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */,
 				7742C7B81E57231C006A25AF /* ViewController.swift in Sources */,
+				044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */,
+				044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */,
 				775C2A1F1E5B11AD00E409B6 /* User.swift in Sources */,
 				775C2A211E5B11AD00E409B6 /* UserObserver.swift in Sources */,
 				775C2A161E5B11AD00E409B6 /* NotificationManager.swift in Sources */,
@@ -352,6 +379,7 @@
 				04343C031E5EBDB500417C91 /* RegisterViewController.swift in Sources */,
 				775C2A1B1E5B11AD00E409B6 /* TaskObserver.swift in Sources */,
 				775C2A191E5B11AD00E409B6 /* Task.swift in Sources */,
+				044B713B1E81618200613ECA /* WalletSetupViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

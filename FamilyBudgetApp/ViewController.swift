@@ -13,10 +13,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var emailAddress: UITextField!
     @IBOutlet weak var password: UITextField!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         
         password.isSecureTextEntry = true
         
@@ -31,6 +29,11 @@ class ViewController: UIViewController {
     
     @IBAction func signInBtnAction(_ sender: Any) {
         
+        let activity = UIActivityIndicatorView(frame: self.view.frame)
+        activity.hidesWhenStopped = true
+        activity.startAnimating()
+        activity.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        self.view.addSubview(activity)
         var error = ""
         var errorDis = ""
         
@@ -44,16 +47,23 @@ class ViewController: UIViewController {
         
         if error == "" {
             
-            Auth.sharedInstance().signIn(email: emailAddress.text!, password: password.text!, callback: { (user) in
-                
-                if user != nil {
+            Auth.sharedInstance().signIn(email: emailAddress.text!, password: password.text!, callback: { (error) in
+                if error != nil {
                     
+                    let alert = UIAlertController(title: error?.localizedDescription, message: errorDis, preferredStyle: .alert)
+                    
+                    let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                    
+                    alert.addAction(action)
+                    activity.stopAnimating()
+                    self.present(alert, animated: true, completion: nil)
+                }
+                else {
+                    activity.stopAnimating()
                     self.performSegue(withIdentifier: "home", sender: nil)
                     
                 }
-                
             })
-            
         }
         else {
             
@@ -62,6 +72,7 @@ class ViewController: UIViewController {
             let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
             
             alert.addAction(action)
+            activity.stopAnimating()
             self.present(alert, animated: true, completion: nil)
         }
         
