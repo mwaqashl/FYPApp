@@ -47,10 +47,11 @@ class ViewController: UIViewController {
         
         if error == "" {
             
-            Auth.sharedInstance().signIn(email: emailAddress.text!, password: password.text!, callback: { (error) in
-                if error != nil {
-                    
-                    let alert = UIAlertController(title: error?.localizedDescription, message: errorDis, preferredStyle: .alert)
+            Auth.sharedInstance().signIn(email: emailAddress.text!, password: password.text!, callback: { (_error) in
+                if _error != nil {
+                    error = "Error"
+                    errorDis = _error?.localizedDescription ?? "Some error Occured"
+                    let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
                     
                     let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
                     
@@ -60,7 +61,7 @@ class ViewController: UIViewController {
                 }
                 else {
                     activity.stopAnimating()
-                    self.performSegue(withIdentifier: "home", sender: nil)
+                    self.performSegue(withIdentifier: "main", sender: nil)
                     
                 }
             })

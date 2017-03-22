@@ -110,7 +110,7 @@ class UserManager {
     // call this function when user logged in to set device to active mode
     func userLoggedIn(_ user: String) {
         // add the device in deviceIDs
-        let deviceRef = ref.child("UserInfo").child(user)
+        let deviceRef = ref.child("Users").child(user)
         if let deviceToken = defaultSettings.value(forKey: "deviceToken") as? String {
             deviceRef.updateChildValues(["deviceID":deviceToken,"lastSeen": FIRServerValue.timestamp()])
         }
@@ -118,7 +118,7 @@ class UserManager {
     
     // call this function when user logged out to set device to inactive mode
     func userLoggedOut(_ user: String) {
-        let deviceRef = ref.child("UserInfo").child(user).child("deviceID")
+        let deviceRef = ref.child("Users").child(user).child("deviceID")
         if let deviceToken = defaultSettings.value(forKey: "deviceToken") as? String {
             deviceRef.child(deviceToken).removeValue()
         }

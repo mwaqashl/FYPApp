@@ -8,19 +8,20 @@
 
 import UIKit
 
-class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, WalletDelegate, WalletMemberDelegate {
 
     var array = ["Waqas","Huzaifa","Zeeshan"]
-    //var wallets = [String:UserWallet]()
+    var wallets = [String:UserWallet]()
     
     @IBOutlet weak var UserName: UILabel!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //wallets = Resource.sharedInstance().userWallets
+        wallets = Resource.sharedInstance().userWallets
         UserName.text = Auth.sharedInstance().authUser?.userName
-        //WalletObserver.sharedInstance().startObserving()
+        WalletObserver.sharedInstance().startObserving()
+        Delegate.sharedInstance().addWalletDelegate(self)
         
         //print(wallets)
         // Do any additional setup after loading the view.
@@ -33,6 +34,9 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
+    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "timeline", sender: nil)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -47,29 +51,29 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
         return wallets!
     }
     
-//    func walletAdded(_ wallet: UserWallet) {
-//        print(wallet.id)
-//    }
-//    
-//    func walletUpdated(_ wallet: UserWallet) {
-//        
-//    }
-//    func WalletDeleted(_ wallet: UserWallet) {
-//        
-//    }
-//    
-//    func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
-//        
-//    }
-//    
-//    func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
-//        
-//    }
-//    
-//    func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
-//        
-//    }
-//    
+    func walletAdded(_ wallet: UserWallet) {
+        print(wallet.id)
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        
+    }
+    func WalletDeleted(_ wallet: UserWallet) {
+        
+    }
+    
+    func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
+    
+    func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
+    
+    func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
+    
     @IBAction func CloseWalletButton(_ sender: Any) {
     }
     
@@ -84,7 +88,7 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
             self.present(alert, animated: true, completion: nil)
         }
         else {
-            
+            self.dismiss(animated: true, completion: nil)
         }
     }
 

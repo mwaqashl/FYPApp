@@ -1,19 +1,17 @@
 //
-//  TimelineTableViewCell.swift
+//  DefaultTableViewCell.swift
 //  FamilyBudgetApp
 //
-//  Created by mac on 3/21/17.
+//  Created by mac on 3/22/17.
 //  Copyright © 2017 Technollage. All rights reserved.
 //
 
 import UIKit
 
-class TimelineTableViewCell: UITableViewCell {
+class DefaultTableViewCell: UITableViewCell {
 
-    
-    @IBOutlet weak var category: UILabel!
-    @IBOutlet weak var amount: UILabel!
-    @IBOutlet weak var categoryIcon: UILabel!
+    @IBOutlet weak var title: UILabel!
+    @IBOutlet weak var textView: UITextField!
     
     override func awakeFromNib() {
         super.awakeFromNib()

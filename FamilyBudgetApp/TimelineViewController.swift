@@ -43,6 +43,11 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         self.performSegue(withIdentifier: "Transactiondescription", sender: nil)
     }
     
+    @IBAction func addTransaction(_ sender: Any) {
+        
+        self.performSegue(withIdentifier: "addTrans", sender: nil)
+        
+    }
 
     /*
     // MARK: - Navigation

@@ -131,6 +131,7 @@ class WalletObserver {
     }
     
     fileprivate func observeWalletAdded(){
+        print(Resource.sharedInstance().currentUserId)
         let walletsRef = ref.child("UserWallets").child(Resource.sharedInstance().currentUserId!)
         walletsRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
             let walletRef = self.ref.child("Wallets").child(snapshot.key)

@@ -45,6 +45,7 @@ import Firebase
                 
                 self.authUser = newUser
                 UserManager.sharedInstance().addNewUser(newUser)
+                Resource.sharedInstance().currentUserId = newUser.getUserID()
                 self.isAuthenticated = true
                 callback(nil)
             }
@@ -67,9 +68,10 @@ import Firebase
             }
             else {
                 
-                FIRDatabase.database().reference().child("UserInfo").child(user!.uid).observeSingleEvent(of: .value, with: { (snap) in
-                    
-                    guard let data = snap.value as? [String:Any] else {
+                FIRDatabase.database().reference().child("Users").child(user!.uid).observeSingleEvent(of: .value, with: { (snap) in
+                    print(snap.value)
+                    print(snap.key)
+                    guard let data = snap.value as? NSDictionary else {
                         self.isAuthenticated = false
                         self.authUser = nil
                         
@@ -81,7 +83,8 @@ import Firebase
                     
                     self.isAuthenticated = true
                     self.authUser = thisUser
-                    
+                    Resource.sharedInstance().currentUserId = thisUser.getUserID()
+
                     //for getting currentWalletID
                     if let walletID = defaultSettings.value(forKey: "walletID") as? String {
                         Resource.sharedInstance().currentWalletID = walletID
@@ -90,12 +93,13 @@ import Firebase
                         Resource.sharedInstance().currentWalletID = thisUser.getUserID()
                     }
                     
-                    
+                    callback(nil)
+//
 //                    if (defaultSettings.value(forKey: "lastUserIDs") as! [String]).contains(thisUser.getUserID()){
 //                        
 //                        Resource.sharedInstance().currentUserId = user!.uid
 //                        UserManager.sharedInstance().userLoggedIn(thisUser.getUserID())
-//                        self.callback(nil)
+//                        callback(nil)
 //                        
 //                    }else{
 //                        
@@ -107,19 +111,19 @@ import Firebase
 //                                var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String])
 //                                users.append(thisUser.getUserID())
 //                                defaultSettings.setValue(users, forKey: "lastUserIDs")
-//                                self.callback(nil)
+//                                callback(nil)
 //                                
 //                            }else{
 //                                
 //                                self.authUser = thisUser
-//                                self.callback(true)
+//                                callback(nil)
 //                                
 //                            }
 //                        })
 //                    }
-                    
+//                    
                 })
-                
+
             }
             
         })
