@@ -157,6 +157,11 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     }
     
+    @IBAction func backBtnAction(_ sender: Any) {
+        
+        self.dismiss(animated: true, completion: nil)
+        
+    }
     
     /*
     // MARK: - Navigation

@@ -12,11 +12,15 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var emailAddress: UITextField!
     @IBOutlet weak var password: UITextField!
+    @IBOutlet weak var signInBtn: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         password.isSecureTextEntry = true
+        
+        signInBtn.layer.borderWidth = 1
+        signInBtn.layer.borderColor = UIColor.white.cgColor
         
         // Do any additional setup after loading the view, typically from a nib.
     }
