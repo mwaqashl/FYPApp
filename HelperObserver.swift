@@ -40,7 +40,7 @@ class HelperObservers  {
             return
         }
         
-        FIRDatabase.database().reference().child("UserDetails").child(Resource.sharedInstance().currentUserId!).observeSingleEvent(of: .value, with: { (snap) in
+        FIRDatabase.database().reference().child("Users").child(Resource.sharedInstance().currentUserId!).observeSingleEvent(of: .value, with: { (snap) in
             if let data = snap.value as? NSDictionary {
                 let newUser = CurrentUser(id: Resource.sharedInstance().currentUserId!, email: data["email"] as! String, userName: data["userName"] as! String, imageURL: data["image"] as! String, birthdate: data["birthDate"] as? Double, deviceID: nil, gender: data["gender"] as! Int)
                 Resource.sharedInstance().users[newUser.getUserID()] = newUser
