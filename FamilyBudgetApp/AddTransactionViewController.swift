@@ -110,7 +110,6 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             textView.text = ""
         }
         
-        
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
