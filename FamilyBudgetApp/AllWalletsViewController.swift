@@ -14,7 +14,7 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
     var transactioncount = 0 , taskcount = 0
     var walletkey = [String]()
     var userwallets = [String:UserWallet]()
-    @IBOutlet weak var pagecontroller: UIPageControl!
+   // @IBOutlet weak var pagecontroller: UIPageControl!
     
     @IBOutlet weak var colltectionview: UICollectionView!
     @IBOutlet weak var UserName: UILabel!
@@ -23,7 +23,6 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        pagecontroller.numberOfPages = walletkey.count
         userwallets = Resource.sharedInstance().userWallets
         //print(wallets)
         UserName.text = Auth.sharedInstance().authUser?.userName
@@ -33,6 +32,7 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
         Delegate.sharedInstance().addTransactionDelegate(self)
         Delegate.sharedInstance().addTaskDelegate(self)
         
+        self.navigationController!.isToolbarHidden = true
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             
@@ -80,13 +80,11 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
      
         let walletCell = collectionView.dequeueReusableCell(withReuseIdentifier: "wallets", for: indexPath) as? WalletsCollectionViewCell
         let wallet = userwallets[walletkey[indexPath.item]]
-//        wallets?.OwnwrName.text = wallet?.creator.userName
-//        wallets?.BalanceAmount.text = "\(wallet?.balance)"//String(describing: wallet?.balance)
-//        wallets?.ExpenseTotal.text = String(describing: wallet?.totalExpense)
-//        wallets?.IncomeTotal.text = String(describing: wallet?.totalIncome)
-//        wallets?.WalletName.text = wallet?.name
         walletCell?.OwnwrName.text = wallet!.creator.userName
+        walletCell?.BalanceAmount.text = "\(wallet!.balance)"//String(describing: wallet?.balance)
+        walletCell?.ExpenseTotal.text = "\(wallet!.totalExpense)"
         walletCell?.IncomeTotal.text = "\(wallet!.totalIncome)"
+        walletCell?.WalletName.text = wallet!.name
         
         return walletCell!
     }
@@ -130,7 +128,8 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
     func WalletDeleted(_ wallet: UserWallet) {
         if userwallets[wallet.id] != nil {
             userwallets.removeValue(forKey: wallet.id)
-            walletkey[walletkey.index(of: wallet.id)!] = ""
+            //walletkey[walletkey.index(of: wallet.id)!] = ""
+            walletkey.remove(at: walletkey.index(of: wallet.id)!)
             colltectionview.reloadData()
         }
     }
@@ -152,6 +151,7 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
     // User Delegates
     
     func userAdded(_ user: User) {
+        //print(user.)
         colltectionview.reloadData()
     }
     func userUpdated(_ user: User) {
