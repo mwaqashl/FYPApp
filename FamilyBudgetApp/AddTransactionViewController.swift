@@ -12,6 +12,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
 
     @IBOutlet weak var addBtn: UIButton!
     @IBOutlet weak var detailsTableView: UITableView!
+    @IBOutlet weak var tableView: UITableView!
     
     
     let cells = ["Amount","Category","Date","Comments"]
@@ -69,6 +70,13 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             let cell = tableView.dequeueReusableCell(withIdentifier: "commentsCell") as! CommentsTableViewCell
             
             cell.textView.text = transaction?.comments != nil ? (transaction?.comments == "" ? "Write here" : transaction!.comments) : "Write here"
+            
+            cell.textView.autoresizingMask = UIViewAutoresizing.flexibleHeight
+            
+            if cell.textView.contentSize.height > cell.frame.height {
+                cell.frame.size.height += (cell.textView.contentSize.height - cell.frame.height) + 8
+            }
+            
             cell.textView.delegate = self
             return cell
             
@@ -104,6 +112,22 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         }
     }
     
+    func textViewDidChange(_ textView: UITextView) {
+        transaction?.comments = textView.text
+        
+        guard let cell = tableView.cellForRow(at: IndexPath(row: cells.endIndex-1, section: 0)) as? CommentsTableViewCell else {
+            return
+        }
+        let newTextView = textView
+        let fixedWidth = newTextView.frame.size.width;
+        let newSize = newTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        if newSize.height > textView.frame.height + 16 {
+            
+            cell.frame.size.height = newSize.height+18
+            textView.frame.size.height = newSize.height
+            tableView.contentSize.height += 20
+        }
+    }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == "Write here" {
