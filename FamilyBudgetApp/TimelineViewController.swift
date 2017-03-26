@@ -8,14 +8,19 @@
 
 import UIKit
 
-class TimelineViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class TimelineViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TransactionDelegate{
 
-    var categoryname = ["Food & Dirnks","Grocerys","Travel","Clothes","Others"]
-    var categoryprices = ["100","150","200","300","400"]
+    var selectedrow : Int?
+    @IBOutlet weak var tableview: UITableView!
+    
+    var transactions = [Transaction]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        transactions = (Resource.sharedInstance().currentWallet?.transactions)!
+        Delegate.sharedInstance().addTransactionDelegate(self)
+        TransactionObserver.sharedInstance().startObservingTransaction(ofWallet: (Resource.sharedInstance().currentWallet?.id)!)
         // Do any additional setup after loading the view.
     }
 
@@ -29,18 +34,25 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryname.count
+        return transactions.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? TimelineTableViewCell
-        cell?.category.text = categoryname[indexPath.row]
-        cell?.amount.text = categoryprices[indexPath.row]
-        return cell!
-    }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! TimelineTableViewCell
+        let category = transactions[indexPath.row].category
+        cell.category.text = category.name
+        cell.amount.text = "\(transactions[indexPath.row].amount)"
+        cell.categoryIcon.text = category.icon
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "Transactiondescription", sender: nil)
+        cell.categoryIcon.backgroundColor = category.color
+        cell.categoryIcon.textColor = category.color
+        cell.categoryIcon.backgroundColor = .white
+        cell.categoryIcon.layer.borderColor = category.color.cgColor
+        cell.categoryIcon.layer.borderWidth = 1
+        cell.categoryIcon.layer.cornerRadius = cell.categoryIcon.frame.width/2
+        
+        
+        return cell
     }
     
     @IBAction func addTransaction(_ sender: Any) {
@@ -48,7 +60,44 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         self.performSegue(withIdentifier: "addTrans", sender: nil)
         
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectedrow = indexPath.row
+        performSegue(withIdentifier: "TransactionDetail", sender: nil)
+    }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let destination = segue.destination as! AddTransactionViewController
+        
+        if segue.identifier == "TransactionDetail" {
+            destination.isNew = false
+            destination.transaction = transactions[selectedrow!]
+            print(destination.transaction!.id)
+        }
+        
+        if segue.identifier == "addTrans" {
+            destination.isNew = true
+            print(destination.isNew)
+        }
+    }
+    
+    //Transaction Delegates
+    
+    func transactionAdded(_ transaction: Transaction) {
+        transactions.append(transaction)
+        print("Added Chal gaya")
+        tableview.reloadData()
+    }
+    
+    func transactionDeleted(_ transaction: Transaction) {
+        tableview.reloadData()
+    }
+    
+    func transactionUpdated(_ transaction: Transaction) {
+        tableview.reloadData()
+    }
+    
     /*
     // MARK: - Navigation
 

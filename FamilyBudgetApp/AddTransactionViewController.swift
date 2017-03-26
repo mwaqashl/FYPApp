@@ -9,66 +9,88 @@
 import UIKit
 
 class AddTransactionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate {
+    
+    
 
     @IBOutlet weak var addBtn: UIButton!
     @IBOutlet weak var detailsTableView: UITableView!
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var headertitle: UILabel!
+    @IBOutlet weak var segmentbtn: UISegmentedControl!
     
-    let cells = ["Amount","Category","Date","Comments"]
+    var date : Double?
+    
+    var cells = ["Amount","Category","Date","Comments","Delete"]
     var transaction : Transaction?
     
     var datepicker = UIDatePicker()
     let toolbar = UIToolbar()
+    var isNew : Bool?
+    let dateformatter = DateFormatter()
 
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        print(isNew!)
+        
+        if !(isNew!) {
+            headertitle.text = "Transaction Details"
+            addBtn.setTitle("Edit", for: .normal)
+            segmentbtn.isHidden = true
+        }
+        
+        tableView.dataSource = self
+        tableView.delegate = self
         
         addBtn.layer.borderWidth = 1
         addBtn.layer.borderColor = UIColor(red: 43/255, green: 190/255, blue: 230/255, alpha: 1.0).cgColor
         
         detailsTableView.delegate = self
         detailsTableView.dataSource = self
+        segmentbtn.selectedSegmentIndex = 0
         
         datepicker.maximumDate = Date()
         datepicker.datePickerMode = .date
         datepicker.backgroundColor = .white
         toolbar.sizeToFit()
-        
-        
-        let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
-        let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([cancel,spaceButton,done], animated: false)
+        dateformatter.dateFormat = "dd-MMM-yyyy"
+
+        HelperObservers.sharedInstance().getUserAndWallet { (flag) in
+            if flag {
+                
+                if self.isNew! {
+                    self.transaction = Transaction(transactionId: "", amount: 0, categoryId: "", comments: nil, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: "-KUSVorHYEOc4zYoAwgp", isExpense: true, walletID: Resource.sharedInstance().currentWalletID!)
+                }
+            }
+        }
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        tableView.reloadData()
+        print(transaction!.category.name)
+        print("\n\n")
+        print(transaction!.categoryId)
+    }
         
         // Do any additional setup after loading the view.
-    }
+    
     
     func donepressed(){
+        let cell = tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as! DefaultTableViewCell
+        cell.textView.text = dateformatter.string(from: datepicker.date)
+        date = datepicker.date.timeIntervalSince1970
+        transaction!.date = datepicker.date
         self.view.endEditing(true)
     }
-    
+
     func cancelpressed(){
         self.view.endEditing(true)
     }
     
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return ""
-    }
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -76,8 +98,66 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     
     @IBAction func addBtnAction(_ sender: UIButton) {
         
+        let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! DefaultTableViewCell
         
+        if addBtn.currentTitle == "Done" {
+            transaction?.amount = Double(cell.textView.text!) ?? 0.0
+            var error = ""
+            var errorDis = ""
         
+            if transaction!.amount == 0 {
+                error = "Error"
+                errorDis = "Amount cannot be empty"
+            }
+            else if transaction?.category == nil {
+                error = "Error"
+                errorDis = "Category cannot be empty"
+            }
+            else if transaction?.date == nil {
+                error = "Error"
+                errorDis = "Date cannot be empty"
+            }
+        
+            if error == "" {
+                TransactionManager.sharedInstance().AddTransactionInWallet(transaction!)
+                self.navigationController!.popViewController(animated: true)
+            }
+            else {
+                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+        }
+            
+        else if addBtn.currentTitle == "Save" {
+            transaction?.amount = Double(cell.textView.text!) ?? 0.0
+            var error = ""
+            var errorDis = ""
+            
+            if transaction!.amount == 0 {
+                error = "Error"
+                errorDis = "Amount cannot be empty"
+            }
+            
+            if error == "" {
+                TransactionManager.sharedInstance().updateTransactionInWallet(transaction!)
+                self.navigationController!.popViewController(animated: true)
+            }
+            else {
+                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+        }
+        else {
+            isNew = true
+            addBtn.setTitle("Save", for: .normal)
+            tableView.reloadData()
+        }
     }
     
     
@@ -92,10 +172,28 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 2 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "defaultCell") as! DefaultTableViewCell
-            cell.textView.inputView = self.datepicker
-            cell.textView.inputAccessoryView = toolbar
+        if indexPath.row == 1 {
+            if segmentbtn.selectedSegmentIndex == 1 {
+                transaction!.isExpense = false
+            }
+            else if segmentbtn.selectedSegmentIndex == 0 {
+                transaction?.isExpense = true
+            }
+            performSegue(withIdentifier: "Category", sender: nil)
+        }
+        if cells[indexPath.row] == "Delete" {
+            TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
+            self.navigationController?.popViewController(animated: true)
+        }
+        
+    }
+    
+    //prepareing for segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "Category" {
+            let destination = segue.destination as! CategoriesViewController
+            destination.transaction = self.transaction
+            
         }
     }
     
@@ -117,19 +215,52 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             if cell.textView.contentSize.height > cell.frame.height {
                 cell.frame.size.height += (cell.textView.contentSize.height - cell.frame.height) + 8
             }
-            
             cell.textView.delegate = self
+            if !(isNew!) {
+                if transaction!.comments == nil {
+                    cell.isHidden = true
+                }
+            }
             return cell
             
         case "Category":
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
             
-            cell.name.text = transaction?.category != nil ? transaction!.category.name : "None"
+            if transaction?.categoryId == "" {
+                cell.name.text = "None"
+                cell.icon.text = ""
+            }
+            else if (transaction?.category.isExpense)! && segmentbtn.selectedSegmentIndex == 1 {
+                cell.name.text = "None"
+                cell.icon.text = ""
+            }
+            else if !((transaction?.category.isExpense)!) && segmentbtn.selectedSegmentIndex == 0 {
+                cell.name.text = "None"
+                cell.icon.text = ""
+            }
+            else {
+                //let category = Resource.sharedInstance().categories[(transaction?.categoryId)!]
+                cell.name.text = transaction?.category.name
+                cell.icon.text = transaction?.category.icon
+            }
             cell.icon.backgroundColor = transaction?.category != nil ? transaction!.category.color : UIColor.lightGray
-            cell.icon.textColor = UIColor.white
-            cell.icon.text = transaction?.category.icon
+            cell.icon.textColor = transaction?.category.color
+            cell.icon.backgroundColor = .white
+            cell.icon.layer.borderColor = transaction?.category.color.cgColor
+            cell.icon.layer.borderWidth = 1
+            cell.icon.layer.cornerRadius = cell.icon.frame.width/2
             
+            return cell
+            
+        case "Delete":
+            let cell = tableView.dequeueReusableCell(withIdentifier: "DeleteCell") as! DeleteTableViewCell
+            if isNew! {
+                cell.isHidden = true
+            }
+            else {
+                cell.isHidden = false
+            }
             return cell
             
         default:
@@ -139,12 +270,19 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             cell.title.text = cells[indexPath.row]
             
             if cell.title.text == "Amount" {
-                
+                cell.textView.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : "0"
                 cell.textView.isUserInteractionEnabled = true
                 
             }
             else if cell.title.text == "Date" {
+//                cell.textView.text = dateformatter.string(from: datepicker.date)
                 cell.textView.inputView = datepicker
+                cell.textView.text = dateformatter.string(from: transaction!.date)
+                let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
+                let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
+                let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+                self.toolbar.setItems([cancel,spaceButton,done], animated: false)
+                cell.textView.inputAccessoryView = self.toolbar
             }
             else {
                 
@@ -177,7 +315,6 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         if textView.text == "Write here" {
             textView.text = ""
         }
-        
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -185,6 +322,14 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         transaction?.comments = textView.text
     }
 
+    
+    @IBAction func segmentbtnAction(_ sender: Any) {
+        tableView.reloadData()
+    }
+    
+    
+    
+    
     /*
     // MARK: - Navigation
 
