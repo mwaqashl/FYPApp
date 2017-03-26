@@ -13,7 +13,8 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     //Currency
     var cname = ["United State Dollar","Saudi Riyal","Euro","Pakistani Rupees","Pound"]
     var ccode = ["USD","SAR","EUR","Rs","PD"]
-    var selectedindex = 0, previousindex = 0
+    var selectedindex = 0
+    
     
     //For Wallet Setup
     @IBOutlet weak var walletname: UITextField!
@@ -22,10 +23,11 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBOutlet weak var currencyIcon: UITextField!
     
     var currencypicker = UIPickerView()
+    var wallet : UserWallet?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         //Currency picker
         currencypicker.dataSource = self
         currencypicker.delegate = self
@@ -33,6 +35,8 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         currencyIcon.inputView = currencypicker
         
         currencypicker.backgroundColor = .white
+        
+        wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [:], isOpen: true, color: UIColor.blue.stringRepresentation)
         
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
@@ -50,15 +54,19 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func donepressed(){
-        currencyName.text = cname[selectedindex]
-        currencyIcon.text = ccode[selectedindex]
-        previousindex = selectedindex
+        
+        let all = Array(Resource.sharedInstance().currencies.keys)
+        let this = all[selectedindex]
+        
+        wallet?.currencyID = this
+        currencyIcon.text = wallet!.currency.code
+        currencyName.text = wallet!.currency.name
         self.view.endEditing(true)
     }
     
     func cancelpressed(){
-        currencyName.text = cname[previousindex]
-        currencyIcon.text = ccode[previousindex]
+        currencyIcon.text = wallet!.currency.code
+        currencyName.text = wallet!.currency.name
         self.view.endEditing(true)
     }
     
@@ -67,13 +75,32 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return cname.count
+        print(Resource.sharedInstance().currencies.count)
+        return Resource.sharedInstance().currencies.count
     }
     
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return "\(cname[row])\t\t\t\(ccode[row])"
+    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView!) -> UIView
+    {
+        var pickerLabel = UILabel()
+        pickerLabel.textColor = UIColor.black
+        
+        let all = Array(Resource.sharedInstance().currencies.keys)
+        let this = all[row]
+        
+        let attString = NSAttributedString(string: Resource.sharedInstance().currencies[this]!.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 24)!])
+        
+        let attString2 = NSAttributedString(string: " - \(Resource.sharedInstance().currencies[this]!.name) - \(Resource.sharedInstance().currencies[this]!.code)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 17)])
+        
+        let str = NSMutableAttributedString()
+        str.append(attString)
+        str.append(attString2)
+        
+        pickerLabel.attributedText = attString
+        pickerLabel.textAlignment = NSTextAlignment.center
+        return pickerLabel
     }
     
+        
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedindex = row
     }
@@ -90,7 +117,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         var errorDis = ""
         
         if walletname.text == "" {
-            error = "Wallet Name is Epmty"
+            error = "Wallet Name is Empty"
             errorDis = "Please Enter Wallet Name"
         }
         else if initialamount.text == "" {

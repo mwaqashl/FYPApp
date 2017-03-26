@@ -21,7 +21,9 @@
 		04B0939A1E82801D003E26DE /* CommentsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B093991E82801D003E26DE /* CommentsTableViewCell.swift */; };
 		04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */; };
 		543F485DAE600F08C8532E77 /* Pods_FamilyBudgetApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */; };
-		77085EB41E855C20002BDB39 /* iconFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 77085EB31E855C20002BDB39 /* iconFont.ttf */; };
+		7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C51E8717D80074CD60 /* iconFont.ttf */; };
+		7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */; };
+		7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */; };
 		770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */; };
 		7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B51E57231C006A25AF /* AppDelegate.swift */; };
 		7742C7B81E57231C006A25AF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B71E57231C006A25AF /* ViewController.swift */; };
@@ -68,8 +70,9 @@
 		04B093991E82801D003E26DE /* CommentsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentsTableViewCell.swift; sourceTree = "<group>"; };
 		04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTransactionViewController.swift; sourceTree = "<group>"; };
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
-		77085EB21E855C14002BDB39 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = "<group>"; };
-		77085EB31E855C20002BDB39 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = "<group>"; };
+		7706A6C51E8717D80074CD60 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = SOURCE_ROOT; };
+		7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = SOURCE_ROOT; };
+		7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-25.ttf"; sourceTree = SOURCE_ROOT; };
 		770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7742C7B21E57231C006A25AF /* FamilyBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7742C7B51E57231C006A25AF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -160,6 +163,9 @@
 				044B71401E81889A00613ECA /* TimelineViewController.swift */,
 				044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */,
 				7742C7B91E57231C006A25AF /* Main.storyboard */,
+				7706A6C51E8717D80074CD60 /* iconFont.ttf */,
+				7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */,
+				7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */,
 				7742C7BC1E57231C006A25AF /* Assets.xcassets */,
 				770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */,
 				7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */,
@@ -168,8 +174,6 @@
 				049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */,
 				044B713E1E81764200613ECA /* WalletsCollectionViewCell.swift */,
 				044B71421E8188D600613ECA /* TimelineTableViewCell.swift */,
-				77085EB31E855C20002BDB39 /* iconFont.ttf */,
-				77085EB21E855C14002BDB39 /* untitled-font-18.ttf */,
 			);
 			path = FamilyBudgetApp;
 			sourceTree = "<group>";
@@ -302,8 +306,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */,
+				7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */,
 				770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */,
-				77085EB41E855C20002BDB39 /* iconFont.ttf in Resources */,
+				7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */,
+				7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */,
 				7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */,
 				049908FC1E7FE610008238F4 /* HuzaifaStroyboard.storyboard in Resources */,
 				7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */,

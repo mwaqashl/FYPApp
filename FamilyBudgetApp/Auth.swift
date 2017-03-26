@@ -3,7 +3,6 @@ import Foundation
 import Firebase
 
  class Auth {
-
     
     var authUser : CurrentUser?
     var isAuthenticated = false

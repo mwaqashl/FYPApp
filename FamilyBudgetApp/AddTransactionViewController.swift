@@ -115,7 +115,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     func textViewDidChange(_ textView: UITextView) {
         transaction?.comments = textView.text
         
-        guard let cell = tableView.cellForRow(at: IndexPath(row: cells.endIndex-1, section: 0)) as? CommentsTableViewCell else {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: cells.index(of: "Comments")!, section: 0)) as? CommentsTableViewCell else {
             return
         }
         let newTextView = textView
