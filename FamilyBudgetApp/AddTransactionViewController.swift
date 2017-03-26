@@ -18,8 +18,10 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     let cells = ["Amount","Category","Date","Comments"]
     var transaction : Transaction?
     
-    
-    
+    var datepicker = UIDatePicker()
+    let toolbar = UIToolbar()
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -28,8 +30,43 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         
         detailsTableView.delegate = self
         detailsTableView.dataSource = self
-
+        
+        datepicker.maximumDate = Date()
+        datepicker.datePickerMode = .date
+        datepicker.backgroundColor = .white
+        toolbar.sizeToFit()
+        
+        
+        let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
+        let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        toolbar.setItems([cancel,spaceButton,done], animated: false)
+        
         // Do any additional setup after loading the view.
+    }
+    
+    func donepressed(){
+        self.view.endEditing(true)
+    }
+    
+    func cancelpressed(){
+        self.view.endEditing(true)
+    }
+    
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return ""
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -55,7 +92,11 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        if indexPath.row == 2 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "defaultCell") as! DefaultTableViewCell
+            cell.textView.inputView = self.datepicker
+            cell.textView.inputAccessoryView = toolbar
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -101,6 +142,9 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
                 
                 cell.textView.isUserInteractionEnabled = true
                 
+            }
+            else if cell.title.text == "Date" {
+                cell.textView.inputView = datepicker
             }
             else {
                 

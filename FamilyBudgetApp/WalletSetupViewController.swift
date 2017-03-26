@@ -135,6 +135,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
             
             let walletid = WalletManager.sharedInstance().addWallet(personalWallet)
             if walletid != "" {
+                Resource.sharedInstance().currentWalletID = walletid
             self.performSegue(withIdentifier: "main", sender: nil)
             }
         }
