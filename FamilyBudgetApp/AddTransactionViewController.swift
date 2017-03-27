@@ -410,6 +410,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
                 if !(isNew!) {
                     cells.append("Delete")
                     addBtn.isHidden = false
+                    addBtn.isEnabled = true
                 }
                 self.tableView.reloadData()
             }
