@@ -20,7 +20,9 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBOutlet weak var walletname: UITextField!
     @IBOutlet weak var initialamount: UITextField!
     @IBOutlet weak var currencyName: UITextField!
-    @IBOutlet weak var currencyIcon: UITextField!
+    @IBOutlet weak var currencyCode: UITextField!
+    @IBOutlet weak var currencyIcon: UILabel!
+    
     
     var currencypicker = UIPickerView()
     var wallet : UserWallet?
@@ -32,7 +34,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         currencypicker.dataSource = self
         currencypicker.delegate = self
         currencyName.inputView = currencypicker
-        currencyIcon.inputView = currencypicker
+        currencyCode.inputView = currencypicker
         
         currencypicker.backgroundColor = .white
         
@@ -48,7 +50,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         toolbar.setItems([cancel,spaceButton,done], animated: false)
         
         currencyName.inputAccessoryView = toolbar
-        currencyIcon.inputAccessoryView = toolbar
+        currencyCode.inputAccessoryView = toolbar
 
         // Do any additional setup after loading the view.
     }
@@ -59,13 +61,15 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         let this = all[selectedindex]
         
         wallet?.currencyID = this
-        currencyIcon.text = wallet!.currency.code
+        currencyIcon.text = wallet!.currency.icon
+        currencyCode.text = wallet!.currency.code
         currencyName.text = wallet!.currency.name
         self.view.endEditing(true)
     }
     
     func cancelpressed(){
-        currencyIcon.text = wallet!.currency.code
+        currencyIcon.text = wallet!.currency.icon
+        currencyCode.text = wallet!.currency.code
         currencyName.text = wallet!.currency.name
         self.view.endEditing(true)
     }
@@ -79,15 +83,14 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         return Resource.sharedInstance().currencies.count
     }
     
-    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView!) -> UIView
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
     {
         var pickerLabel = UILabel()
         pickerLabel.textColor = UIColor.black
-        
         let all = Array(Resource.sharedInstance().currencies.keys)
         let this = all[row]
         
-        let attString = NSAttributedString(string: Resource.sharedInstance().currencies[this]!.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 24)!])
+        let attString = NSAttributedString(string: Resource.sharedInstance().currencies[this]!.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
         
         let attString2 = NSAttributedString(string: " - \(Resource.sharedInstance().currencies[this]!.name) - \(Resource.sharedInstance().currencies[this]!.code)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 17)])
         
@@ -95,7 +98,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         str.append(attString)
         str.append(attString2)
         
-        pickerLabel.attributedText = attString
+        pickerLabel.attributedText = str
         pickerLabel.textAlignment = NSTextAlignment.center
         return pickerLabel
     }
@@ -149,9 +152,32 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
     }
     
-    @IBAction func backBtnAction(_ sender: Any) {
+    func findFirstVC(cont: UIViewController) -> UIViewController {
         
-        self.dismiss(animated: true, completion: nil)
+        if cont is ViewController {
+            return cont
+            
+        }else {
+            return findFirstVC(cont: cont.presentingViewController!)
+        }
+        
+        
+        
+    }
+    
+    @IBAction func backBtnAction(_ sender: Any) {
+        Auth.sharedInstance().logOutUser(callback: {
+            (err) in
+            
+            if err == nil {
+                findFirstVC(cont: self).dismiss(animated: true, completion: nil)
+            }
+            else {
+                print(err?.localizedDescription)
+            }
+        })
+        
+        
     }
 
     /*

@@ -93,18 +93,37 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     @IBAction func SignoutButton(_ sender: Any) {
-        let error = Auth.sharedInstance().logOutUser()
-        if error != nil {
-            let alert = UIAlertController(title: error?.localizedDescription, message: "", preferredStyle: .alert)
+        Auth.sharedInstance().logOutUser(callback: {
+            (error) in
             
-            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            if error != nil {
+                let alert = UIAlertController(title: error?.localizedDescription, message: "", preferredStyle: .alert)
+                
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
+            }
+            else {
+                findFirstVC(cont: self).dismiss(animated: true, completion: nil)
+            }
             
-            alert.addAction(action)
-            self.present(alert, animated: true, completion: nil)
+        })
+        
+    }
+    
+    
+    func findFirstVC(cont: UIViewController) -> UIViewController {
+        
+        if cont is ViewController {
+            return cont
+            
+        }else {
+            return findFirstVC(cont: cont.presentingViewController!)
         }
-        else {
-            self.dismiss(animated: true, completion: nil)
-        }
+        
+        
+        
     }
     
     //Wallet Delegate

@@ -24,6 +24,11 @@ class ViewController: UIViewController {
         
         // Do any additional setup after loading the view, typically from a nib.
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        emailAddress.text = ""
+        password.text = ""
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -51,7 +56,7 @@ class ViewController: UIViewController {
         
         if error == "" {
             
-            Auth.sharedInstance().signIn(email: emailAddress.text!, password: password.text!, callback: { (_error) in
+            Auth.sharedInstance().signIn(email: emailAddress.text!, password: password.text!, callback: { (isNewUser, _error) in
                 if _error != nil {
                     error = "Error"
                     errorDis = _error?.localizedDescription ?? "Some error Occured"
@@ -65,7 +70,14 @@ class ViewController: UIViewController {
                 }
                 else {
                     activity.stopAnimating()
-                    self.performSegue(withIdentifier: "main", sender: nil)
+                    
+                    if isNewUser {
+                        self.performSegue(withIdentifier: "setupWallet", sender: nil)
+                    }
+                    else {
+                        
+                        self.performSegue(withIdentifier: "main", sender: nil)
+                    }
                     
                 }
             })

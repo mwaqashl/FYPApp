@@ -24,7 +24,10 @@ class Resource {
         return self.userWallets[currentWalletID!]
     }
     func reset(){
+        let old = Resource.singleInstance
         Resource.singleInstance = Resource()
+        Resource.singleInstance.categories = old.categories
+        Resource.singleInstance.currencies = old.currencies
     }
     
     
