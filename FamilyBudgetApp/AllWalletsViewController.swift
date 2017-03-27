@@ -67,13 +67,7 @@ class AllWalletsViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        if walletkey.count > 0 {
-//            activity.stopAnimating()
-//            return walletkey.count
-//        }
-//        else {
             return walletkey.count
-        //}
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

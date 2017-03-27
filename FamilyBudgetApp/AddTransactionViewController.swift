@@ -8,12 +8,11 @@
 
 import UIKit
 
-class AddTransactionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate {
+class AddTransactionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate {
     
     
 
     @IBOutlet weak var addBtn: UIButton!
-    @IBOutlet weak var detailsTableView: UITableView!
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var headertitle: UILabel!
@@ -33,22 +32,25 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(isNew!)
+       // print(addBtn.currentTitle)
         
         if !(isNew!) {
             headertitle.text = "Transaction Details"
-            addBtn.setTitle("Edit", for: .normal)
+            addBtn.setTitle("EDIT", for: .normal)
             segmentbtn.isHidden = true
         }
         
         tableView.dataSource = self
         tableView.delegate = self
         
+        tableView.estimatedRowHeight = 80
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
         addBtn.layer.borderWidth = 1
         addBtn.layer.borderColor = UIColor(red: 43/255, green: 190/255, blue: 230/255, alpha: 1.0).cgColor
         
-        detailsTableView.delegate = self
-        detailsTableView.dataSource = self
+//        detailsTableView.delegate = self
+//        detailsTableView.dataSource = self
         segmentbtn.selectedSegmentIndex = 0
         
         datepicker.maximumDate = Date()
@@ -56,7 +58,8 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         datepicker.backgroundColor = .white
         toolbar.sizeToFit()
         dateformatter.dateFormat = "dd-MMM-yyyy"
-
+        
+        Delegate.sharedInstance().addWalletDelegate(self)
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
                 
@@ -71,7 +74,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
         print(transaction!.category.name)
-        print("\n\n")
+        print("\n")
         print(transaction!.categoryId)
     }
         
@@ -100,7 +103,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         
         let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! DefaultTableViewCell
         
-        if addBtn.currentTitle == "Done" {
+        if addBtn.currentTitle == "DONE" {
             transaction?.amount = Double(cell.textView.text!) ?? 0.0
             var error = ""
             var errorDis = ""
@@ -131,7 +134,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             }
         }
             
-        else if addBtn.currentTitle == "Save" {
+        else if addBtn.currentTitle == "SAVE" {
             transaction?.amount = Double(cell.textView.text!) ?? 0.0
             var error = ""
             var errorDis = ""
@@ -153,9 +156,9 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
                 present(alert, animated: true, completion: nil)
             }
         }
-        else {
+        else if addBtn.currentTitle == "EDIT" {
             isNew = true
-            addBtn.setTitle("Save", for: .normal)
+            addBtn.setTitle("SAVE", for: .normal)
             tableView.reloadData()
         }
     }
@@ -163,12 +166,10 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     
     // TableView Functions Delegate and Datasources
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        return indexPath.row == 1 || indexPath.row == 3 ? 70 : 50
-        
-        
-    }
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        
+//        return indexPath.row == 1 ? 70 : 50
+//    }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -181,14 +182,10 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             }
             performSegue(withIdentifier: "Category", sender: nil)
         }
-        if cells[indexPath.row] == "Delete" {
-            TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
-            self.navigationController?.popViewController(animated: true)
-        }
-        
+//        print(indexPath.row)
     }
     
-    //prepareing for segue
+//    prepareing for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Category" {
             let destination = segue.destination as! CategoriesViewController
@@ -210,11 +207,13 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             
             cell.textView.text = transaction?.comments != nil ? (transaction?.comments == "" ? "Write here" : transaction!.comments) : "Write here"
             
-            cell.textView.autoresizingMask = UIViewAutoresizing.flexibleHeight
+//            cell.textView.autoresizingMask = UIViewAutoresizing.flexibleHeight
+            cell.backgroundColor = .cyan
+//            cell.frame.size.height = 200
             
-            if cell.textView.contentSize.height > cell.frame.height {
-                cell.frame.size.height += (cell.textView.contentSize.height - cell.frame.height) + 8
-            }
+//            if cell.textView.contentSize.height > cell.frame.height {
+//                cell.frame.size.height += (cell.textView.contentSize.height - cell.frame.height) + 8
+//            }
             cell.textView.delegate = self
             if !(isNew!) {
                 if transaction!.comments == nil {
@@ -226,29 +225,33 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         case "Category":
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
-            
-            if transaction?.categoryId == "" {
-                cell.name.text = "None"
-                cell.icon.text = ""
-            }
-            else if (transaction?.category.isExpense)! && segmentbtn.selectedSegmentIndex == 1 {
-                cell.name.text = "None"
-                cell.icon.text = ""
-            }
-            else if !((transaction?.category.isExpense)!) && segmentbtn.selectedSegmentIndex == 0 {
-                cell.name.text = "None"
-                cell.icon.text = ""
+            if isNew! {
+                if transaction?.categoryId == "" {
+                    cell.name.text = "None"
+                    cell.icon.text = ""
+                }
+                else if (transaction?.category.isExpense)! && segmentbtn.selectedSegmentIndex == 1 {
+                    cell.name.text = "None"
+                    cell.icon.text = ""
+                }
+                else if !((transaction?.category.isExpense)!) && segmentbtn.selectedSegmentIndex == 0 {
+                    cell.name.text = "None"
+                    cell.icon.text = ""
+                }
+                else {
+                    cell.name.text = transaction?.category.name
+                    cell.icon.text = transaction?.category.icon
+                }
             }
             else {
-                //let category = Resource.sharedInstance().categories[(transaction?.categoryId)!]
-                cell.name.text = transaction?.category.name
-                cell.icon.text = transaction?.category.icon
+                cell.name.text = transaction!.category.name
+                cell.icon.text = transaction!.category.icon
             }
             cell.icon.backgroundColor = transaction?.category != nil ? transaction!.category.color : UIColor.lightGray
             cell.icon.textColor = transaction?.category.color
             cell.icon.backgroundColor = .white
             cell.icon.layer.borderColor = transaction?.category.color.cgColor
-            cell.icon.layer.borderWidth = 1
+            cell.icon.layer.borderWidth = 2
             cell.icon.layer.cornerRadius = cell.icon.frame.width/2
             
             return cell
@@ -256,6 +259,9 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         case "Delete":
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeleteCell") as! DeleteTableViewCell
             if isNew! {
+                cell.isHidden = true
+            }
+            else if !(Resource.sharedInstance().currentWallet!.isOpen) {
                 cell.isHidden = true
             }
             else {
@@ -270,9 +276,10 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             cell.title.text = cells[indexPath.row]
             
             if cell.title.text == "Amount" {
-                cell.textView.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : "0"
-                cell.textView.isUserInteractionEnabled = true
-                
+                cell.textView.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : ""
+                if isNew! {
+                    cell.textView.isUserInteractionEnabled = true
+                }
             }
             else if cell.title.text == "Date" {
 //                cell.textView.text = dateformatter.string(from: datepicker.date)
@@ -294,27 +301,29 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         }
     }
     
-    func textViewDidChange(_ textView: UITextView) {
-        transaction?.comments = textView.text
-        
-        guard let cell = tableView.cellForRow(at: IndexPath(row: cells.endIndex-1, section: 0)) as? CommentsTableViewCell else {
-            return
-        }
-        let newTextView = textView
-        let fixedWidth = newTextView.frame.size.width;
-        let newSize = newTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        if newSize.height > textView.frame.height + 16 {
-            
-            cell.frame.size.height = newSize.height+18
-            textView.frame.size.height = newSize.height
-            tableView.contentSize.height += 20
-        }
-    }
+//    func textViewDidChange(_ textView: UITextView) {
+//
+//        guard let cell = tableView.cellForRow(at: IndexPath(row: cells.endIndex-1, section: 0)) as? CommentsTableViewCell else {
+//            return
+//        }
+//        let newTextView = textView
+//        let fixedWidth = newTextView.frame.size.width;
+//        let newSize = newTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+//        if newSize.height > textView.frame.height + 16 {
+//            cell.frame.size.height = newSize.height+18
+//            textView.frame.size.height = newSize.height
+//            tableView.contentSize.height += 20
+//        }
+//    }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == "Write here" {
             textView.text = ""
         }
+        let cell = tableView.cellForRow(at: IndexPath(row: cells.endIndex-2, section: 0)) as! CommentsTableViewCell
+        print("height of a cell : \(cell.frame.height)")
+        print("height of a comment : \(textView.text)")
+    
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -322,14 +331,53 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         transaction?.comments = textView.text
     }
 
-    
     @IBAction func segmentbtnAction(_ sender: Any) {
         tableView.reloadData()
     }
     
+    @IBAction func DeleteTransactionBtn(_ sender: Any) {
+            TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
+            self.navigationController?.popViewController(animated: true)
+    }
     
     
+    // Wallet Delegates
     
+    func walletAdded(_ wallet: UserWallet) {
+        
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        if Resource.sharedInstance().currentWalletID == wallet.id {
+            let alert = UIAlertController(title: "Alert", message: "This Wallet Has been Deleted", preferredStyle: .alert)
+            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            alert.addAction(action)
+            present(alert, animated: true, completion: nil)
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if Resource.sharedInstance().currentWalletID == wallet.id {
+            if !(wallet.isOpen) {
+                let alert = UIAlertController(title: "", message: "This Wallet Has been closed", preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: { ac in
+                    if self.isNew! {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                    else {
+                        self.addBtn.isHidden = true
+                    }
+                })
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+            tableView.reloadData()
+        }
+    }
+
+
+
     /*
     // MARK: - Navigation
 
