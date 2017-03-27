@@ -10,16 +10,15 @@ import UIKit
 
 class CategoriesViewController: UIViewController , UITableViewDelegate, UITableViewDataSource , CategoryDelegate{
 
-    
     var transaction : Transaction?
     @IBOutlet weak var tableview: UITableView!
     
     var income = [String]()
     var expence = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        //income = Resource.sharedInstance().categories
-        print("\(income.count)")
+    
         for key in Resource.sharedInstance().categories.keys {
             let curr = Resource.sharedInstance().categories[key]
             if curr!.isExpense {
@@ -29,10 +28,7 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
                 income.append(key)
             }
         }
-        print("Expenxe = \(transaction?.isExpense)")
-//        print("Income = \(transaction?.currencyId)")
-
-        // Do any additional setup after loading the view.
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -40,12 +36,12 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
         // Dispose of any resources that can be recreated.
     }
     
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("Inside numberofrows \(transaction!.isExpense)")
         if (transaction!.isExpense) {
             return expence.count
         }
@@ -61,30 +57,34 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
         
         if (transaction!.isExpense) {
             category = Resource.sharedInstance().categories[expence[indexPath.row]]
-            if transaction!.categoryId == expence[indexPath.row] {
-                cell.accessoryType = .checkmark
-            }
-            else {
-                cell.accessoryType = .none
-            }
+//            if transaction!.categoryId == expence[indexPath.row] {
+//                cell.accessoryType = .checkmark
+//            }
+//            else {
+//                cell.accessoryType = .none
+//            }
         }
         else {
             category = Resource.sharedInstance().categories[income[indexPath.row]]
-            if transaction!.categoryId == income[indexPath.row] {
-                cell.accessoryType = .checkmark
-            }
-            else {
-                cell.accessoryType = .none
-            }
+//            if transaction!.categoryId == income[indexPath.row] {
+//                cell.accessoryType = .checkmark
+//            }
+//            else {
+//                cell.accessoryType = .none
+//            }
+        }
+        
+        if category!.id == transaction!.categoryId {
+            cell.accessoryType = .checkmark
         }
         
         cell.CategoryIcon.text = category!.icon
         cell.CategoryName.text = category!.name
-        cell.CategoryIcon.layer.borderWidth = 2
+        cell.CategoryIcon.layer.borderWidth = 1
         cell.CategoryIcon.backgroundColor = .white
-        cell.CategoryIcon.layer.borderColor = category?.color.cgColor
-        cell.CategoryIcon.layer.cornerRadius = 22
-        
+        cell.CategoryIcon.layer.borderColor = category!.color.cgColor
+        cell.CategoryIcon.textColor = category!.color
+        cell.CategoryIcon.layer.cornerRadius = cell.CategoryIcon.frame.width/2
         
         return cell
     }

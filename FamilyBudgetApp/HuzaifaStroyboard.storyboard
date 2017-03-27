@@ -1246,6 +1246,9 @@
                                             <segment title="Income"/>
                                         </segments>
                                         <color key="tintColor" red="0.1688722372" green="0.74465757610000005" blue="0.90145617720000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <connections>
+                                            <action selector="SegmentbtnAction:" destination="Gt0-22-MM7" eventType="valueChanged" id="ig7-xc-XyB"/>
+                                        </connections>
                                     </segmentedControl>
                                 </subviews>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -1346,9 +1349,11 @@
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
+                        <outlet property="AddBtn" destination="gqn-Bn-ycG" id="ByB-Dg-Cin"/>
                         <outlet property="BalanceAmount" destination="0fD-UI-Rh1" id="IY6-f3-4rJ"/>
                         <outlet property="ExpenseAmount" destination="rq4-gc-ryZ" id="0GY-B4-hWf"/>
                         <outlet property="IncomeAmount" destination="iLM-Cu-ULj" id="fks-qL-cL4"/>
+                        <outlet property="Segmentbtn" destination="BiP-Qf-zn5" id="MkA-H4-zeJ"/>
                         <outlet property="tableview" destination="OVM-E0-qJy" id="25r-Jk-dY8"/>
                         <segue destination="HCr-hY-9uc" kind="show" identifier="transDesc" id="xBS-E3-VNY"/>
                         <segue destination="vCD-NH-FiW" kind="show" identifier="addTrans" id="EC6-mq-V6g"/>
@@ -1615,11 +1620,11 @@
                                 <rect key="frame" x="0.0" y="118" width="414" height="618"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="CategoryCell" rowHeight="60" id="TqS-lz-opb" customClass="SelectCategoryTableViewCell" customModule="FamilyBudgetApp" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" rowHeight="60" id="TqS-lz-opb" customClass="SelectCategoryTableViewCell" customModule="FamilyBudgetApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TqS-lz-opb" id="ZLA-U9-8ea">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="59"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="59"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="L" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hCM-XQ-DmT">

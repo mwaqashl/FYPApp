@@ -15,15 +15,17 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var IncomeAmount: UILabel!
     @IBOutlet weak var BalanceAmount: UILabel!
     @IBOutlet weak var ExpenseAmount: UILabel!
+    @IBOutlet weak var Segmentbtn: UISegmentedControl!
+    @IBOutlet weak var AddBtn: UIBarButtonItem!
     
-    var transactions = [Transaction]()
+    var incometransactions = [Transaction]()
+    var expensetransactions = [Transaction]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        transactions = (Resource.sharedInstance().currentWallet?.transactions.filter({ (tran) -> Bool in
-            return tran.isExpense
-        }))!
+        Segmentbtn.selectedSegmentIndex = 0
+        
         Delegate.sharedInstance().addTransactionDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)
         TransactionObserver.sharedInstance().startObservingTransaction(ofWallet: (Resource.sharedInstance().currentWallet?.id)!)
@@ -32,15 +34,17 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         ExpenseAmount.text = "\(Resource.sharedInstance().currentWallet!.totalExpense)"
         BalanceAmount.text = "\(Resource.sharedInstance().currentWallet!.balance)"
         
+        if !(Resource.sharedInstance().currentWallet?.isOpen)! {
+            AddBtn.isEnabled = false
+            AddBtn.tintColor = .clear
+        }
+
+        TransactionFiltering()
+        
         // Do any additional setup after loading the view.
     }
-    
-//    override func viewWillAppear(_ animated: Bool) {
-//        IncomeAmount.text = "\(Resource.sharedInstance().currentWallet!.totalIncome)"
-//        ExpenseAmount.text = "\(Resource.sharedInstance().currentWallet!.totalExpense)"
-//        BalanceAmount.text = "\(Resource.sharedInstance().currentWallet!.balance)"
-//    }
 
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -51,7 +55,12 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return transactions.count
+        if Segmentbtn.selectedSegmentIndex == 0 {
+            return expensetransactions.count
+        }
+        else {
+            return incometransactions.count
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -60,33 +69,30 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! TimelineTableViewCell
-        let category = transactions[indexPath.row].category
-        cell.category.text = category.name
-        cell.amount.text = "\(transactions[indexPath.row].amount)"
-        cell.categoryIcon.text = category.icon
+        var category : Category?
+        if Segmentbtn.selectedSegmentIndex == 1 {
+            category = incometransactions[indexPath.row].category
+            cell.amount.text = "\(incometransactions[indexPath.row].amount)"
+        }
+        else {
+            category = expensetransactions[indexPath.row].category
+            cell.amount.text = "\(expensetransactions[indexPath.row].amount)"
+        }
+        cell.category.text = category!.name
+        cell.categoryIcon.text = category!.icon
     
-        cell.categoryIcon.backgroundColor = category.color
-        cell.categoryIcon.textColor = category.color
+        cell.categoryIcon.textColor = category!.color
         cell.categoryIcon.backgroundColor = .white
-        cell.categoryIcon.layer.borderColor = category.color.cgColor
+        cell.categoryIcon.layer.borderColor = category!.color.cgColor
         cell.categoryIcon.layer.borderWidth = 1
         cell.categoryIcon.layer.cornerRadius = cell.categoryIcon.frame.width/2
-        
         
         return cell
     }
     
     @IBAction func addTransaction(_ sender: Any) {
-        
         if (Resource.sharedInstance().currentWallet!.isOpen) {
             self.performSegue(withIdentifier: "addTrans", sender: nil)
-        }
-        else if !(Resource.sharedInstance().currentWallet!.isOpen) { // Ya button hide karun
-            let alert = UIAlertController(title: "Error", message: "This Wallet is close no transaction can be performed", preferredStyle: .alert)
-            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
-            
-            alert.addAction(action)
-            present(alert, animated: true, completion: nil)
         }
     }
     
@@ -101,31 +107,37 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
         if segue.identifier == "TransactionDetail" {
             destination.isNew = false
-            destination.transaction = transactions[selectedrow!]
-            print(destination.transaction!.id)
+            if Segmentbtn.selectedSegmentIndex == 0 {
+                destination.transaction = expensetransactions[selectedrow!]
+            }
+            else {
+                destination.transaction = incometransactions[selectedrow!]
+            }
         }
         else if segue.identifier == "addTrans" {
             destination.isNew = true
-//            print(destination.isNew)
         }
     }
     
-    //Transaction Delegates
+//    Segment btn
+    @IBAction func SegmentbtnAction(_ sender: Any) {
+        tableview.reloadData()
+    }
     
+    
+//    Transaction Delegates
     func transactionAdded(_ transaction: Transaction) {
-        transactions.append(transaction)
-        print("Added Chal gaya")
-        transactions = (Resource.sharedInstance().currentWallet?.transactions)!
+        TransactionFiltering()
         tableview.reloadData()
     }
     
     func transactionDeleted(_ transaction: Transaction) {
-        transactions = (Resource.sharedInstance().currentWallet?.transactions)!
+        TransactionFiltering()
         tableview.reloadData()
     }
     
     func transactionUpdated(_ transaction: Transaction) {
-        transactions = (Resource.sharedInstance().currentWallet?.transactions)!
+        TransactionFiltering()
         tableview.reloadData()
     }
     
@@ -140,6 +152,17 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         IncomeAmount.text = "\(Resource.sharedInstance().currentWallet!.totalIncome)"
         ExpenseAmount.text = "\(Resource.sharedInstance().currentWallet!.totalExpense)"
         BalanceAmount.text = "\(Resource.sharedInstance().currentWallet!.balance)"
+        
+        if Resource.sharedInstance().currentWalletID == wallet.id { //hide add transaction btn if wallet is closed
+            if !wallet.isOpen {
+                AddBtn.isEnabled = false
+                AddBtn.tintColor = .clear
+            }
+            else if wallet.isOpen {
+                AddBtn.isEnabled = true
+                AddBtn.tintColor = .blue
+            }
+        }
     }
     
     func WalletDeleted(_ wallet: UserWallet) {
@@ -152,14 +175,16 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    //breaking transaction in expense and income
+    func TransactionFiltering() {
+        incometransactions = (Resource.sharedInstance().currentWallet?.transactions.filter({ (trans) -> Bool in
+            return !trans.isExpense
+        }))!
+        
+        expensetransactions = (Resource.sharedInstance().currentWallet?.transactions.filter({ (trans) -> Bool in
+            return trans.isExpense
+        }))!
     }
-    */
-
+    
 }
