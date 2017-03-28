@@ -46,13 +46,9 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         addBtn.layer.borderWidth = 1
         addBtn.layer.borderColor = UIColor(red: 43/255, green: 190/255, blue: 230/255, alpha: 1.0).cgColor
         
-        detailsTableView.delegate = self
-        detailsTableView.dataSource = self
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableViewAutomaticDimension
         
-        addBtn.layer.borderWidth = 1
-        addBtn.layer.borderColor = UIColor(red: 43/255, green: 190/255, blue: 230/255, alpha: 1.0).cgColor
         
         //        detailsTableView.delegate = self
         //        detailsTableView.dataSource = self

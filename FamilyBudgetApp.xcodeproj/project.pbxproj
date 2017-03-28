@@ -30,6 +30,10 @@
 		7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7B91E57231C006A25AF /* Main.storyboard */; };
 		7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BC1E57231C006A25AF /* Assets.xcassets */; };
 		7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */; };
+		774F71621E8A225500E1BCDC /* AddwalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */; };
+		774F71631E8A225500E1BCDC /* CategoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */; };
+		774F71641E8A225500E1BCDC /* DeleteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */; };
+		774F71651E8A225500E1BCDC /* SelectCategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F71611E8A225500E1BCDC /* SelectCategoryTableViewCell.swift */; };
 		775C2A101E5B11AD00E409B6 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FB1E5B11AD00E409B6 /* Auth.swift */; };
 		775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FC1E5B11AD00E409B6 /* Budget.swift */; };
 		775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */; };
@@ -81,6 +85,10 @@
 		7742C7BC1E57231C006A25AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7742C7BF1E57231C006A25AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7742C7C11E57231C006A25AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddwalletViewController.swift; sourceTree = "<group>"; };
+		774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoriesViewController.swift; sourceTree = "<group>"; };
+		774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteTableViewCell.swift; sourceTree = "<group>"; };
+		774F71611E8A225500E1BCDC /* SelectCategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectCategoryTableViewCell.swift; sourceTree = "<group>"; };
 		775C29FB1E5B11AD00E409B6 /* Auth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Auth.swift; path = FamilyBudgetApp/Auth.swift; sourceTree = SOURCE_ROOT; };
 		775C29FC1E5B11AD00E409B6 /* Budget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Budget.swift; path = FamilyBudgetApp/Budget.swift; sourceTree = SOURCE_ROOT; };
 		775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BudgetManager.swift; path = FamilyBudgetApp/BudgetManager.swift; sourceTree = SOURCE_ROOT; };
@@ -163,6 +171,10 @@
 				044B71401E81889A00613ECA /* TimelineViewController.swift */,
 				044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */,
 				7742C7B91E57231C006A25AF /* Main.storyboard */,
+				774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */,
+				774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */,
+				774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */,
+				774F71611E8A225500E1BCDC /* SelectCategoryTableViewCell.swift */,
 				7706A6C51E8717D80074CD60 /* iconFont.ttf */,
 				7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */,
 				7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */,
@@ -373,6 +385,7 @@
 			files = (
 				775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */,
 				04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */,
+				774F71641E8A225500E1BCDC /* DeleteTableViewCell.swift in Sources */,
 				775C2A181E5B11AD00E409B6 /* Resource.swift in Sources */,
 				775C2A261E5B173300E409B6 /* Assets.swift in Sources */,
 				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
@@ -386,6 +399,7 @@
 				775C2A1D1E5B11AD00E409B6 /* TransactionManager.swift in Sources */,
 				775C2A1A1E5B11AD00E409B6 /* TaskManager.swift in Sources */,
 				775C2A201E5B11AD00E409B6 /* UserManager.swift in Sources */,
+				774F71651E8A225500E1BCDC /* SelectCategoryTableViewCell.swift in Sources */,
 				775C2A131E5B11AD00E409B6 /* BudgetObserver.swift in Sources */,
 				775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */,
 				775C2A1E1E5B11AD00E409B6 /* TransactionObserver.swift in Sources */,
@@ -394,6 +408,7 @@
 				775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */,
 				044B71451E818EE100613ECA /* TransactionDescriptionViewController.swift in Sources */,
 				775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */,
+				774F71621E8A225500E1BCDC /* AddwalletViewController.swift in Sources */,
 				7742C7B81E57231C006A25AF /* ViewController.swift in Sources */,
 				044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */,
 				044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */,
@@ -408,6 +423,7 @@
 				775C2A1B1E5B11AD00E409B6 /* TaskObserver.swift in Sources */,
 				775C2A191E5B11AD00E409B6 /* Task.swift in Sources */,
 				044B713B1E81618200613ECA /* WalletSetupViewController.swift in Sources */,
+				774F71631E8A225500E1BCDC /* CategoriesViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
