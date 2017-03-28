@@ -43,6 +43,8 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
+        print("Inside numberofrows \(transaction!.isExpense)")
         if (transaction!.isExpense) {
             return expence.count
         }
@@ -54,7 +56,7 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var category : Category?
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell") as? SelectCategoryTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell") as! SelectCategoryTableViewCell
         
         if (transaction?.isExpense)! {
             category = Resource.sharedInstance().categories[expence[indexPath.row]]
@@ -87,7 +89,7 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
         cell.CategoryIcon.textColor = category!.color
         cell.CategoryIcon.layer.cornerRadius = cell.CategoryIcon.frame.width/2
         
-        return cell!
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

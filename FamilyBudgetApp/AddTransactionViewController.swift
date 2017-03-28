@@ -19,6 +19,8 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     @IBOutlet weak var segmentbtn: UISegmentedControl!
     
     
+    var date : Double?
+    
     var cells = ["Amount","Category","Date"]
     var transaction : Transaction?
     
@@ -30,6 +32,8 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // print(addBtn.currentTitle)
         
         if !(isNew!) {
             headertitle.text = "TRANSACTION DETAIL"
@@ -61,6 +65,14 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         addBtn.layer.borderWidth = 1
         addBtn.layer.borderColor = UIColor(red: 43/255, green: 190/255, blue: 230/255, alpha: 1.0).cgColor
         
+        tableView.estimatedRowHeight = 80
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
+        
+        //        detailsTableView.delegate = self
+        //        detailsTableView.dataSource = self
+        
+        segmentbtn.selectedSegmentIndex = 0
         datepicker.maximumDate = Date()
         datepicker.datePickerMode = .date
         datepicker.backgroundColor = .white
@@ -125,6 +137,11 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
                 error = "Error"
                 errorDis = "Category cannot be empty"
             }
+            else if transaction?.date == nil {
+                error = "Error"
+                errorDis = "Date cannot be empty"
+            }
+            
             if error == "" {
                 TransactionManager.sharedInstance().AddTransactionInWallet(transaction!)
                 self.navigationController!.popViewController(animated: true)
@@ -204,6 +221,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             alert.addAction(action)
             present(alert, animated: true, completion: nil)
         }
+        
     }
     
     //    prepareing for segue
@@ -278,6 +296,16 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             
         case "Delete":
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeleteCell") as! DeleteTableViewCell
+            if isNew! {
+                cell.isHidden = true
+            }
+                
+            else if !(Resource.sharedInstance().currentWallet!.isOpen) {
+                cell.isHidden = true
+            }
+            else {
+                cell.isHidden = false
+            }
             return cell
             
         default:
@@ -287,6 +315,8 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             cell.title.text = cells[indexPath.row]
             
             if cell.title.text == "Amount" {
+                cell.textView.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : "0"
+                cell.textView.isUserInteractionEnabled = true
                 
                 cell.textView.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : ""
                 if isNew! {
@@ -336,11 +366,13 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         let fixedWidth = newTextView.frame.size.width;
         let newSize = newTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         if newSize.height > textView.frame.height + 16 {
+            
             cell.frame.size.height = newSize.height+18
             textView.frame.size.height = newSize.height
             tableView.contentSize.height += 20
         }
     }
+    
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == "Write here" {
@@ -441,7 +473,9 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             present(alert, animated: true, completion: nil)
         }
     }
-    
+
+
+
     /*
      // MARK: - Navigation
      
