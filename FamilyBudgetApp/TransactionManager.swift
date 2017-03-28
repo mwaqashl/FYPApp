@@ -37,6 +37,7 @@ class TransactionManager {
         }
         
         transRef.setValue(data)
+        transaction.id = transRef.key
         updateWalletFromTransaction(transaction)
         
     }
@@ -50,11 +51,11 @@ class TransactionManager {
      */
     fileprivate func updateWalletFromTransaction(_ transaction: Transaction) {
         
-        let walletRef = ref.child("Transaction/\(transaction.walletID)/\(transaction.id)")
+        let walletRef = ref.child("Wallets/\(transaction.walletID)")
         
         walletRef.runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
-            if var walletData = currentData.value as? [String : AnyObject] {
-                
+            if var walletData = currentData.value as? [String : Any] {
+                print(walletData["balance"])
                 var balance = walletData["balance"] as! Double
                 var totExp = walletData["totExpense"] as! Double
                 var totInc = walletData["totIncome"] as! Double
@@ -68,9 +69,9 @@ class TransactionManager {
                     totInc += transaction.amount
                 }
                 
-                walletData["balance"] = balance as AnyObject?
-                walletData["totIncome"] = totInc as AnyObject?
-                walletData["totExpense"] = totExp as AnyObject?
+                walletData["balance"] = balance
+                walletData["totIncome"] = totInc
+                walletData["totExpense"] = totExp
                 
                 currentData.value = walletData
                 
