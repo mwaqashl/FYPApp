@@ -11,14 +11,13 @@ import UIKit
 class AddTransactionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate {
     
     
-
+    
     @IBOutlet weak var addBtn: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var headertitle: UILabel!
     @IBOutlet weak var segmentbtn: UISegmentedControl!
     
-    var date : Double?
     
     var cells = ["Amount","Category","Date"]
     var transaction : Transaction?
@@ -27,7 +26,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     let toolbar = UIToolbar()
     var isNew : Bool?
     let dateformatter = DateFormatter()
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,8 +85,8 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
     }
-        
-        // Do any additional setup after loading the view.
+    
+    // Do any additional setup after loading the view.
     
     
     func donepressed(){
@@ -97,7 +96,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         transaction!.date = datepicker.date
         self.view.endEditing(true)
     }
-
+    
     func cancelpressed(){
         self.view.endEditing(true)
     }
@@ -138,7 +137,6 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
                 present(alert, animated: true, completion: nil)
             }
         }
-            
         else if addBtn.currentTitle == "SAVE" {
             
             transaction?.amount = Double(cell.textView.text!) ?? 0
@@ -208,7 +206,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         }
     }
     
-//    prepareing for segue
+    //    prepareing for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Category" {
             let destination = segue.destination as! CategoriesViewController
@@ -354,7 +352,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         textView.text = textView.text == "" ? "Write here" : textView.text
         transaction?.comments = textView.text
     }
-
+    
     @IBAction func segmentbtnAction(_ sender: Any) {
         if segmentbtn.selectedSegmentIndex == 0 {
             transaction!.isExpense = true
@@ -365,9 +363,10 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         tableView.reloadData()
     }
     
+    
     @IBAction func DeleteTransactionBtn(_ sender: Any) {
-            TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
-            self.navigationController?.popViewController(animated: true)
+        TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
+        self.navigationController?.popViewController(animated: true)
     }
     
     
@@ -442,17 +441,15 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             present(alert, animated: true, completion: nil)
         }
     }
-
-
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }

@@ -3,22 +3,21 @@ import Foundation
 import Firebase
 
  class Auth {
-
     
     var authUser : CurrentUser?
     var isAuthenticated = false
     fileprivate static var singleTonInstance : Auth?
     
-    func logOutUser() -> NSError? {
+    func logOutUser(callback: (Error?) -> Void) {
         do{
             try FIRAuth.auth()?.signOut()
             isAuthenticated = false
             Resource.sharedInstance().reset()
             FIRDatabase.database().reference().removeAllObservers()
-            return nil
+            return callback(nil)
         }catch let error as NSError{
             print(error.localizedDescription)
-            return error
+            return callback(error)
         }
     }
     
@@ -53,7 +52,7 @@ import Firebase
         
     }
     
-    func signIn(email: String, password: String, callback: @escaping (Error?)->Void) {
+    func signIn(email: String, password: String, callback: @escaping (Bool, Error?)->Void) {
         
         FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
             
@@ -62,7 +61,7 @@ import Firebase
                 print(error?.localizedDescription ?? "Some Garbar ")
                 self.isAuthenticated = false
                 self.authUser = nil
-                callback(error)
+                callback(false,error)
                 return
                 
             }
@@ -93,35 +92,37 @@ import Firebase
                         Resource.sharedInstance().currentWalletID = thisUser.getUserID()
                     }
                     
-                    callback(nil)
+                    if defaultSettings.value(forKey: "lastUserIDs") == nil {
+                        let strarr : [String] = []
+                        defaultSettings.set(strarr, forKey: "lastUserIDs")
+                    }
+                    
+                    if (defaultSettings.value(forKey: "lastUserIDs") as! [String]).contains(thisUser.getUserID()){
+                        
+                        Resource.sharedInstance().currentUserId = user!.uid
+                        UserManager.sharedInstance().userLoggedIn(thisUser.getUserID())
+                        callback(false, nil)
+                        
+                    }else{
+                        
+                        Resource.sharedInstance().currentUserId = user!.uid
+                        HelperObservers.sharedInstance().getUserAndWallet({ (success) in
+                            if success {
+                                
+                                //did for quick logging in; refer to DefaultKeys for detail;
+                                var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String])
+                                users.append(thisUser.getUserID())
+                                defaultSettings.setValue(users, forKey: "lastUserIDs")
+                                callback(false, nil)
+                                
+                            }else{
+                                self.authUser = thisUser
+                                callback(true, nil)
+                                
+                            }
+                        })
+                    }
 //
-//                    if (defaultSettings.value(forKey: "lastUserIDs") as! [String]).contains(thisUser.getUserID()){
-//                        
-//                        Resource.sharedInstance().currentUserId = user!.uid
-//                        UserManager.sharedInstance().userLoggedIn(thisUser.getUserID())
-//                        callback(nil)
-//                        
-//                    }else{
-//                        
-//                        Resource.sharedInstance().currentUserId = user!.uid
-//                        HelperObservers.sharedInstance().getUserAndWallet({ (success) in
-//                            if success {
-//                                
-//                                //did for quick logging in; refer to DefaultKeys for detail;
-//                                var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String])
-//                                users.append(thisUser.getUserID())
-//                                defaultSettings.setValue(users, forKey: "lastUserIDs")
-//                                callback(nil)
-//                                
-//                            }else{
-//                                
-//                                self.authUser = thisUser
-//                                callback(nil)
-//                                
-//                            }
-//                        })
-//                    }
-//                    
                 })
 
             }
@@ -130,3 +131,4 @@ import Firebase
     }
     
 }
+

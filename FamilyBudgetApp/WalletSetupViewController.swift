@@ -13,26 +13,32 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     //Currency
     var cname = ["United State Dollar","Saudi Riyal","Euro","Pakistani Rupees","Pound"]
     var ccode = ["USD","SAR","EUR","Rs","PD"]
-    var selectedindex = 0, previousindex = 0
+    var selectedindex = 0
+    
     
     //For Wallet Setup
     @IBOutlet weak var walletname: UITextField!
     @IBOutlet weak var initialamount: UITextField!
     @IBOutlet weak var currencyName: UITextField!
-    @IBOutlet weak var currencyIcon: UITextField!
+    @IBOutlet weak var currencyCode: UITextField!
+    @IBOutlet weak var currencyIcon: UILabel!
+    
     
     var currencypicker = UIPickerView()
+    var wallet : UserWallet?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         //Currency picker
         currencypicker.dataSource = self
         currencypicker.delegate = self
         currencyName.inputView = currencypicker
-        currencyIcon.inputView = currencypicker
+        currencyCode.inputView = currencypicker
         
         currencypicker.backgroundColor = .white
+        
+        wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [:], isOpen: true, color: UIColor.blue.stringRepresentation)
         
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
@@ -44,21 +50,27 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         toolbar.setItems([cancel,spaceButton,done], animated: false)
         
         currencyName.inputAccessoryView = toolbar
-        currencyIcon.inputAccessoryView = toolbar
+        currencyCode.inputAccessoryView = toolbar
 
         // Do any additional setup after loading the view.
     }
     
     func donepressed(){
-        currencyName.text = cname[selectedindex]
-        currencyIcon.text = ccode[selectedindex]
-        previousindex = selectedindex
+        
+        let all = Array(Resource.sharedInstance().currencies.keys)
+        let this = all[selectedindex]
+        
+        wallet?.currencyID = this
+        currencyIcon.text = wallet!.currency.icon
+        currencyCode.text = wallet!.currency.code
+        currencyName.text = wallet!.currency.name
         self.view.endEditing(true)
     }
     
     func cancelpressed(){
-        currencyName.text = cname[previousindex]
-        currencyIcon.text = ccode[previousindex]
+        currencyIcon.text = wallet!.currency.icon
+        currencyCode.text = wallet!.currency.code
+        currencyName.text = wallet!.currency.name
         self.view.endEditing(true)
     }
     
@@ -67,13 +79,31 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return cname.count
+        print(Resource.sharedInstance().currencies.count)
+        return Resource.sharedInstance().currencies.count
     }
     
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return "\(cname[row])\t\t\t\(ccode[row])"
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
+    {
+        var pickerLabel = UILabel()
+        pickerLabel.textColor = UIColor.black
+        let all = Array(Resource.sharedInstance().currencies.keys)
+        let this = all[row]
+        
+        let attString = NSAttributedString(string: Resource.sharedInstance().currencies[this]!.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
+        
+        let attString2 = NSAttributedString(string: " - \(Resource.sharedInstance().currencies[this]!.name) - \(Resource.sharedInstance().currencies[this]!.code)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 17)])
+        
+        let str = NSMutableAttributedString()
+        str.append(attString)
+        str.append(attString2)
+        
+        pickerLabel.attributedText = str
+        pickerLabel.textAlignment = NSTextAlignment.center
+        return pickerLabel
     }
     
+        
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedindex = row
     }
@@ -90,7 +120,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         var errorDis = ""
         
         if walletname.text == "" {
-            error = "Wallet Name is Epmty"
+            error = "Wallet Name is Empty"
             errorDis = "Please Enter Wallet Name"
         }
         else if initialamount.text == "" {
@@ -122,9 +152,32 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
     }
     
-    @IBAction func backBtnAction(_ sender: Any) {
+    func findFirstVC(cont: UIViewController) -> UIViewController {
         
-        self.dismiss(animated: true, completion: nil)
+        if cont is ViewController {
+            return cont
+            
+        }else {
+            return findFirstVC(cont: cont.presentingViewController!)
+        }
+        
+        
+        
+    }
+    
+    @IBAction func backBtnAction(_ sender: Any) {
+        Auth.sharedInstance().logOutUser(callback: {
+            (err) in
+            
+            if err == nil {
+                findFirstVC(cont: self).dismiss(animated: true, completion: nil)
+            }
+            else {
+                print(err?.localizedDescription)
+            }
+        })
+        
+        
     }
 
     /*

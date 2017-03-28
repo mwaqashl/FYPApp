@@ -96,6 +96,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedrow = indexPath.row
         performSegue(withIdentifier: "TransactionDetail", sender: nil)

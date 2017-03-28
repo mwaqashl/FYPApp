@@ -20,17 +20,20 @@
 		04B093981E827FFE003E26DE /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B093971E827FFE003E26DE /* CategoryTableViewCell.swift */; };
 		04B0939A1E82801D003E26DE /* CommentsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B093991E82801D003E26DE /* CommentsTableViewCell.swift */; };
 		04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */; };
-		04F7250C1E87C53E00A8AD53 /* DeleteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F725091E87C53E00A8AD53 /* DeleteTableViewCell.swift */; };
-		04F7250E1E87C53E00A8AD53 /* SelectCategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F7250B1E87C53E00A8AD53 /* SelectCategoryTableViewCell.swift */; };
-		04F725101E87C5AF00A8AD53 /* CategoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F7250F1E87C5AF00A8AD53 /* CategoriesViewController.swift */; };
 		543F485DAE600F08C8532E77 /* Pods_FamilyBudgetApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */; };
-		77085EB41E855C20002BDB39 /* iconFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 77085EB31E855C20002BDB39 /* iconFont.ttf */; };
+		7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C51E8717D80074CD60 /* iconFont.ttf */; };
+		7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */; };
+		7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */; };
 		770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */; };
 		7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B51E57231C006A25AF /* AppDelegate.swift */; };
 		7742C7B81E57231C006A25AF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B71E57231C006A25AF /* ViewController.swift */; };
 		7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7B91E57231C006A25AF /* Main.storyboard */; };
 		7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BC1E57231C006A25AF /* Assets.xcassets */; };
 		7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */; };
+		774F71621E8A225500E1BCDC /* AddwalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */; };
+		774F71631E8A225500E1BCDC /* CategoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */; };
+		774F71641E8A225500E1BCDC /* DeleteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */; };
+		774F71651E8A225500E1BCDC /* SelectCategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F71611E8A225500E1BCDC /* SelectCategoryTableViewCell.swift */; };
 		775C2A101E5B11AD00E409B6 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FB1E5B11AD00E409B6 /* Auth.swift */; };
 		775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FC1E5B11AD00E409B6 /* Budget.swift */; };
 		775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */; };
@@ -70,12 +73,10 @@
 		04B093971E827FFE003E26DE /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewCell.swift; sourceTree = "<group>"; };
 		04B093991E82801D003E26DE /* CommentsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentsTableViewCell.swift; sourceTree = "<group>"; };
 		04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTransactionViewController.swift; sourceTree = "<group>"; };
-		04F725091E87C53E00A8AD53 /* DeleteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteTableViewCell.swift; sourceTree = "<group>"; };
-		04F7250B1E87C53E00A8AD53 /* SelectCategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectCategoryTableViewCell.swift; sourceTree = "<group>"; };
-		04F7250F1E87C5AF00A8AD53 /* CategoriesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoriesViewController.swift; sourceTree = "<group>"; };
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
-		77085EB21E855C14002BDB39 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = "<group>"; };
-		77085EB31E855C20002BDB39 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = "<group>"; };
+		7706A6C51E8717D80074CD60 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = SOURCE_ROOT; };
+		7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = SOURCE_ROOT; };
+		7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-25.ttf"; sourceTree = SOURCE_ROOT; };
 		770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7742C7B21E57231C006A25AF /* FamilyBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7742C7B51E57231C006A25AF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -84,6 +85,10 @@
 		7742C7BC1E57231C006A25AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7742C7BF1E57231C006A25AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7742C7C11E57231C006A25AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddwalletViewController.swift; sourceTree = "<group>"; };
+		774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoriesViewController.swift; sourceTree = "<group>"; };
+		774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteTableViewCell.swift; sourceTree = "<group>"; };
+		774F71611E8A225500E1BCDC /* SelectCategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectCategoryTableViewCell.swift; sourceTree = "<group>"; };
 		775C29FB1E5B11AD00E409B6 /* Auth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Auth.swift; path = FamilyBudgetApp/Auth.swift; sourceTree = SOURCE_ROOT; };
 		775C29FC1E5B11AD00E409B6 /* Budget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Budget.swift; path = FamilyBudgetApp/Budget.swift; sourceTree = SOURCE_ROOT; };
 		775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BudgetManager.swift; path = FamilyBudgetApp/BudgetManager.swift; sourceTree = SOURCE_ROOT; };
@@ -159,15 +164,20 @@
 				04343C021E5EBDB500417C91 /* RegisterViewController.swift */,
 				044B713A1E81618200613ECA /* WalletSetupViewController.swift */,
 				04B093951E827F81003E26DE /* DefaultTableViewCell.swift */,
-				04F725091E87C53E00A8AD53 /* DeleteTableViewCell.swift */,
 				04B093971E827FFE003E26DE /* CategoryTableViewCell.swift */,
-				04F7250B1E87C53E00A8AD53 /* SelectCategoryTableViewCell.swift */,
 				04B093991E82801D003E26DE /* CommentsTableViewCell.swift */,
+				04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */,
 				044B713C1E8168AE00613ECA /* AllWalletsViewController.swift */,
 				044B71401E81889A00613ECA /* TimelineViewController.swift */,
-				04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */,
-				04F7250F1E87C5AF00A8AD53 /* CategoriesViewController.swift */,
+				044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */,
 				7742C7B91E57231C006A25AF /* Main.storyboard */,
+				774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */,
+				774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */,
+				774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */,
+				774F71611E8A225500E1BCDC /* SelectCategoryTableViewCell.swift */,
+				7706A6C51E8717D80074CD60 /* iconFont.ttf */,
+				7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */,
+				7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */,
 				7742C7BC1E57231C006A25AF /* Assets.xcassets */,
 				770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */,
 				7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */,
@@ -176,9 +186,6 @@
 				049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */,
 				044B713E1E81764200613ECA /* WalletsCollectionViewCell.swift */,
 				044B71421E8188D600613ECA /* TimelineTableViewCell.swift */,
-				77085EB31E855C20002BDB39 /* iconFont.ttf */,
-				77085EB21E855C14002BDB39 /* untitled-font-18.ttf */,
-				044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */,
 			);
 			path = FamilyBudgetApp;
 			sourceTree = "<group>";
@@ -311,8 +318,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */,
+				7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */,
 				770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */,
-				77085EB41E855C20002BDB39 /* iconFont.ttf in Resources */,
+				7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */,
+				7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */,
 				7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */,
 				049908FC1E7FE610008238F4 /* HuzaifaStroyboard.storyboard in Resources */,
 				7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */,
@@ -376,6 +385,7 @@
 			files = (
 				775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */,
 				04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */,
+				774F71641E8A225500E1BCDC /* DeleteTableViewCell.swift in Sources */,
 				775C2A181E5B11AD00E409B6 /* Resource.swift in Sources */,
 				775C2A261E5B173300E409B6 /* Assets.swift in Sources */,
 				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
@@ -388,8 +398,8 @@
 				775C2A101E5B11AD00E409B6 /* Auth.swift in Sources */,
 				775C2A1D1E5B11AD00E409B6 /* TransactionManager.swift in Sources */,
 				775C2A1A1E5B11AD00E409B6 /* TaskManager.swift in Sources */,
-				04F725101E87C5AF00A8AD53 /* CategoriesViewController.swift in Sources */,
 				775C2A201E5B11AD00E409B6 /* UserManager.swift in Sources */,
+				774F71651E8A225500E1BCDC /* SelectCategoryTableViewCell.swift in Sources */,
 				775C2A131E5B11AD00E409B6 /* BudgetObserver.swift in Sources */,
 				775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */,
 				775C2A1E1E5B11AD00E409B6 /* TransactionObserver.swift in Sources */,
@@ -398,6 +408,7 @@
 				775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */,
 				044B71451E818EE100613ECA /* TransactionDescriptionViewController.swift in Sources */,
 				775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */,
+				774F71621E8A225500E1BCDC /* AddwalletViewController.swift in Sources */,
 				7742C7B81E57231C006A25AF /* ViewController.swift in Sources */,
 				044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */,
 				044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */,
@@ -405,8 +416,6 @@
 				04B093981E827FFE003E26DE /* CategoryTableViewCell.swift in Sources */,
 				775C2A211E5B11AD00E409B6 /* UserObserver.swift in Sources */,
 				775C2A161E5B11AD00E409B6 /* NotificationManager.swift in Sources */,
-				04F7250E1E87C53E00A8AD53 /* SelectCategoryTableViewCell.swift in Sources */,
-				04F7250C1E87C53E00A8AD53 /* DeleteTableViewCell.swift in Sources */,
 				7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */,
 				775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */,
 				775C2A151E5B11AD00E409B6 /* Notification.swift in Sources */,
@@ -414,6 +423,7 @@
 				775C2A1B1E5B11AD00E409B6 /* TaskObserver.swift in Sources */,
 				775C2A191E5B11AD00E409B6 /* Task.swift in Sources */,
 				044B713B1E81618200613ECA /* WalletSetupViewController.swift in Sources */,
+				774F71631E8A225500E1BCDC /* CategoriesViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

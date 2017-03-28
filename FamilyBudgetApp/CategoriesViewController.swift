@@ -11,6 +11,7 @@ import UIKit
 class CategoriesViewController: UIViewController , UITableViewDelegate, UITableViewDataSource , CategoryDelegate{
 
     var transaction : Transaction?
+
     @IBOutlet weak var tableview: UITableView!
     
     var income = [String]()
@@ -53,9 +54,9 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var category : Category?
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell") as! SelectCategoryTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell") as? SelectCategoryTableViewCell
         
-        if (transaction!.isExpense) {
+        if (transaction?.isExpense)! {
             category = Resource.sharedInstance().categories[expence[indexPath.row]]
 //            if transaction!.categoryId == expence[indexPath.row] {
 //                cell.accessoryType = .checkmark
@@ -86,7 +87,7 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
         cell.CategoryIcon.textColor = category!.color
         cell.CategoryIcon.layer.cornerRadius = cell.CategoryIcon.frame.width/2
         
-        return cell
+        return cell!
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -29,6 +29,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(Resource.sharedInstance().currencies.count)
         genderpicker.delegate = self
         genderpicker.dataSource = self
         gender.inputView = genderpicker

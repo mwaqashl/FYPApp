@@ -41,22 +41,26 @@ class HomeViewController: UIViewController {
     @IBAction func signoutAction(_ sender: Any) {
         
         
-        guard let error = Auth.sharedInstance().logOutUser() else {
+        Auth.sharedInstance().logOutUser(callback: {
+            (error) in
             
-            let cont = self.storyboard?.instantiateViewController(withIdentifier: "login") as! ViewController
+            if error == nil {
+                let cont = self.storyboard?.instantiateViewController(withIdentifier: "login") as! ViewController
+                
+                self.present(cont, animated: true, completion: nil)
+                self.navigationController?.viewControllers.removeAll()
+            }
+            else {
+                let alert = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
+                
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
+            }
             
-            self.present(cont, animated: true, completion: nil)
-            self.navigationController?.viewControllers.removeAll()
             
-            return
-        }
-        
-        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
-        
-        alert.addAction(action)
-        self.present(alert, animated: true, completion: nil)
+        })
     }
     
 
