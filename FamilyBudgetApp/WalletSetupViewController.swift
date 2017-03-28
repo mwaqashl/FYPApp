@@ -11,8 +11,6 @@ import UIKit
 class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
 
     //Currency
-    var cname = ["United State Dollar","Saudi Riyal","Euro","Pakistani Rupees","Pound"]
-    var ccode = ["USD","SAR","EUR","Rs","PD"]
     var selectedindex = 0
     
     
@@ -22,7 +20,6 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBOutlet weak var currencyName: UITextField!
     @IBOutlet weak var currencyCode: UITextField!
     @IBOutlet weak var currencyIcon: UILabel!
-    
     
     var currencypicker = UIPickerView()
     var wallet : UserWallet?
@@ -68,9 +65,11 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func cancelpressed(){
-        currencyIcon.text = wallet!.currency.icon
-        currencyCode.text = wallet!.currency.code
-        currencyName.text = wallet!.currency.name
+        if wallet!.currencyID != "" {
+            currencyIcon.text = wallet!.currency.icon
+            currencyCode.text = wallet!.currency.code
+            currencyName.text = wallet!.currency.name
+        }
         self.view.endEditing(true)
     }
     

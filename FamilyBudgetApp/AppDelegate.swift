@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FIRApp.configure()
         HelperObservers.sharedInstance().startObserving()
+        
         return true
     }
 
