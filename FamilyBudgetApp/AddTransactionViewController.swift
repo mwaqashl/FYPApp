@@ -8,19 +8,18 @@
 
 import UIKit
 
-class AddTransactionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate {
+class AddTransactionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate {
     
     
-
+    
     @IBOutlet weak var addBtn: UIButton!
-    @IBOutlet weak var detailsTableView: UITableView!
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var headertitle: UILabel!
     @IBOutlet weak var segmentbtn: UISegmentedControl!
     
-    var date : Double?
     
+    var date : Double?
     var cells = ["Amount","Category","Date","Comments","Delete"]
     var transaction : Transaction?
     
@@ -28,16 +27,16 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     let toolbar = UIToolbar()
     var isNew : Bool?
     let dateformatter = DateFormatter()
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(isNew!)
+        // print(addBtn.currentTitle)
         
         if !(isNew!) {
             headertitle.text = "Transaction Details"
-            addBtn.setTitle("Edit", for: .normal)
+            addBtn.setTitle("EDIT", for: .normal)
             segmentbtn.isHidden = true
         }
         
@@ -49,14 +48,23 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         
         detailsTableView.delegate = self
         detailsTableView.dataSource = self
-        segmentbtn.selectedSegmentIndex = 0
+        tableView.estimatedRowHeight = 80
+        tableView.rowHeight = UITableViewAutomaticDimension
         
+        addBtn.layer.borderWidth = 1
+        addBtn.layer.borderColor = UIColor(red: 43/255, green: 190/255, blue: 230/255, alpha: 1.0).cgColor
+        
+        //        detailsTableView.delegate = self
+        //        detailsTableView.dataSource = self
+        
+        segmentbtn.selectedSegmentIndex = 0
         datepicker.maximumDate = Date()
         datepicker.datePickerMode = .date
         datepicker.backgroundColor = .white
         toolbar.sizeToFit()
         dateformatter.dateFormat = "dd-MMM-yyyy"
-
+        
+        Delegate.sharedInstance().addWalletDelegate(self)
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
                 
@@ -71,11 +79,11 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
         print(transaction!.category.name)
-        print("\n\n")
+        print("\n")
         print(transaction!.categoryId)
     }
-        
-        // Do any additional setup after loading the view.
+    
+    // Do any additional setup after loading the view.
     
     
     func donepressed(){
@@ -85,7 +93,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         transaction!.date = datepicker.date
         self.view.endEditing(true)
     }
-
+    
     func cancelpressed(){
         self.view.endEditing(true)
     }
@@ -100,11 +108,11 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         
         let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! DefaultTableViewCell
         
-        if addBtn.currentTitle == "Done" {
+        if addBtn.currentTitle == "DONE" {
             transaction?.amount = Double(cell.textView.text!) ?? 0.0
             var error = ""
             var errorDis = ""
-        
+            
             if transaction!.amount == 0 {
                 error = "Error"
                 errorDis = "Amount cannot be empty"
@@ -117,7 +125,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
                 error = "Error"
                 errorDis = "Date cannot be empty"
             }
-        
+            
             if error == "" {
                 TransactionManager.sharedInstance().AddTransactionInWallet(transaction!)
                 self.navigationController!.popViewController(animated: true)
@@ -125,13 +133,12 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             else {
                 let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
                 let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
-            
+                
                 alert.addAction(action)
                 present(alert, animated: true, completion: nil)
             }
         }
-            
-        else if addBtn.currentTitle == "Save" {
+        else if addBtn.currentTitle == "SAVE" {
             transaction?.amount = Double(cell.textView.text!) ?? 0.0
             var error = ""
             var errorDis = ""
@@ -153,9 +160,9 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
                 present(alert, animated: true, completion: nil)
             }
         }
-        else {
+        else if addBtn.currentTitle == "EDIT" {
             isNew = true
-            addBtn.setTitle("Save", for: .normal)
+            addBtn.setTitle("SAVE", for: .normal)
             tableView.reloadData()
         }
     }
@@ -163,12 +170,10 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     
     // TableView Functions Delegate and Datasources
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        return indexPath.row == 1 || indexPath.row == 3 ? 70 : 50
-        
-        
-    }
+    //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    //
+    //        return indexPath.row == 1 ? 70 : 50
+    //    }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -181,14 +186,10 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             }
             performSegue(withIdentifier: "Category", sender: nil)
         }
-        if cells[indexPath.row] == "Delete" {
-            TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
-            self.navigationController?.popViewController(animated: true)
-        }
         
     }
     
-    //prepareing for segue
+    //    prepareing for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Category" {
             let destination = segue.destination as! CategoriesViewController
@@ -210,11 +211,13 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             
             cell.textView.text = transaction?.comments != nil ? (transaction?.comments == "" ? "Write here" : transaction!.comments) : "Write here"
             
-            cell.textView.autoresizingMask = UIViewAutoresizing.flexibleHeight
+            //            cell.textView.autoresizingMask = UIViewAutoresizing.flexibleHeight
+            cell.backgroundColor = .cyan
+            //            cell.frame.size.height = 200
             
-            if cell.textView.contentSize.height > cell.frame.height {
-                cell.frame.size.height += (cell.textView.contentSize.height - cell.frame.height) + 8
-            }
+            //            if cell.textView.contentSize.height > cell.frame.height {
+            //                cell.frame.size.height += (cell.textView.contentSize.height - cell.frame.height) + 8
+            //            }
             cell.textView.delegate = self
             if !(isNew!) {
                 if transaction!.comments == nil {
@@ -226,23 +229,27 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         case "Category":
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
-            
-            if transaction?.categoryId == "" {
-                cell.name.text = "None"
-                cell.icon.text = ""
-            }
-            else if (transaction?.category.isExpense)! && segmentbtn.selectedSegmentIndex == 1 {
-                cell.name.text = "None"
-                cell.icon.text = ""
-            }
-            else if !((transaction?.category.isExpense)!) && segmentbtn.selectedSegmentIndex == 0 {
-                cell.name.text = "None"
-                cell.icon.text = ""
+            if isNew! {
+                if transaction?.categoryId == "" {
+                    cell.name.text = "None"
+                    cell.icon.text = ""
+                }
+                else if (transaction?.category.isExpense)! && segmentbtn.selectedSegmentIndex == 1 {
+                    cell.name.text = "None"
+                    cell.icon.text = ""
+                }
+                else if !((transaction?.category.isExpense)!) && segmentbtn.selectedSegmentIndex == 0 {
+                    cell.name.text = "None"
+                    cell.icon.text = ""
+                }
+                else {
+                    cell.name.text = transaction?.category.name
+                    cell.icon.text = transaction?.category.icon
+                }
             }
             else {
-                //let category = Resource.sharedInstance().categories[(transaction?.categoryId)!]
-                cell.name.text = transaction?.category.name
-                cell.icon.text = transaction?.category.icon
+                cell.name.text = transaction!.category.name
+                cell.icon.text = transaction!.category.icon
             }
             cell.icon.backgroundColor = transaction?.category != nil ? transaction!.category.color : UIColor.lightGray
             cell.icon.textColor = transaction?.category.color
@@ -256,6 +263,10 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         case "Delete":
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeleteCell") as! DeleteTableViewCell
             if isNew! {
+                cell.isHidden = true
+            }
+                
+            else if !(Resource.sharedInstance().currentWallet!.isOpen) {
                 cell.isHidden = true
             }
             else {
@@ -273,9 +284,12 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
                 cell.textView.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : "0"
                 cell.textView.isUserInteractionEnabled = true
                 
+                if isNew! {
+                    cell.textView.isUserInteractionEnabled = true
+                }
             }
             else if cell.title.text == "Date" {
-//                cell.textView.text = dateformatter.string(from: datepicker.date)
+                //                cell.textView.text = dateformatter.string(from: datepicker.date)
                 cell.textView.inputView = datepicker
                 cell.textView.text = dateformatter.string(from: transaction!.date)
                 let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
@@ -311,6 +325,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         }
     }
     
+    
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == "Write here" {
             textView.text = ""
@@ -321,23 +336,61 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         textView.text = textView.text == "" ? "Write here" : textView.text
         transaction?.comments = textView.text
     }
-
     
     @IBAction func segmentbtnAction(_ sender: Any) {
         tableView.reloadData()
     }
     
     
+    @IBAction func DeleteTransactionBtn(_ sender: Any) {
+        TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
+        self.navigationController?.popViewController(animated: true)
+    }
     
+    
+    // Wallet Delegates
+    
+    func walletAdded(_ wallet: UserWallet) {
+        
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        if Resource.sharedInstance().currentWalletID == wallet.id {
+            let alert = UIAlertController(title: "Alert", message: "This Wallet Has been Deleted", preferredStyle: .alert)
+            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            alert.addAction(action)
+            present(alert, animated: true, completion: nil)
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if Resource.sharedInstance().currentWalletID == wallet.id {
+            if !(wallet.isOpen) {
+                let alert = UIAlertController(title: "", message: "This Wallet Has been closed", preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: { ac in
+                    if self.isNew! {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                    else {
+                        self.addBtn.isHidden = true
+                    }
+                })
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+            tableView.reloadData()
+        }
+    }
     
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }

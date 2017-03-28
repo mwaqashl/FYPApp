@@ -12,6 +12,8 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
 
     
     var transaction : Transaction?
+
+    @IBOutlet weak var tableview: UITableView!
     
     var income = [String]()
     var expence = [String]()
@@ -44,8 +46,9 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("Inside numberofrows \(transaction?.isExpense)")
-        if (transaction?.isExpense)! {
+
+        print("Inside numberofrows \(transaction!.isExpense)")
+        if (transaction!.isExpense) {
             return expence.count
         }
         else {
@@ -65,6 +68,7 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
             }
             else {
                 cell?.accessoryType = .none
+
             }
         }
         else {
@@ -89,8 +93,8 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (transaction?.isExpense)! {
-            transaction?.categoryId = expence[indexPath.row]
+        if (transaction!.isExpense) {
+            transaction!.categoryId = expence[indexPath.row]
         }
         else {
             transaction!.categoryId = income[indexPath.row]
@@ -103,6 +107,7 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
     //Category Delegates
     func categoryAdded(_ category : Category){
         print(category.name)
+        tableview.reloadData()
     }
     func categoryUpdated(_ category : Category){
         
