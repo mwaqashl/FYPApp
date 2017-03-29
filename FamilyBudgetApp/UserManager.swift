@@ -78,7 +78,7 @@ class UserManager {
     // Add a new Wallet to User in Database ! required argument is a CurrentUser Object.
     func addWalletInUser(_ userID: String, walletID: String, isPersonal: Bool) {
         
-        ref.child("UserWallets/\(userID)").setValue([walletID:isPersonal])
+        ref.child("UserWallets/\(userID)/\(walletID)").setValue(isPersonal)
         
     }
     
