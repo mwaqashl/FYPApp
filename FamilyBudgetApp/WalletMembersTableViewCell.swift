@@ -1,18 +1,18 @@
 //
-//  DefaultTableViewCell.swift
+//  WalletMembersTableViewCell.swift
 //  FamilyBudgetApp
 //
-//  Created by mac on 3/22/17.
+//  Created by mac on 3/28/17.
 //  Copyright © 2017 Technollage. All rights reserved.
 //
 
 import UIKit
 
-class DefaultTableViewCell: UITableViewCell {
+class WalletMembersTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var title: UILabel!
-    @IBOutlet weak var textview: UITextView!
     
+    @IBOutlet weak var memberName: UILabel!
+    @IBOutlet weak var memberImage: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

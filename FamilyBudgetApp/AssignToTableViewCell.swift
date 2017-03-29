@@ -1,18 +1,19 @@
 //
-//  DefaultTableViewCell.swift
-//  FamilyBudgetApp
+//  AssignToTableViewCell.swift
+//  test
 //
-//  Created by mac on 3/22/17.
-//  Copyright © 2017 Technollage. All rights reserved.
+//  Created by mac on 3/27/17.
+//  Copyright © 2017 UIT. All rights reserved.
 //
 
 import UIKit
 
-class DefaultTableViewCell: UITableViewCell {
+class AssignToTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var title: UILabel!
-    @IBOutlet weak var textview: UITextView!
     
+    @IBOutlet weak var Title: UILabel!
+    @IBOutlet weak var membersCollection: UICollectionView!
+    @IBOutlet weak var addmemberBtn: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()

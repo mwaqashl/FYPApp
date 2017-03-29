@@ -103,7 +103,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
     
     func donepressed(){
         let cell = tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as! DefaultTableViewCell
-        cell.textView.text = dateformatter.string(from: datepicker.date)
+        cell.textview.text = dateformatter.string(from: datepicker.date)
         date = datepicker.date.timeIntervalSince1970
         transaction!.date = datepicker.date
         self.view.endEditing(true)
@@ -125,7 +125,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         
         if addBtn.currentTitle == "DONE" {
             
-            transaction?.amount = Double(cell.textView.text!) ?? 0
+            transaction?.amount = Double(cell.textview.text!) ?? 0
             var error = ""
             var errorDis = ""
             
@@ -156,7 +156,7 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
         }
         else if addBtn.currentTitle == "SAVE" {
             
-            transaction?.amount = Double(cell.textView.text!) ?? 0
+            transaction?.amount = Double(cell.textview.text!) ?? 0
             var error = ""
             var errorDis = ""
             
@@ -315,42 +315,42 @@ class AddTransactionViewController: UIViewController, UITableViewDelegate, UITab
             cell.title.text = cells[indexPath.row]
             
             if cell.title.text == "Amount" {
-                cell.textView.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : "0"
-                cell.textView.isUserInteractionEnabled = true
+                cell.textview.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : "0"
+                cell.textview.isUserInteractionEnabled = true
                 
-                cell.textView.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : ""
+                cell.textview.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : ""
                 if isNew! {
-                    cell.textView.isUserInteractionEnabled = true
+                    cell.textview.isUserInteractionEnabled = true
                 }
                 if !(isNew!) {
-                    cell.textView.isUserInteractionEnabled = false
+                    cell.textview.isUserInteractionEnabled = false
                 }
             }
                 
             else if cell.title.text == "Date" {
                 
-                cell.textView.inputView = datepicker
-                cell.textView.text = dateformatter.string(from: transaction!.date)
+                cell.textview.inputView = datepicker
+                cell.textview.text = dateformatter.string(from: transaction!.date)
                 let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
                 let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
                 let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
                 self.toolbar.setItems([cancel,spaceButton,done], animated: false)
-                cell.textView.inputAccessoryView = self.toolbar
+                cell.textview.inputAccessoryView = self.toolbar
                 if !(isNew!) {
-                    cell.textView.isUserInteractionEnabled = false
+                    cell.textview.isUserInteractionEnabled = false
                 }
                 if (isNew!) {
-                    cell.textView.isUserInteractionEnabled = true
+                    cell.textview.isUserInteractionEnabled = true
                 }
             }
             
             else if cell.title.text == "Transaction By" {
-                cell.textView.text = transaction!.transactionBy.userName
-                cell.textView.isUserInteractionEnabled = false
+                cell.textview.text = transaction!.transactionBy.userName
+                cell.textview.isUserInteractionEnabled = false
             }
             else {
                 
-                cell.textView.isUserInteractionEnabled = false
+                cell.textview.isUserInteractionEnabled = false
             }
             
             return cell

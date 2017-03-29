@@ -15,6 +15,15 @@
 		044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71401E81889A00613ECA /* TimelineViewController.swift */; };
 		044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71421E8188D600613ECA /* TimelineTableViewCell.swift */; };
 		044B71451E818EE100613ECA /* TransactionDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */; };
+		046DCDA01E8A920400A3BC15 /* AddTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCD9B1E8A920400A3BC15 /* AddTaskViewController.swift */; };
+		046DCDA11E8A920400A3BC15 /* AssignToTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCD9C1E8A920400A3BC15 /* AssignToTableViewCell.swift */; };
+		046DCDA21E8A920400A3BC15 /* TaskMembersCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCD9D1E8A920400A3BC15 /* TaskMembersCollectionViewCell.swift */; };
+		046DCDA31E8A920400A3BC15 /* TasksListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCD9E1E8A920400A3BC15 /* TasksListViewController.swift */; };
+		046DCDA41E8A920400A3BC15 /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCD9F1E8A920400A3BC15 /* TaskTableViewCell.swift */; };
+		046DCDA61E8A938D00A3BC15 /* TaskTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCDA51E8A938D00A3BC15 /* TaskTitleTableViewCell.swift */; };
+		046DCDAA1E8A9F8B00A3BC15 /* TaskCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCDA91E8A9F8B00A3BC15 /* TaskCategoryViewController.swift */; };
+		046DCDAC1E8AA1DF00A3BC15 /* AddMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCDAB1E8AA1DF00A3BC15 /* AddMembersViewController.swift */; };
+		046DCDAE1E8AA22600A3BC15 /* WalletMembersTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046DCDAD1E8AA22600A3BC15 /* WalletMembersTableViewCell.swift */; };
 		049908FC1E7FE610008238F4 /* HuzaifaStroyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */; };
 		04B093961E827F81003E26DE /* DefaultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B093951E827F81003E26DE /* DefaultTableViewCell.swift */; };
 		04B093981E827FFE003E26DE /* CategoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B093971E827FFE003E26DE /* CategoryTableViewCell.swift */; };
@@ -68,6 +77,15 @@
 		044B71401E81889A00613ECA /* TimelineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
 		044B71421E8188D600613ECA /* TimelineTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineTableViewCell.swift; sourceTree = "<group>"; };
 		044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDescriptionViewController.swift; sourceTree = "<group>"; };
+		046DCD9B1E8A920400A3BC15 /* AddTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTaskViewController.swift; sourceTree = "<group>"; };
+		046DCD9C1E8A920400A3BC15 /* AssignToTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssignToTableViewCell.swift; sourceTree = "<group>"; };
+		046DCD9D1E8A920400A3BC15 /* TaskMembersCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskMembersCollectionViewCell.swift; sourceTree = "<group>"; };
+		046DCD9E1E8A920400A3BC15 /* TasksListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksListViewController.swift; sourceTree = "<group>"; };
+		046DCD9F1E8A920400A3BC15 /* TaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
+		046DCDA51E8A938D00A3BC15 /* TaskTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTitleTableViewCell.swift; sourceTree = "<group>"; };
+		046DCDA91E8A9F8B00A3BC15 /* TaskCategoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskCategoryViewController.swift; sourceTree = "<group>"; };
+		046DCDAB1E8AA1DF00A3BC15 /* AddMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMembersViewController.swift; sourceTree = "<group>"; };
+		046DCDAD1E8AA22600A3BC15 /* WalletMembersTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletMembersTableViewCell.swift; sourceTree = "<group>"; };
 		049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HuzaifaStroyboard.storyboard; sourceTree = "<group>"; };
 		04B093951E827F81003E26DE /* DefaultTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultTableViewCell.swift; sourceTree = "<group>"; };
 		04B093971E827FFE003E26DE /* CategoryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryTableViewCell.swift; sourceTree = "<group>"; };
@@ -128,6 +146,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		046DCD9A1E8A913400A3BC15 /* Task */ = {
+			isa = PBXGroup;
+			children = (
+				046DCD9E1E8A920400A3BC15 /* TasksListViewController.swift */,
+				046DCD9F1E8A920400A3BC15 /* TaskTableViewCell.swift */,
+				046DCD9D1E8A920400A3BC15 /* TaskMembersCollectionViewCell.swift */,
+				046DCD9B1E8A920400A3BC15 /* AddTaskViewController.swift */,
+				046DCDA51E8A938D00A3BC15 /* TaskTitleTableViewCell.swift */,
+				046DCD9C1E8A920400A3BC15 /* AssignToTableViewCell.swift */,
+				046DCDA91E8A9F8B00A3BC15 /* TaskCategoryViewController.swift */,
+				046DCDAB1E8AA1DF00A3BC15 /* AddMembersViewController.swift */,
+				046DCDAD1E8AA22600A3BC15 /* WalletMembersTableViewCell.swift */,
+			);
+			name = Task;
+			sourceTree = "<group>";
+		};
 		44BB0B31E715C6598EB081CD /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -175,6 +209,7 @@
 				774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */,
 				774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */,
 				774F71611E8A225500E1BCDC /* SelectCategoryTableViewCell.swift */,
+				046DCD9A1E8A913400A3BC15 /* Task */,
 				7706A6C51E8717D80074CD60 /* iconFont.ttf */,
 				7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */,
 				7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */,
@@ -383,6 +418,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				046DCDAC1E8AA1DF00A3BC15 /* AddMembersViewController.swift in Sources */,
 				775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */,
 				04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */,
 				774F71641E8A225500E1BCDC /* DeleteTableViewCell.swift in Sources */,
@@ -390,18 +426,22 @@
 				775C2A261E5B173300E409B6 /* Assets.swift in Sources */,
 				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
 				775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */,
+				046DCDA21E8A920400A3BC15 /* TaskMembersCollectionViewCell.swift in Sources */,
 				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
 				775C2A1C1E5B11AD00E409B6 /* Transaction.swift in Sources */,
+				046DCDA11E8A920400A3BC15 /* AssignToTableViewCell.swift in Sources */,
 				04B0939A1E82801D003E26DE /* CommentsTableViewCell.swift in Sources */,
 				04B093961E827F81003E26DE /* DefaultTableViewCell.swift in Sources */,
 				044B713D1E8168AE00613ECA /* AllWalletsViewController.swift in Sources */,
 				775C2A101E5B11AD00E409B6 /* Auth.swift in Sources */,
+				046DCDA01E8A920400A3BC15 /* AddTaskViewController.swift in Sources */,
 				775C2A1D1E5B11AD00E409B6 /* TransactionManager.swift in Sources */,
 				775C2A1A1E5B11AD00E409B6 /* TaskManager.swift in Sources */,
 				775C2A201E5B11AD00E409B6 /* UserManager.swift in Sources */,
 				774F71651E8A225500E1BCDC /* SelectCategoryTableViewCell.swift in Sources */,
 				775C2A131E5B11AD00E409B6 /* BudgetObserver.swift in Sources */,
 				775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */,
+				046DCDAA1E8A9F8B00A3BC15 /* TaskCategoryViewController.swift in Sources */,
 				775C2A1E1E5B11AD00E409B6 /* TransactionObserver.swift in Sources */,
 				04343C051E5EBDC800417C91 /* HomeViewController.swift in Sources */,
 				044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */,
@@ -410,13 +450,17 @@
 				775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */,
 				774F71621E8A225500E1BCDC /* AddwalletViewController.swift in Sources */,
 				7742C7B81E57231C006A25AF /* ViewController.swift in Sources */,
+				046DCDA61E8A938D00A3BC15 /* TaskTitleTableViewCell.swift in Sources */,
 				044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */,
 				044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */,
 				775C2A1F1E5B11AD00E409B6 /* User.swift in Sources */,
 				04B093981E827FFE003E26DE /* CategoryTableViewCell.swift in Sources */,
 				775C2A211E5B11AD00E409B6 /* UserObserver.swift in Sources */,
+				046DCDAE1E8AA22600A3BC15 /* WalletMembersTableViewCell.swift in Sources */,
 				775C2A161E5B11AD00E409B6 /* NotificationManager.swift in Sources */,
+				046DCDA41E8A920400A3BC15 /* TaskTableViewCell.swift in Sources */,
 				7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */,
+				046DCDA31E8A920400A3BC15 /* TasksListViewController.swift in Sources */,
 				775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */,
 				775C2A151E5B11AD00E409B6 /* Notification.swift in Sources */,
 				04343C031E5EBDB500417C91 /* RegisterViewController.swift in Sources */,

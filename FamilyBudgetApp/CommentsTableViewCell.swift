@@ -9,8 +9,9 @@
 import UIKit
 
 class CommentsTableViewCell: UITableViewCell {
-
+    
     @IBOutlet weak var textView: UITextView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

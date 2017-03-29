@@ -1,17 +1,21 @@
 //
-//  CategoryTableViewCell.swift
-//  FamilyBudgetApp
+//  TaskTableViewCell.swift
+//  test
 //
-//  Created by mac on 3/22/17.
-//  Copyright © 2017 Technollage. All rights reserved.
+//  Created by mac on 3/27/17.
+//  Copyright © 2017 UIT. All rights reserved.
 //
 
 import UIKit
 
-class CategoryTableViewCell: UITableViewCell {
+class TaskTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var name: UILabel!
+    @IBOutlet weak var Title: UILabel!
     @IBOutlet weak var icon: UILabel!
+    @IBOutlet weak var status: UIView!
+    @IBOutlet weak var taskMembers: UICollectionView!
+    @IBOutlet weak var assignTotag: UILabel!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

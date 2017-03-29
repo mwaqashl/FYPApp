@@ -1,17 +1,16 @@
 //
-//  DefaultTableViewCell.swift
+//  TaskTitleTableViewCell.swift
 //  FamilyBudgetApp
 //
-//  Created by mac on 3/22/17.
+//  Created by mac on 3/28/17.
 //  Copyright © 2017 Technollage. All rights reserved.
 //
 
 import UIKit
 
-class DefaultTableViewCell: UITableViewCell {
+class TaskTitleTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var title: UILabel!
-    @IBOutlet weak var textview: UITextView!
+    @IBOutlet weak var taskTitle: UITextView!
     
     
     override func awakeFromNib() {
