@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FamilyBudgetApp/AddTransactionViewController.swift"
-            timestampString = "512169200.578372"
+            timestampString = "512369526.751318"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "122"
-            endingLineNumber = "122"
-            landmarkName = "textViewDidChange(_:)"
+            startingLineNumber = "118"
+            endingLineNumber = "118"
+            landmarkName = "addBtnAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

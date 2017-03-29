@@ -8,26 +8,39 @@
 
 import UIKit
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, WalletDelegate {
 
     @IBOutlet weak var label1: UILabel!
     @IBOutlet weak var label2: UILabel!
     
     
+    var walletIDs : [String] = []
+    
+    @IBOutlet weak var tableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        Delegate.sharedInstance().addWalletDelegate(self)
+        WalletObserver.sharedInstance().autoObserve = true
+        WalletObserver.sharedInstance().startObserving()
         
-        if Auth.sharedInstance().isAuthenticated {
+        HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             
-            let user = Auth.sharedInstance().authUser
-            
-            label1.text = "Login Success"
-            label2.text = "Welcome \(user!.userName)"
+            if flag {
+                
+                self.walletIDs = Array(Resource.sharedInstance().userWallets.keys)
+                print(self.walletIDs)
+                self.tableView.delegate = self
+                self.tableView.dataSource = self
+                
+                
+            }
             
         }
         
-
+        self.navigationItem.title = "All Wallets"
+        
         // Do any additional setup after loading the view.
     }
 
@@ -36,41 +49,64 @@ class HomeViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // TableView Delegate and Datasources
     
     
-    @IBAction func signoutAction(_ sender: Any) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
-        Auth.sharedInstance().logOutUser(callback: {
-            (error) in
-            
-            if error == nil {
-                let cont = self.storyboard?.instantiateViewController(withIdentifier: "login") as! ViewController
-                
-                self.present(cont, animated: true, completion: nil)
-                self.navigationController?.viewControllers.removeAll()
-            }
-            else {
-                let alert = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
-                
-                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
-                
-                alert.addAction(action)
-                self.present(alert, animated: true, completion: nil)
-            }
-            
-            
-        })
     }
     
-
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return walletIDs.count
+    }
     
-    @IBAction func addDataAction(_ sender: Any) {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        let this = Resource.sharedInstance().userWallets[walletIDs[indexPath.row]]
         
-        let wallet = UserWallet(id: "asd", name: "Waqas's Wallet", icon: "a", currencyID: "asd", creatorID: Auth.sharedInstance().authUser!.getUserID(), balance: 10000, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970*1000, isPersonal: true, memberTypes: [Auth.sharedInstance().authUser!.getUserID() : MemberType.owner], isOpen: true, color: "10:188:228:1")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "showWallet") as! WalletTableViewCell
         
-        WalletManager.sharedInstance().addWallet(wallet)
+        cell.icon.layer.borderWidth = 2
+        cell.icon.layer.cornerRadius = cell.icon.frame.width/2
+        cell.icon.layer.borderColor = this!.color.cgColor
+        cell.icon.clipsToBounds = true
+        cell.icon.textColor = this!.color
+        
+        for view in cell.views {
+            view.backgroundColor = this!.color
+        }
+        
+        cell.icon.text = this?.icon
+        cell.name.text = this?.name
+        cell.membersCollectionView.tag = indexPath.row
+//        cell.membersCollectionView.delegate = self
+        //        cell.membersCollectionView.dataSource = self
+        cell.balance.text = "\(this!.balance)"
+        cell.income.text = "\(this!.totalIncome)"
+        cell.expense.text = "\(this!.totalExpense)"
+        
+        return cell
+    }
+    
+    
+    // Wallet Delegate Methods
+    
+    func walletAdded(_ wallet: UserWallet) {
+        
+        if !walletIDs.contains(wallet.id) {
+            self.walletIDs.append(wallet.id)
+            tableView.reloadData()
+        }
+        
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if walletIDs.contains(wallet.id) {
+            tableView.reloadData()
+        }
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
         
     }
     

@@ -83,14 +83,7 @@ import Firebase
                     self.isAuthenticated = true
                     self.authUser = thisUser
                     Resource.sharedInstance().currentUserId = thisUser.getUserID()
-
-                    //for getting currentWalletID
-                    if let walletID = defaultSettings.value(forKey: "walletID") as? String {
-                        Resource.sharedInstance().currentWalletID = walletID
-                    }else{
-                        defaultSettings.setValue(thisUser.getUserID(), forKey: "walletID")
-                        Resource.sharedInstance().currentWalletID = thisUser.getUserID()
-                    }
+                    Resource.sharedInstance().currentWalletID = thisUser.getUserID()
                     
                     if defaultSettings.value(forKey: "lastUserIDs") == nil {
                         let strarr : [String] = []

@@ -66,6 +66,7 @@
 		775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A0F1E5B11AD00E409B6 /* WalletObserver.swift */; };
 		775C2A261E5B173300E409B6 /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A251E5B173300E409B6 /* Assets.swift */; };
 		775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A271E5B37BB00E409B6 /* HelperObserver.swift */; };
+		777D02991E8A860000C682F2 /* WalletTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777D02981E8A860000C682F2 /* WalletTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -130,6 +131,7 @@
 		775C2A0F1E5B11AD00E409B6 /* WalletObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WalletObserver.swift; path = FamilyBudgetApp/WalletObserver.swift; sourceTree = SOURCE_ROOT; };
 		775C2A251E5B173300E409B6 /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Assets.swift; path = FamilyBudgetApp/Assets.swift; sourceTree = SOURCE_ROOT; };
 		775C2A271E5B37BB00E409B6 /* HelperObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperObserver.swift; sourceTree = SOURCE_ROOT; };
+		777D02981E8A860000C682F2 /* WalletTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletTableViewCell.swift; sourceTree = "<group>"; };
 		8A8B1FA4EAEBCFC2910F799F /* Pods-FamilyBudgetApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.release.xcconfig"; sourceTree = "<group>"; };
 		9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FamilyBudgetApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -202,6 +204,7 @@
 				04B093991E82801D003E26DE /* CommentsTableViewCell.swift */,
 				04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */,
 				044B713C1E8168AE00613ECA /* AllWalletsViewController.swift */,
+				777D02981E8A860000C682F2 /* WalletTableViewCell.swift */,
 				044B71401E81889A00613ECA /* TimelineViewController.swift */,
 				044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */,
 				7742C7B91E57231C006A25AF /* Main.storyboard */,
