@@ -10,12 +10,13 @@ import UIKit
 
 class CategoriesViewController: UIViewController , UITableViewDelegate, UITableViewDataSource , CategoryDelegate{
 
-    var transaction : Transaction?
+    var IsExpense = Bool()
 
     @IBOutlet weak var tableview: UITableView!
     
     var income = [String]()
     var expence = [String]()
+    var allcategory = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +29,7 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
             else {
                 income.append(key)
             }
+            allcategory.append(key)
         }
         
     }
@@ -43,13 +45,15 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
-        print("Inside numberofrows \(transaction!.isExpense)")
-        if (transaction!.isExpense) {
+        
+        if (IsExpense) {
             return expence.count
         }
-        else {
+        else if !(IsExpense) {
             return income.count
+        }
+        else {
+            return allcategory.count
         }
     }
     
@@ -58,27 +62,21 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
         var category : Category?
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell") as! SelectCategoryTableViewCell
         
-        if (transaction?.isExpense)! {
+        if (IsExpense) {
             category = Resource.sharedInstance().categories[expence[indexPath.row]]
-//            if transaction!.categoryId == expence[indexPath.row] {
-//                cell.accessoryType = .checkmark
-//            }
-//            else {
-//                cell.accessoryType = .none
-//            }
+        }
+        else if !(IsExpense) {
+            category = Resource.sharedInstance().categories[income[indexPath.row]]
         }
         else {
-            category = Resource.sharedInstance().categories[income[indexPath.row]]
-//            if transaction!.categoryId == income[indexPath.row] {
-//                cell.accessoryType = .checkmark
-//            }
-//            else {
-//                cell.accessoryType = .none
-//            }
+            category = Resource.sharedInstance().categories[allcategory[indexPath.row]]
         }
         
-        if category!.id == transaction!.categoryId {
+        if category!.id == TransactionCategoryID{
             cell.accessoryType = .checkmark
+        }
+        else {
+            cell.accessoryType = .none
         }
         
         cell.CategoryIcon.text = category!.icon
@@ -93,21 +91,18 @@ class CategoriesViewController: UIViewController , UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (transaction!.isExpense) {
-            transaction!.categoryId = expence[indexPath.row]
+        if IsExpense {
+            TransactionCategoryID = expence[indexPath.row]
         }
-        else {
-            transaction!.categoryId = income[indexPath.row]
+        else if !(IsExpense) {
+            TransactionCategoryID = income[indexPath.row]
         }
-        let new = AddTransactionViewController()
-        new.transaction = self.transaction
         self.navigationController!.popViewController(animated: true)
     }
     
     //Category Delegates
     func categoryAdded(_ category : Category){
-        print(category.name)
-        tableview.reloadData()
+
     }
     func categoryUpdated(_ category : Category){
         

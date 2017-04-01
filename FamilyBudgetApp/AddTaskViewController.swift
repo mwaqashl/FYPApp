@@ -8,19 +8,29 @@
 
 import UIKit
 
-class AddTaskViewController: UIViewController, UITableViewDataSource , UITableViewDelegate , UITextViewDelegate{
+class AddTaskViewController: UIViewController, UITableViewDataSource , UITableViewDelegate , UITextViewDelegate , UICollectionViewDelegate , UICollectionViewDataSource{
 
     
     @IBOutlet weak var TitleForPage: UILabel!
     @IBOutlet weak var tableview: UITableView!
-    @IBOutlet weak var DoneBtn: UIButton!
     @IBOutlet weak var acceptBtn: UIButton!
     @IBOutlet weak var rejectBtn: UIButton!
     
+    //Collection View
+    @IBOutlet weak var collectionview: UICollectionView!
+    @IBOutlet weak var membersCollectionView: UICollectionView!
+    
+    @IBOutlet var mainView: UIView!
+    @IBOutlet var CategoryView: UIView!
+    @IBOutlet var MemberView: UIView!
+    
+    @IBOutlet weak var AddTaskBtn: UIBarButtonItem!
     var datepicker = UIDatePicker()
     var dateformatter = DateFormatter()
     let toolbar = UIToolbar()
     var date : Double?
+    
+    var categoriesKeys = [String]()
     
     var cells = ["Title","Amount","Category","Date","Comments","AssignTo"]
     var task : Task?
@@ -34,6 +44,16 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         tableview.delegate = self
         tableview.dataSource = self
         
+        collectionview.dataSource = self
+        collectionview.delegate = self
+        
+        membersCollectionView.dataSource = self
+        membersCollectionView.delegate = self
+        
+        for key in Resource.sharedInstance().categories.keys {
+            categoriesKeys.append(key)
+        }
+        
         if isNew! {
             acceptBtn.isHidden = true
             rejectBtn.isHidden = true
@@ -43,14 +63,6 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             self.task = Task.init(taskID: "", title: "", categoryID: "", amount: 0.0, comment: "", dueDate: Date().timeIntervalSince1970, startDate: Date().timeIntervalSince1970, creatorID: "", status: .open, doneByID: "", payeeID: "", memberIDs: [], walletID: "")//Resource.sharedInstance().currentWalletID!)
         }
         
-//        HelperObservers.sharedInstance().getUserAndWallet { (flag) in
-//            if flag {
-//                if self.isNew! {
-//                    self.task = Task.init(taskID: "", title: "", categoryID: "", amount: 0.0, comment: "", dueDate: Date().timeIntervalSince1970, startDate: Date().timeIntervalSince1970, creatorID: "", status: .open, doneByID: "", payeeID: "", memberIDs: [], walletID: Resource.sharedInstance().currentWalletID!)
-//                }
-//            }
-//        }        
-
         // Do any additional setup after loading the view.
     }
 
@@ -167,10 +179,6 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             }
             return cell
             
-        case "Delete":
-            let cell = tableView.dequeueReusableCell(withIdentifier: "DeleteCell") as! DeleteTableViewCell
-            return cell
-            
         default:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "defaultCell") as! DefaultTableViewCell
@@ -212,7 +220,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 2 {
-            performSegue(withIdentifier: "Category", sender: nil)
+            addView(view: CategoryView)
         }
     }
     
@@ -251,11 +259,66 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         }
     }
     
-    @IBAction func DeleteTask(_ sender: Any) {
+    // Coolection View for categories
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if collectionView != membersCollectionView {
+            return categoriesKeys.count
+        }
+        else {
+            return 2
+        }
     }
     
-    @IBAction func DoneBtnPressed(_ sender: Any) {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if collectionView != membersCollectionView {
+            
+            let Categorycell = collectionView.dequeueReusableCell(withReuseIdentifier: "categoryCell", for: indexPath) as! CategorySelectionCollectionViewCell
+        
+            let category = Resource.sharedInstance().categories[categoriesKeys[indexPath.item]]
+            Categorycell.name.text = category!.name
+            Categorycell.icon.text = category!.icon
+        
+            if task?.categoryID == category!.id {
+                Categorycell.selectedCategory.isHidden = false
+                Categorycell.selectedCategory.layer.cornerRadius = Categorycell.selectedCategory.layer.frame.width/2
+                Categorycell.selectedCategory.layer.borderWidth = 1
+                Categorycell.selectedCategory.layer.borderColor = Categorycell.selectedCategory.textColor.cgColor
+                Categorycell.selectedCategory.backgroundColor = .white
+            }
+            else {
+                Categorycell.selectedCategory.isHidden = true
+            }
+            
+            Categorycell.icon.textColor = category!.color
+            Categorycell.icon.layer.cornerRadius = Categorycell.icon.layer.frame.width/2
+            Categorycell.icon.layer.borderWidth = 1
+            Categorycell.icon.layer.borderColor = Categorycell.icon.textColor.cgColor
+        
+            return Categorycell
+        }
+        
+        else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "memberCell", for: indexPath) as! TaskMembersCollectionViewCell
+            cell.image.image = #imageLiteral(resourceName: "persontemp")
+            cell.name.text = "Hzaifa"
+            return cell
+        }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! CategorySelectionCollectionViewCell
+        cell.isSelected = true
+//        removeView(view: CategoryView)
+    }
+    
+    // members view Done btn
+    @IBAction func RemoveMemberView(_ sender: Any) {
+        removeView(view: MemberView)
+    }
+    
+    
     
     @IBAction func AcceptBtnPressed(_ sender: Any) {
     }
@@ -263,12 +326,50 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     @IBAction func RejectBtnPressed(_ sender: Any) {
     }
     
+    @IBAction func AddTaskBtnPressed(_ sender: Any) {
+    }
+    
+    
     @IBAction func assignToaddBtnPressed(_ sender: Any) {
         //WalletMembers identifier
         if isNew! {
-            performSegue(withIdentifier: "WalletMembers", sender: nil)
+            addView(view: MemberView)
         }
     }
+    
+    
+    
+    // Animation and adding category view
+    func addView(view : UIView) {
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.7
+        view.layer.shadowOffset = CGSize(width: 0, height: 0)
+        view.layer.shadowRadius = 22.0
+        self.mainView.addSubview(view)
+        view.center = self.mainView.center
+        view.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+        view.alpha = 0
+        tableview.alpha = 0.2
+        TitleForPage.layer.opacity = 0.2
+        UIView.animate(withDuration: 0.4, animations: {
+            view.alpha = 1.0
+            view.transform = CGAffineTransform.identity
+        })
+    }
+    
+    func removeView(view : UIView) {
+        UIView.animate(withDuration: 0.3, animations: {
+            view.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+            view.alpha = 0
+
+        }) { (Success) in
+            view.removeFromSuperview()
+            self.TitleForPage.layer.opacity = 1
+            self.tableview.alpha = 1
+        }
+    }
+    
+    //
     
     
     /*

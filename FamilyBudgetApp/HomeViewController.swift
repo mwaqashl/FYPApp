@@ -41,6 +41,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.navigationItem.title = "All Wallets"
         
+        Resource.sharedInstance().currentWalletID = "-KgKJagYIYwOtiAN3HrW"
+        
         // Do any additional setup after loading the view.
     }
 

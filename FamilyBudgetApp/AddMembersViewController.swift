@@ -10,7 +10,8 @@ import UIKit
 
 class AddMembersViewController: UIViewController,UITableViewDelegate, UITableViewDataSource, WalletMemberDelegate {
 
-    
+    var names = ["Huzaifa","Waqas","Zeeshan","Sumair","Azmul"]
+    var type = ["Owner","member","Admin","member","member"]
     var walletMembers = [User]()
     var task : Task?
     
@@ -21,8 +22,8 @@ class AddMembersViewController: UIViewController,UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        walletMembers = Resource.sharedInstance().currentWallet!.members
-        Delegate.sharedInstance().addWalletMemberDelegate(self)
+//        walletMembers = Resource.sharedInstance().currentWallet!.members
+//        Delegate.sharedInstance().addWalletMemberDelegate(self)
         
         
         tableview.dataSource = self
@@ -41,18 +42,19 @@ class AddMembersViewController: UIViewController,UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return walletMembers.count
+        return 5
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableview.dequeueReusableCell(withIdentifier: "membersCell") as! WalletMembersTableViewCell
-        cell.memberName.text = walletMembers[indexPath.row].userName
+        cell.memberName.text = names[indexPath.row]
         cell.imageView!.image = #imageLiteral(resourceName: "persontemp")
+        cell.type.text = type[indexPath.row]
         
-        if task!.memberIDs.contains(walletMembers[indexPath.row].getUserID()) {
-            cell.accessoryType = .checkmark
-        }
+//        if task!.memberIDs.contains(walletMembers[indexPath.row].getUserID()) {
+//            cell.accessoryType = .checkmark
+//        }
         
 //        cell.memberType.text = Resource.sharedInstance().currentWallet!.memberTypes[walletMembers[indexPath.row].getUserID()] == .admin ? "Admin" 
         

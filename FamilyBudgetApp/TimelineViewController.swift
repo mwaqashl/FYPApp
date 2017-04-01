@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TimelineViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TransactionDelegate , WalletDelegate{
+class TimelineViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TransactionDelegate , WalletDelegate, WalletMemberDelegate, UserDelegate{
 
     var selectedrow : Int?
     @IBOutlet weak var tableview: UITableView!
@@ -18,27 +18,41 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var Segmentbtn: UISegmentedControl!
     @IBOutlet weak var AddBtn: UIBarButtonItem!
     
+    
     var incometransactions = [Transaction]()
     var expensetransactions = [Transaction]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        barBtnColor = AddBtn.tintColor!
+        
         Segmentbtn.selectedSegmentIndex = 0
         
         Delegate.sharedInstance().addTransactionDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)
+        Delegate.sharedInstance().addWalletMemberDelegate(self)
+        Delegate.sharedInstance().addUserDelegate(self)
+        
         TransactionObserver.sharedInstance().startObservingTransaction(ofWallet: (Resource.sharedInstance().currentWallet?.id)!)
         
-        IncomeAmount.text = "\(Resource.sharedInstance().currentWallet!.totalIncome)"
-        ExpenseAmount.text = "\(Resource.sharedInstance().currentWallet!.totalExpense)"
-        BalanceAmount.text = "\(Resource.sharedInstance().currentWallet!.balance)"
+        let CurrIcon = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
+        
+        let Income = NSAttributedString(string: "\(Resource.sharedInstance().currentWallet!.balance)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 17)])
+        
+        let str = NSMutableAttributedString()
+        str.append(CurrIcon)
+        str.append(Income)
+        
+        IncomeAmount.attributedText = str
+        ExpenseAmount.text = "\(CurrIcon) \(Resource.sharedInstance().currentWallet!.totalExpense)"
+        BalanceAmount.text = "\(CurrIcon) \(Resource.sharedInstance().currentWallet!.balance)"
         
         if !(Resource.sharedInstance().currentWallet?.isOpen)! {
             AddBtn.isEnabled = false
             AddBtn.tintColor = .clear
         }
-
+        
         TransactionFiltering()
         
         // Do any additional setup after loading the view.
@@ -90,6 +104,18 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         return cell
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        cell.alpha = 0
+        let transform = CATransform3DTranslate(CATransform3DIdentity, -200, 0, 0)
+        cell.layer.transform = transform
+
+        UIView.animate(withDuration: 0.5) {
+            cell.alpha = 1.0
+            cell.layer.transform = CATransform3DIdentity
+        }
+    }
+    
     @IBAction func addTransaction(_ sender: Any) {
         if (Resource.sharedInstance().currentWallet!.isOpen) {
             self.performSegue(withIdentifier: "addTrans", sender: nil)
@@ -126,20 +152,27 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     
+    
 //    Transaction Delegates
     func transactionAdded(_ transaction: Transaction) {
-        TransactionFiltering()
-        tableview.reloadData()
+        if transaction.walletID == Resource.sharedInstance().currentWalletID {
+            TransactionFiltering()
+            tableview.reloadData()
+        }
     }
     
     func transactionDeleted(_ transaction: Transaction) {
-        TransactionFiltering()
-        tableview.reloadData()
+        if transaction.walletID == Resource.sharedInstance().currentWalletID {
+            TransactionFiltering()
+            tableview.reloadData()
+        }
     }
     
     func transactionUpdated(_ transaction: Transaction) {
-        TransactionFiltering()
-        tableview.reloadData()
+        if transaction.walletID == Resource.sharedInstance().currentWalletID {
+            TransactionFiltering()
+            tableview.reloadData()
+        }
     }
     
     
@@ -150,29 +183,30 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func walletUpdated(_ wallet: UserWallet) {
-        IncomeAmount.text = "\(Resource.sharedInstance().currentWallet!.totalIncome)"
-        ExpenseAmount.text = "\(Resource.sharedInstance().currentWallet!.totalExpense)"
-        BalanceAmount.text = "\(Resource.sharedInstance().currentWallet!.balance)"
-        
+    
         if Resource.sharedInstance().currentWalletID == wallet.id { //hide add transaction btn if wallet is closed
+            IncomeAmount.text = "\(Resource.sharedInstance().currentWallet!.totalIncome)"
+            ExpenseAmount.text = "\(Resource.sharedInstance().currentWallet!.totalExpense)"
+            BalanceAmount.text = "\(Resource.sharedInstance().currentWallet!.balance)"
             if !wallet.isOpen {
                 AddBtn.isEnabled = false
                 AddBtn.tintColor = .clear
             }
             else if wallet.isOpen {
                 AddBtn.isEnabled = true
-                AddBtn.tintColor = .blue
+                AddBtn.tintColor = self.navigationItem.leftBarButtonItem?.tintColor
             }
         }
     }
     
     func WalletDeleted(_ wallet: UserWallet) {
         if (Resource.sharedInstance().currentWalletID == wallet.id) {
-            let alert = UIAlertController(title: "Error", message: "This Wallet has been Deleted", preferredStyle: .alert)
-            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            let alert = UIAlertController(title: "Alert", message: "This Wallet has been Deleted", preferredStyle: .alert)
+            let action = UIAlertAction(title: "Ok", style: .default, handler: { (success) in
+                self.navigationController?.popViewController(animated: true)
+            })
             alert.addAction(action)
             present(alert, animated: true, completion: nil)
-            self.navigationController?.popViewController(animated: true)
         }
     }
     
@@ -186,6 +220,30 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         expensetransactions = (Resource.sharedInstance().currentWallet?.transactions.filter({ (trans) -> Bool in
             return trans.isExpense
         }))!
+    }
+    
+    func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
+    func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
+    func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
+    
+    
+    func userAdded(_ user: User) {
+        
+    }
+    func userUpdated(_ user: User) {
+        
+    }
+    func userDetailsAdded(_ user: CurrentUser) {
+        
+    }
+    func userDetailsUpdated(_ user: CurrentUser) {
+        
     }
     
 }
