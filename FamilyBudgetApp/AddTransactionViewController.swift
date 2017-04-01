@@ -65,8 +65,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             segmentbtn.isEnabled = false
         }
         
-        print(DoneBtn.tintColor)
-        
         tableView.dataSource = self
         tableView.delegate = self
         
@@ -137,6 +135,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     
     @IBAction func DoneBtnPressed(_ sender: Any) {
         
@@ -307,9 +306,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             
         case "Delete":
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: "deleteCell") as! DeleteTableViewCell
-            
-//            cell.DeleteTransactionbtn
+            let cell = tableView.dequeueReusableCell(withIdentifier: "DeleteCell") as! DeleteTableViewCell
             
             return cell
             
