@@ -30,6 +30,9 @@
 		7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7B91E57231C006A25AF /* Main.storyboard */; };
 		7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BC1E57231C006A25AF /* Assets.xcassets */; };
 		7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */; };
+		774B0FDF1E8D2EBE00417457 /* Tutorials.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 774B0FDE1E8D2EBE00417457 /* Tutorials.storyboard */; };
+		774B0FE11E8D30E000417457 /* TutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774B0FE01E8D30E000417457 /* TutorialViewController.swift */; };
+		774DFABF1E8FA3070067010A /* DefaultCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774DFABE1E8FA3070067010A /* DefaultCollectionViewCell.swift */; };
 		774F71621E8A225500E1BCDC /* AddwalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */; };
 		774F71631E8A225500E1BCDC /* CategoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */; };
 		774F71641E8A225500E1BCDC /* DeleteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */; };
@@ -86,6 +89,9 @@
 		7742C7BC1E57231C006A25AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7742C7BF1E57231C006A25AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7742C7C11E57231C006A25AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		774B0FDE1E8D2EBE00417457 /* Tutorials.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Tutorials.storyboard; sourceTree = "<group>"; };
+		774B0FE01E8D30E000417457 /* TutorialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialViewController.swift; sourceTree = "<group>"; };
+		774DFABE1E8FA3070067010A /* DefaultCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultCollectionViewCell.swift; sourceTree = "<group>"; };
 		774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddwalletViewController.swift; sourceTree = "<group>"; };
 		774F715F1E8A225500E1BCDC /* CategoriesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoriesViewController.swift; sourceTree = "<group>"; };
 		774F71601E8A225500E1BCDC /* DeleteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteTableViewCell.swift; sourceTree = "<group>"; };
@@ -170,6 +176,7 @@
 				04B093991E82801D003E26DE /* CommentsTableViewCell.swift */,
 				04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */,
 				044B713C1E8168AE00613ECA /* AllWalletsViewController.swift */,
+				774DFABE1E8FA3070067010A /* DefaultCollectionViewCell.swift */,
 				777D02981E8A860000C682F2 /* WalletTableViewCell.swift */,
 				044B71401E81889A00613ECA /* TimelineViewController.swift */,
 				044B71441E818EE100613ECA /* TransactionDescriptionViewController.swift */,
@@ -181,6 +188,7 @@
 				7706A6C51E8717D80074CD60 /* iconFont.ttf */,
 				7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */,
 				7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */,
+				774B0FE21E8D30E800417457 /* Tutorials */,
 				7742C7BC1E57231C006A25AF /* Assets.xcassets */,
 				770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */,
 				7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */,
@@ -246,6 +254,15 @@
 			);
 			name = API;
 			path = ../../../../Users/Waqas/PenzyApp/Penzy/Penzy;
+			sourceTree = "<group>";
+		};
+		774B0FE21E8D30E800417457 /* Tutorials */ = {
+			isa = PBXGroup;
+			children = (
+				774B0FDE1E8D2EBE00417457 /* Tutorials.storyboard */,
+				774B0FE01E8D30E000417457 /* TutorialViewController.swift */,
+			);
+			name = Tutorials;
 			sourceTree = "<group>";
 		};
 		CB25BB70E7A28B1FDF8F5720 /* Frameworks */ = {
@@ -322,6 +339,7 @@
 			files = (
 				7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */,
 				7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */,
+				774B0FDF1E8D2EBE00417457 /* Tutorials.storyboard in Resources */,
 				770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */,
 				7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */,
 				7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */,
@@ -388,6 +406,7 @@
 			files = (
 				777D02991E8A860000C682F2 /* WalletTableViewCell.swift in Sources */,
 				775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */,
+				774DFABF1E8FA3070067010A /* DefaultCollectionViewCell.swift in Sources */,
 				04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */,
 				774F71641E8A225500E1BCDC /* DeleteTableViewCell.swift in Sources */,
 				775C2A181E5B11AD00E409B6 /* Resource.swift in Sources */,
@@ -416,6 +435,7 @@
 				7742C7B81E57231C006A25AF /* ViewController.swift in Sources */,
 				044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */,
 				044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */,
+				774B0FE11E8D30E000417457 /* TutorialViewController.swift in Sources */,
 				775C2A1F1E5B11AD00E409B6 /* User.swift in Sources */,
 				04B093981E827FFE003E26DE /* CategoryTableViewCell.swift in Sources */,
 				775C2A211E5B11AD00E409B6 /* UserObserver.swift in Sources */,

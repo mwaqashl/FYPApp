@@ -8,19 +8,37 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITextFieldDelegate {
     
+    @IBOutlet weak var passwordView: UIView!
+    @IBOutlet weak var emailView: UIView!
+    @IBOutlet weak var backBtn: UIButton!
     @IBOutlet weak var emailAddress: UITextField!
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var signInBtn: UIButton!
+    
+    
+    var isKeyboardOpen = false
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         password.isSecureTextEntry = true
-        
+        emailView.layer.borderWidth = 1
+        emailView.layer.borderColor = UIColor.white.cgColor
+        passwordView.layer.borderWidth = 1
+        passwordView.layer.borderColor = UIColor.white.cgColor
+        emailAddress.delegate = self
+        password.delegate = self
         signInBtn.layer.borderWidth = 1
         signInBtn.layer.borderColor = UIColor.white.cgColor
+        backBtn.layer.borderWidth = 1
+        backBtn.layer.borderColor = UIColor.white.cgColor
+    
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -35,6 +53,11 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    @IBAction func backBtnAction(_ sender: Any) {
+        
+        self.dismiss(animated: true, completion: nil)
+        
+    }
     
     @IBAction func signInBtnAction(_ sender: Any) {
         
@@ -95,6 +118,40 @@ class ViewController: UIViewController {
         
     }
     
+    func keyboardWillShow(notification: NSNotification) {
+        
+        backBtn.isHidden = true
+        
+        if !isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                self.view.frame.origin.y -= keyboardSize.height
+                isKeyboardOpen = true
+            }
+        }
+        
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        
+        backBtn.isHidden = false
+        
+        if isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                self.view.frame.origin.y += keyboardSize.height
+                isKeyboardOpen = false
+            }
+        }
+        
+    }
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        textField.resignFirstResponder()
+        return true
+    }
 
 }
 
