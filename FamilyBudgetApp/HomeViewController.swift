@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, WalletDelegate {
 
     @IBOutlet weak var label1: UILabel!
     @IBOutlet weak var label2: UILabel!
@@ -20,6 +20,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        Delegate.sharedInstance().addWalletDelegate(self)
+        WalletObserver.sharedInstance().autoObserve = true
+        WalletObserver.sharedInstance().startObserving()
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             
@@ -53,7 +57,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return walletIDs.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -67,11 +71,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.icon.layer.borderColor = this!.color.cgColor
         cell.icon.clipsToBounds = true
         cell.icon.textColor = this!.color
-        cell.layer.cornerRadius = 10
-        cell.clipsToBounds = true
-        
-        cell.contentView.layer.cornerRadius = 10
-        cell.contentView.clipsToBounds = true
         
         for view in cell.views {
             view.backgroundColor = this!.color
@@ -86,10 +85,30 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.income.text = "\(this!.totalIncome)"
         cell.expense.text = "\(this!.totalExpense)"
         
-        
         return cell
     }
     
+    
+    // Wallet Delegate Methods
+    
+    func walletAdded(_ wallet: UserWallet) {
+        
+        if !walletIDs.contains(wallet.id) {
+            self.walletIDs.append(wallet.id)
+            tableView.reloadData()
+        }
+        
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if walletIDs.contains(wallet.id) {
+            tableView.reloadData()
+        }
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        
+    }
     
     
     /*
