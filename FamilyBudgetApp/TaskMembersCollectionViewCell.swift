@@ -12,5 +12,7 @@ class TaskMembersCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var name: UILabel!
     @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var memberSelected: UILabel!
+    
     
 }

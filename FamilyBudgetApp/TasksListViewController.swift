@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TasksListViewController: UIViewController ,UITableViewDelegate, UITableViewDataSource,TaskDelegate{
+class TasksListViewController: UIViewController ,UITableViewDelegate, UITableViewDataSource,TaskDelegate , WalletMemberDelegate{
 
     @IBOutlet weak var SegmentBtn: UISegmentedControl!
     @IBOutlet weak var addBtn: UIBarButtonItem!
@@ -27,8 +27,9 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
         tableview.delegate = self
         
         Delegate.sharedInstance().addTaskDelegate(self)
-        
         tasks = Resource.sharedInstance().currentWallet!.tasks
+        UserObserver.sharedInstance().startObserving()
+        Delegate.sharedInstance().addWalletMemberDelegate(self)
         
         // Do any additional setup after loading the view.
     }
@@ -77,10 +78,12 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            deleteIndex = indexPath
-            let deletingtask = tasks![indexPath.row]
-            ConfirmDeletion(task: deletingtask)
+        if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || tasks![indexPath.row].creatorID == Resource.sharedInstance().currentUserId || tasks![indexPath.row].doneByID == Resource.sharedInstance().currentUserId {
+            if editingStyle == .delete {
+                deleteIndex = indexPath
+                let deletingtask = tasks![indexPath.row]
+                ConfirmDeletion(task: deletingtask)
+            }
         }
     }
     
@@ -119,7 +122,7 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     
     func taskAdded(_ task: Task) {
         if Resource.sharedInstance().currentWalletID == task.walletID {
-            tasks?.append(task)
+            tasks!.append(task)
             tableview.reloadData()
         }
     }
@@ -129,10 +132,8 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
             for i in 0..<tasks!.count {
                 if tasks![i].id == task.id {
                     tasks!.remove(at: i)
-                    tableview.deleteRows(at: [IndexPath.init(row: i, section: 0)], with: .automatic)
-//                    tableview.deleteRows(at: , with: .automatic)
-//                    tableview.reloadData()
-                }
+                    tableview.reloadData()
+              }
             }
         }
     }
@@ -149,7 +150,19 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
         
     }
     
+    // Wallet member delegates
     
+    func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
+    
+    func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
+    
+    func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+    }
 
     /*
     // MARK: - Navigation
