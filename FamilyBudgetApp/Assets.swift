@@ -14,8 +14,6 @@ var colorChoices = [UIColor.black,
                     UIColor.purple]
 var darkBlueColor = UIColor(red: 24/255, green: 57/255, blue: 31/255, alpha: 1)
 var greenColor = UIColor.green
-var defaultWalletIcon = ""
-var defaultWalletColor = UIColor(red: 30/255, green: 121/255, blue: 196/255, alpha: 1)
 let defaultSettings = UserDefaults.standard
 var redColor = UIColor.red
 var yellowColor = UIColor.yellow

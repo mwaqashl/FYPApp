@@ -71,7 +71,7 @@ class TutorialViewController: UIViewController {
     
     @IBAction func loginBtnAction(_ sender: Any) {
         
-        let cont = UIStoryboard.init(name: "Tutorials", bundle: nil).instantiateViewController(withIdentifier: "login") as! ViewController
+        let cont = UIStoryboard.init(name: "HuzaifaStroyboard", bundle: nil).instantiateViewController(withIdentifier: "login") as! ViewController
         
         self.present(cont, animated: true, completion: nil)
     }
@@ -80,7 +80,7 @@ class TutorialViewController: UIViewController {
     @IBAction func newUserBtnAction(_ sender: Any) {
         
         
-        let cont = UIStoryboard.init(name: "Tutorials", bundle: nil).instantiateViewController(withIdentifier: "register") as! RegisterViewController
+        let cont = UIStoryboard.init(name: "HuzaifaStroyboard", bundle: nil).instantiateViewController(withIdentifier: "register") as! RegisterViewController
         
         self.present(cont, animated: true, completion: nil)
         

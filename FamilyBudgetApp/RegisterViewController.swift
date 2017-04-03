@@ -23,6 +23,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     @IBOutlet weak var gender: UITextField!
     @IBOutlet weak var dateofbirth: UITextField!
     @IBOutlet weak var registerBtn: UIButton!
+    @IBOutlet weak var nextBtn: UIButton!
 
     var datepicker = UIDatePicker()
     var genderpicker = UIPickerView()
@@ -91,6 +92,14 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             gender.text = gend[selectedrow]
             previous = selectedrow
         }
+        
+        if gend[selectedrow] == "Male" && userImage.image == #imageLiteral(resourceName: "dp-female") {
+            userImage.image = #imageLiteral(resourceName: "dp-male")
+        }
+        else if gend[selectedrow] == "Female" && userImage.image == #imageLiteral(resourceName: "dp-male") {
+            userImage.image = #imageLiteral(resourceName: "dp-female")
+        }
+        
         self.view.endEditing(true)
     }
     
@@ -215,7 +224,8 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             selectedImage = pickedImage
         }
         
-        userImage.image = selectedImage != nil ? selectedImage : #imageLiteral(resourceName: "persontemp")
+        userImage.image = selectedImage != nil ? selectedImage : (gend[selectedrow] == "Male" ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+
         
         dismiss(animated: true, completion: nil)
     }
@@ -234,7 +244,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         
         
-        userImage.image = selectedImage != nil ? selectedImage : #imageLiteral(resourceName: "persontemp")
+        userImage.image = selectedImage != nil ? selectedImage : (gend[selectedrow] == "Male" ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
         
         dismiss(animated: true, completion: nil)
     }

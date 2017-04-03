@@ -41,7 +41,7 @@ class User {
             let data = try? Data(contentsOf: imageNSURL)
             completion(data!)
         }else{
-            let imageRef = FIRStorage.storage().reference(forURL: "gs://penzy-120d0.appspot.com").child("images").child("userImages").child(self.id).child(self.imageURL)
+            let imageRef = FIRStorage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("userImages").child(self.id).child(self.imageURL)
             imageRef.write(toFile: imageNSURL, completion: { (url, error) in
                 guard error == nil else {
                     return

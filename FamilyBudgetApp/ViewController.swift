@@ -19,7 +19,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     
     var isKeyboardOpen = false
-    
+    var tap = UITapGestureRecognizer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +27,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         password.isSecureTextEntry = true
         emailView.layer.borderWidth = 1
         emailView.layer.borderColor = UIColor.white.cgColor
+        emailAddress.autocorrectionType = .no
         passwordView.layer.borderWidth = 1
         passwordView.layer.borderColor = UIColor.white.cgColor
         emailAddress.delegate = self
@@ -35,8 +36,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
         signInBtn.layer.borderColor = UIColor.white.cgColor
         backBtn.layer.borderWidth = 1
         backBtn.layer.borderColor = UIColor.white.cgColor
-    
-        
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
+        self.view.addGestureRecognizer(tap)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
@@ -51,6 +52,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func viewTapped() {
+        self.view.endEditing(true)
     }
 
     @IBAction func backBtnAction(_ sender: Any) {

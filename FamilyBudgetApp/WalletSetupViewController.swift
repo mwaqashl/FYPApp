@@ -26,14 +26,17 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBOutlet weak var iconsCollectionView: UICollectionView!
     @IBOutlet weak var colorsCollectionView: UICollectionView!
     
+    @IBOutlet weak var finishBtn: UIButton!
+    
+    
     var currencypicker = UIPickerView()
     var wallet : UserWallet?
     var backView = UIView()
     var selectedIcon = ""
-    var selectedColor : UIColor = .black
+    var selectedColor : UIColor = .blue
     var pSelectedIcon = ""
-    var pSelectedColor : UIColor = .black
-    var colors : [UIColor] = [.black, .gray, .lightGray, .darkGray, .blue, .green, .yellow, .red, .brown]
+    var pSelectedColor : UIColor = .blue
+    var colors : [UIColor] = [.blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,6 +55,9 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         popoverView.layer.cornerRadius = 10
         popoverView.layer.shadowColor = UIColor.gray.cgColor
         popoverView.layer.shadowRadius = 2
+        
+        finishBtn.layer.borderColor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1).cgColor
+        finishBtn.layer.borderWidth = 1
         
         selectedIcon = "\u{A037}"
         walletIcon.textColor = selectedColor
@@ -138,7 +144,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
     {
-        var pickerLabel = UILabel()
+        let pickerLabel = UILabel()
         pickerLabel.textColor = UIColor.black
         let all = Array(Resource.sharedInstance().currencies.keys)
         let this = all[row]
@@ -187,7 +193,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         if error == "" {
             
-            let personalWallet = UserWallet(id: "", name: walletname!.text!, icon: "", currencyID: "", creatorID: Auth.sharedInstance().authUser!.getUserID(), balance: Double(initialamount.text!)!, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970*1000, isPersonal: true, memberTypes: [(Auth.sharedInstance().authUser?.getUserID())! : .owner], isOpen: true, color: "10:188:228:1")
+            let personalWallet = UserWallet(id: "", name: walletname!.text!, icon: selectedIcon, currencyID: wallet!.currencyID, creatorID: Auth.sharedInstance().authUser!.getUserID(), balance: Double(initialamount.text!)!, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [(Auth.sharedInstance().authUser?.getUserID())! : .owner], isOpen: true, color: selectedColor.stringRepresentation)
             
             let walletid = WalletManager.sharedInstance().addWallet(personalWallet)
             if walletid != "" {
