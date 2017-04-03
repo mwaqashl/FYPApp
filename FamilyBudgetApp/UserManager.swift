@@ -89,12 +89,12 @@ class UserManager {
     
     // Add a new task for user in Database ! required argument is a userID and task.
     func addTaskToUser(_ userID: String, task: Task) {
-        ref.child("Tasks/\(task.walletID)/\(task.id)").setValue(true)
+        ref.child("UserTasks").child(userID).child(task.id).setValue(true)
     }
     
     // Remove task from user in Database ! required argument is a userID and task.
     func removeTaskFromUser(_ userID: String, task: Task) {
-        ref.child("Tasks/\(task.walletID)/\(task.id)").removeValue()
+        ref.child("UserTasks").child(userID).child(task.id).removeValue()
     }
     
     // Add user friends to database ! for Rules management

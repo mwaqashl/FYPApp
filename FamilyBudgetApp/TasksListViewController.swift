@@ -16,10 +16,9 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     
     var deleteIndex : IndexPath?
     
-    var tasks : [Task]?
+    var taskskey = [String]()
     var selectedrow : Int?
     
-//    var names = ["Waqas","Huzaifa","Zeeshan"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,9 +26,15 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
         tableview.delegate = self
         
         Delegate.sharedInstance().addTaskDelegate(self)
-        tasks = Resource.sharedInstance().currentWallet!.tasks
-        UserObserver.sharedInstance().startObserving()
         Delegate.sharedInstance().addWalletMemberDelegate(self)
+
+        UserObserver.sharedInstance().startObserving()          // home page pr lage ga..:D
+        TaskObserver.sharedInstance().startObserving(TasksOf: Resource.sharedInstance().currentWallet!)
+        
+        
+        for key in Resource.sharedInstance().tasks.keys {
+            taskskey.append(key)
+        }
         
         // Do any additional setup after loading the view.
     }
@@ -48,14 +53,21 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tasks!.count
+        print(taskskey.count)
+        return taskskey.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tasks") as! TaskTableViewCell
-        cell.Title.text = tasks![indexPath.row].title
-        cell.icon.text = tasks![indexPath.row].category?.icon
-        cell.status.layer.backgroundColor = tasks![indexPath.row].status == .open ? UIColor.white.cgColor : UIColor.green.cgColor
+        let tasks = Resource.sharedInstance().tasks[taskskey[indexPath.row]]
+        cell.Title.text = tasks!.title
+        cell.icon.text = tasks!.category!.icon
+        cell.status.layer.backgroundColor = tasks!.status == .open ? UIColor.green.cgColor : UIColor.red.cgColor
+        
+        cell.icon.textColor = tasks!.category!.color
+        cell.icon.layer.cornerRadius = cell.icon.layer.frame.width/2
+        cell.icon.layer.borderWidth = 1
+        cell.icon.layer.borderColor = cell.icon.textColor.cgColor
         
         return cell
     }
@@ -68,7 +80,7 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Description" {
             let destination = segue.destination as! AddTaskViewController
-            //destination.task = self.tasks![selectedrow!]
+            destination.task = Resource.sharedInstance().tasks[taskskey[selectedrow!]]
             destination.isNew = false
         }
         else if segue.identifier == "addTask" {
@@ -78,10 +90,12 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || tasks![indexPath.row].creatorID == Resource.sharedInstance().currentUserId || tasks![indexPath.row].doneByID == Resource.sharedInstance().currentUserId {
+        let tasks = Resource.sharedInstance().tasks[taskskey[indexPath.row]]
+        
+        if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || tasks!.creatorID == Resource.sharedInstance().currentUserId || tasks!.doneByID == Resource.sharedInstance().currentUserId {
             if editingStyle == .delete {
                 deleteIndex = indexPath
-                let deletingtask = tasks![indexPath.row]
+                let deletingtask = tasks!
                 ConfirmDeletion(task: deletingtask)
             }
         }
@@ -105,13 +119,9 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     func DeleteTask(alertAction : UIAlertAction!) {
         if let indexPath = deleteIndex {
             tableview.beginUpdates()
-            
-            tasks!.remove(at: indexPath.row)
-            
+            taskskey.remove(at: indexPath.row)
             tableview.deleteRows(at: [indexPath], with: .left)
-            
             deleteIndex = nil
-            
             tableview.endUpdates()
         }
     }
@@ -122,16 +132,17 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     
     func taskAdded(_ task: Task) {
         if Resource.sharedInstance().currentWalletID == task.walletID {
-            tasks!.append(task)
+            taskskey.append(task.id)
+            print("Task Aya")
             tableview.reloadData()
         }
     }
     
     func taskDeleted(_ task: Task) {
         if task.walletID == Resource.sharedInstance().currentWalletID {
-            for i in 0..<tasks!.count {
-                if tasks![i].id == task.id {
-                    tasks!.remove(at: i)
+            for i in 0..<taskskey.count {
+                if taskskey[i] == task.id {
+                    taskskey.remove(at: i)
                     tableview.reloadData()
               }
             }
@@ -140,12 +151,12 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     
     func taskUpdated(_ task: Task) {
         if task.walletID == Resource.sharedInstance().currentWalletID {
-            for i in 0..<tasks!.count {
-                if tasks![i].id == task.id {
-                    tasks![i] = task
+//            for i in 0..<taskskey.count {
+//                if taskskey[i] == task.id {
+//                    taskskey[i] = task
                     tableview.reloadData()
-                }
-            }
+//                }
+//            }
         }
         
     }
@@ -157,7 +168,7 @@ class TasksListViewController: UIViewController ,UITableViewDelegate, UITableVie
     }
     
     func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
-        
+        print("Member AA gaya")
     }
     
     func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {

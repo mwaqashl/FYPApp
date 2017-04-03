@@ -10,7 +10,7 @@ import UIKit
 
 class TimelineViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TransactionDelegate , WalletDelegate, WalletMemberDelegate, UserDelegate{
 
-    var selectedrow : Int?
+    var selectedrow : IndexPath?
     @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var IncomeAmount: UILabel!
     @IBOutlet weak var BalanceAmount: UILabel!
@@ -21,6 +21,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     var incometransactions = [Transaction]()
     var expensetransactions = [Transaction]()
+    
+    var orderWiseExpense = [String:[Transaction]]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,10 +54,26 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
             AddBtn.isEnabled = false
             AddBtn.tintColor = .clear
         }
-        
+        dateformat.dateFormat = "dd-MMM-yyyy"
         TransactionFiltering()
-        
         // Do any additional setup after loading the view.
+    }
+    
+    var dateformat = DateFormatter()
+    var key = [String]()
+    
+    func orderExpense() {
+        for i in 0..<expensetransactions.count {
+            print(dateformat.string(from: expensetransactions[i].date))
+            if orderWiseExpense[dateformat.string(from: expensetransactions[i].date)] == nil {
+                    orderWiseExpense[dateformat.string(from: expensetransactions[i].date)] = [expensetransactions[i]]
+                    key.append(dateformat.string(from: expensetransactions[i].date))
+            }
+            else {
+                    orderWiseExpense[dateformat.string(from: expensetransactions[i].date)]!.append(expensetransactions[i])
+            }
+        }
+        tableview.reloadData()
     }
 
     
@@ -65,12 +83,21 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+//        return 1
+        if Segmentbtn.selectedSegmentIndex == 0 {
+            print(key.count)
+            return key.count
+        }
+        else {
+            return 1
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if Segmentbtn.selectedSegmentIndex == 0 {
-            return expensetransactions.count
+            let c = orderWiseExpense[key[section]]
+            print(c?.count)
+            return c!.count
         }
         else {
             return incometransactions.count
@@ -84,13 +111,16 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! TimelineTableViewCell
         var category : Category?
+        var trans : [Transaction]?
         if Segmentbtn.selectedSegmentIndex == 1 {
             category = incometransactions[indexPath.row].category
             cell.amount.text = "\(incometransactions[indexPath.row].amount)"
         }
         else {
-            category = expensetransactions[indexPath.row].category
-            cell.amount.text = "\(expensetransactions[indexPath.row].amount)"
+            trans = orderWiseExpense[key[indexPath.section]]
+            print(trans!.count)
+            category = trans![indexPath.row].category
+            cell.amount.text = "\(trans![indexPath.row].amount)"
         }
         cell.category.text = category!.name
         cell.categoryIcon.text = category!.icon
@@ -102,6 +132,10 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         cell.categoryIcon.layer.cornerRadius = cell.categoryIcon.frame.width/2
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return key[section]
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -124,7 +158,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedrow = indexPath.row
+        selectedrow = indexPath
         performSegue(withIdentifier: "TransactionDetail", sender: nil)
     }
 
@@ -135,11 +169,14 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         if segue.identifier == "TransactionDetail" {
             destination.isNew = false
             if Segmentbtn.selectedSegmentIndex == 0 {
-                destination.transaction = expensetransactions[selectedrow!]
+                let trans = orderWiseExpense[key[selectedrow!.section]]
+                destination.transaction = trans![selectedrow!.row]
+                print(trans![selectedrow!.row].date)
             }
             else {
-                destination.transaction = incometransactions[selectedrow!]
+                destination.transaction = incometransactions[selectedrow!.row]
             }
+            
         }
         else if segue.identifier == "addTrans" {
             destination.isNew = true
@@ -220,6 +257,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         expensetransactions = (Resource.sharedInstance().currentWallet?.transactions.filter({ (trans) -> Bool in
             return trans.isExpense
         }))!
+        orderExpense()
     }
     
     func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {

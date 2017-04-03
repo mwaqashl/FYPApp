@@ -18,10 +18,10 @@ class UserObserver {
         observeUserUpdated()
     }
     func stopObserving(){
-        FIRDatabase.database().reference().child("UserDetails").removeAllObservers()
+        FIRDatabase.database().reference().child("Users").removeAllObservers()
     }
     fileprivate func observeUserAdded(){
-        let userRef = ref.child("UserDetails")
+        let userRef = ref.child("Users")
         userRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return
@@ -41,7 +41,7 @@ class UserObserver {
         })
     }
     fileprivate func observeUserUpdated(){
-        let userRef = ref.child("UserDetails")
+        let userRef = ref.child("Users")
         userRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return

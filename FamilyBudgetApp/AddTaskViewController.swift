@@ -32,6 +32,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     var date : Double?
     
     var categoriesKeys = [String]()
+    var TaskCategoryID : String? = nil
     
     var cells = ["Title","Amount","Category","Date","Comments","AssignTo"]
     
@@ -43,6 +44,10 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         super.viewDidLoad()
         
         dateformatter.dateFormat = "dd-MMM-yyyy"
+        datepicker.datePickerMode = .date
+        datepicker.backgroundColor = .white
+        toolbar.sizeToFit()
+        
         
         tableview.delegate = self
         tableview.dataSource = self
@@ -62,11 +67,16 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         acceptBtn.isHidden = true
         rejectBtn.isHidden = true
         
+        // Creating New Task
+        
         if self.isNew! {
-            self.task = Task.init(taskID: "", title: "", categoryID: "", amount: 0.0, comment: nil, dueDate: Date().timeIntervalSince1970, startDate: Date().timeIntervalSince1970, creatorID: "", status: .open, doneByID: "", payeeID: "", memberIDs: [], walletID:Resource.sharedInstance().currentWalletID!)
+            self.task = Task.init(taskID: "", title: "", categoryID: "", amount: 0.0, comment: nil, dueDate: Date().timeIntervalSince1970, startDate: Date().timeIntervalSince1970, creatorID: Resource.sharedInstance().currentUserId!, status: .open, doneByID: "", memberIDs: [], walletID:Resource.sharedInstance().currentWalletID!)
         }
+            
+        // Previous Tasks Viewing
         
         else if !(isNew!) {
+            TaskCategoryID = task!.categoryID
             cells.insert("Created By", at: 0)
             if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || task!.creatorID == Resource.sharedInstance().currentUserId || task!.doneByID == Resource.sharedInstance().currentUserId {
 
@@ -112,6 +122,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        print(cells.count)
         return cells.count
     }
     
@@ -130,6 +141,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 cell.taskTitle.text = task!.title
                 cell.taskTitle.textColor = .black
             }
+            cell.taskTitle.isEditable = isNew! ? true : false
             cell.taskTitle.isUserInteractionEnabled = isNew! ? true : false
             cell.taskTitle.delegate = self
             cell.taskTitle.tag = 0                                         // tag 0 for title
@@ -163,12 +175,9 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
             
-//            if task?.categoryID != nil || task?.categoryID != "" {
-//                cell.name.text = task!.category!.name
-//                cell.icon.text = task!.category!.icon
-//            }
-            cell.name.text = task?.categoryID != nil || task?.categoryID != "" ? task!.category!.name : "None"
-            cell.icon.text = task?.categoryID != nil || task?.categoryID != "" ? task!.category!.icon : ""
+            cell.name.text = TaskCategoryID == nil ? "None" : task!.category!.name
+            cell.icon.text = TaskCategoryID == nil ? "" : task?.category!.icon
+            
             cell.icon.backgroundColor = .white
             cell.icon.textColor = task!.category!.color
             cell.icon.layer.borderColor = task!.category!.color.cgColor
@@ -181,8 +190,39 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             let cell = tableview.dequeueReusableCell(withIdentifier: "assignToCell") as! AssignToTableViewCell
             
             cell.addmemberBtn.addTarget(self, action: #selector(self.assignToaddBtnPressed(_:)), for: .touchUpInside)
-            
+            cell.membersCollection.dataSource = self
+            cell.membersCollection.dataSource = self
+            cell.membersCollection.reloadData()
             cell.addmemberBtn.isHidden = isNew! ? false : true
+            return cell
+            
+        case "Delete":
+            
+            let cell = tableview.dequeueReusableCell(withIdentifier: "deleteCell") as! DeleteTableViewCell
+            cell.DeleteBtn.addTarget(nil, action: #selector(self.DeleteTask) , for: .touchUpInside)
+            
+            return cell
+            
+        case "Created By":
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "transactionbyCell") as! TransactionByTableViewCell
+            cell.name.text = task!.creator!.userName
+            let type = Resource.sharedInstance().currentWallet?.memberTypes[(task!.creatorID)]
+            cell.personimage.image = #imageLiteral(resourceName: "persontemp")
+            
+            if type == .admin {
+                print("admin")
+                cell.type.text = "Admin"
+            }
+            else if type == .owner {
+                print("Owner")
+                cell.type.text = "Owner"
+            }
+            else if type == .member {
+                print("member")
+                cell.type.text = "Member"
+            }
+            
             return cell
             
         default:
@@ -193,7 +233,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             
             if cell.title.text == "Amount" {
                 cell.textview.text = task?.amount != 0.0 ? "\(task?.amount ?? 0)" : "0"
-                cell.textview.tag = 1                   // amount tag 0
+                cell.textview.tag = 1                   // amount tag 1
             }
                 
             else if cell.title.text == "Date" {
@@ -205,8 +245,11 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
                 self.toolbar.setItems([cancel,spaceButton,done], animated: false)
                 cell.textview.inputAccessoryView = self.toolbar
+                self.toolbar.backgroundColor = .lightGray
+                cell.textview.isUserInteractionEnabled = true
+                cell.textview.tag = 3
             }
-            
+            cell.textview.isEditable = isNew! ? true : false
             cell.textview.isUserInteractionEnabled = isNew! ? true : false
             cell.textview.delegate = self
             return cell
@@ -247,6 +290,9 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 textView.text = ""
             }
         }
+        if textView.tag == 1 {
+            textView.text = textView.text == "0" ? "" : "\(task!.amount)"
+        }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -254,7 +300,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             task!.title = textView.text
         }
         else if textView.tag == 1 {
-            task!.amount = Double(textView.text)!
+            task!.amount = Double(textView.text) ?? 0.0
         }
         else if textView.tag == 5 {
             task!.comment = textView.text
@@ -265,17 +311,20 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     // Collection View for categories and WalletMembers
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView != membersCollectionView {
+        if collectionView == categoryCollectionView {
             return categoriesKeys.count
         }
-        else {
+        else if collectionView == membersCollectionView {
             return (walletmembers?.count)!
+        }
+        else {
+            return task!.members.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if collectionView != membersCollectionView {
+        if collectionView == categoryCollectionView {
             
             let Categorycell = collectionView.dequeueReusableCell(withReuseIdentifier: "categoryCell", for: indexPath) as! CategorySelectionCollectionViewCell
         
@@ -302,30 +351,54 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             return Categorycell
         }
         
-        else {
+        else if collectionView == membersCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "memberCell", for: indexPath) as! TaskMembersCollectionViewCell
             cell.image.image = #imageLiteral(resourceName: "persontemp")
             cell.name.text = walletmembers![indexPath.item].userName
+            cell.memberSelected.isHidden = true
+            return cell
+        }
+            // table cell collection view
+        else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "memberCell", for: indexPath) as! TaskMembersCollectionViewCell
+            cell.image.image = #imageLiteral(resourceName: "persontemp")
+            cell.name.text = task?.members[indexPath.item].userName
+            cell.name.layer.cornerRadius = cell.name.layer.frame.height/2
+            cell.memberSelected.isHidden = true
             return cell
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
         if collectionView == membersCollectionView {
-            let cell = collectionView.cellForItem(at: indexPath) as! TaskMembersCollectionViewCell
-            cell.memberSelected.isHidden = false
             
-            cell.memberSelected.layer.cornerRadius = cell.memberSelected.layer.frame.width/2
-            cell.memberSelected.layer.borderWidth = 1
-            cell.memberSelected.layer.borderColor = cell.memberSelected.textColor.cgColor
-            task!.addMember(walletmembers![indexPath.item].getUserID())
+            let cell = collectionView.cellForItem(at: indexPath) as! TaskMembersCollectionViewCell
+            
+            if cell.memberSelected.isHidden {
+                cell.memberSelected.isHidden = false
+            
+                cell.memberSelected.layer.cornerRadius = cell.memberSelected.layer.frame.width/2
+                cell.memberSelected.layer.borderWidth = 1
+                cell.memberSelected.layer.borderColor = cell.memberSelected.textColor.cgColor
+                task!.addMember(walletmembers![indexPath.item].getUserID())
+            }
+            else {
+                cell.memberSelected.isHidden = true
+                task!.removeMember(walletmembers![indexPath.item].getUserID())
+            }
         }
+        // Category Selection
         else {
+            TaskCategoryID = categoriesKeys[indexPath.row]
             task!.categoryID = categoriesKeys[indexPath.row]
             tableview.reloadData()
             removeView(view: CategoryView)
         }
+        print(task!.members.count)
     }
+    
+    
     // members view Done btn
     @IBAction func RemoveMemberView(_ sender: Any) {
         tableview.reloadData()
@@ -341,12 +414,82 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     }
     
     @IBAction func AddTaskBtnPressed(_ sender: Any) {
-        if AddTaskBtn.title == "DONE" {
+        
+        if AddTaskBtn.title == "ADD" {
             
+            var error = ""
+            var errorDis = ""
+            
+            if task!.title == "" {
+                error = "Error"
+                errorDis = "Task Title cannot be empty"
+            }
+            else if task!.amount == 0 || task!.amount == 0.0 {
+                error = "Error"
+                errorDis = "Amount cannot be empty"
+            }
+            else if task!.categoryID == "" {
+                error = "Error"
+                errorDis = "Category cannot be empty"
+            }
+            else if task!.members.count == 0 {
+                error = "Error"
+                errorDis = "Select any member to assign this task"
+            }
+            
+            if error == "" {
+                TaskManager.sharedInstance().addNewTask(task!)
+                self.navigationController!.popViewController(animated: true)
+            }
+            else {
+                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
         }
+        else if AddTaskBtn.title == "SAVE" {
+            
+            var error = ""
+            var errorDis = ""
+            
+            if task!.title == "" {
+                error = "Error"
+                errorDis = "Task Title cannot be empty"
+            }
+            else if task!.amount == 0 || task!.amount == 0.0 {
+                error = "Error"
+                errorDis = "Amount cannot be empty"
+            }
+            else if task!.categoryID == "" {
+                error = "Error"
+                errorDis = "Category cannot be empty"
+            }
+            else if task!.members.count == 0 {
+                error = "Error"
+                errorDis = "Select any member to assign this task"
+            }
+            
+            if error == "" {
+                TaskManager.sharedInstance().updateTask(task!)
+                self.navigationController!.popViewController(animated: true)
+            }
+            else {
+                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+        }
+            
         else if AddTaskBtn.title == "EDIT" {
+            AddTaskBtn.title = "SAVE"
             cells.remove(at: 0)
-            cells.remove(at: cells.count-1)
+            if cells[cells.count-1] == "Delete" {
+                cells.remove(at: cells.count-1)
+            }
             acceptBtn.isHidden = true
             rejectBtn.isHidden = true
             isNew! = true
@@ -361,12 +504,32 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     
     
     @IBAction func assignToaddBtnPressed(_ sender: Any) {
-        //WalletMembers identifier
         if isNew! {
             addView(view: MemberView)
         }
     }
     
+    // Delete Task
+    
+    func DeleteTask() {
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
+        let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
+        alert.addAction(action)
+        alert.addAction(noAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func YesPressed(action : UIAlertAction) {
+        print("Kar de Delete")
+        TaskManager.sharedInstance().deleteTask(task!)
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func NoPressed(action : UIAlertAction) {
+        print("Nhn Kr Delete")
+    }
+
     
     
     // Animation and adding category view

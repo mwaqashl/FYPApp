@@ -15,8 +15,7 @@ class TaskObserver {
         "creator", //9
         "status", //10
         "doneBy", //11
-        "payee", // 12
-        "walletID"] //13
+        "walletID"] //12
     fileprivate var ref = FIRDatabase.database().reference()
     fileprivate static var singleInstance : TaskObserver?
     class func sharedInstance() -> TaskObserver {
@@ -82,8 +81,8 @@ class TaskObserver {
                 creatorID: dict[self.FIRKeys[9]] as! String,
                 status: getTaskStatus(dict[self.FIRKeys[10]] as! Int),
                 doneByID: dict[self.FIRKeys[11]] as? String,
-                payeeID: dict[self.FIRKeys[12]] as? String, memberIDs: [],
-                walletID: dict[self.FIRKeys[13]] as! String)
+                memberIDs: [],
+                walletID: dict[self.FIRKeys[12]] as! String)
             Resource.sharedInstance().tasks[snapshot.key] = task
             if self.autoObserve { self.observeTaskMemberAdded(task); self.observeTaskMemberUpdated(task); self.observeTaskMemberRemoved(task); }
             Delegate.sharedInstance().getTaskDelegates().forEach({ (taskDel) in
@@ -108,7 +107,6 @@ class TaskObserver {
             task.creatorID = dict[self.FIRKeys[9]] as! String
             task.status = getTaskStatus(dict[self.FIRKeys[10]] as! Int)
             task.doneByID = dict[self.FIRKeys[11]] as? String
-            task.payeeID = dict[self.FIRKeys[12]] as? String
             Resource.sharedInstance().tasks[snapshot.key] = task
             Delegate.sharedInstance().getTaskDelegates().forEach({ (taskDel) in
                 taskDel.taskUpdated(task)

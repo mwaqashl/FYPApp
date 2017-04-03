@@ -194,7 +194,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             }
             if error == "" {
                 TransactionManager.sharedInstance().updateTransactionInWallet(transaction!)
-                self.navigationController!.popViewController(animated: true)
             }
             else {
                 let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
@@ -307,7 +306,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         case "Delete":
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeleteCell") as! DeleteTableViewCell
-            
+            cell.DeleteBtn.addTarget(nil, action: #selector(self.DeleteTransaction), for: .touchUpInside)
             return cell
             
         case "Transaction By":
@@ -353,6 +352,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             else if cell.title.text == "Date" {
                 
                 cell.textview.inputView = datepicker
+                print(dateformatter.string(from: transaction!.date))
                 cell.textview.text = dateformatter.string(from: transaction!.date)
                 let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
                 let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
@@ -365,6 +365,27 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             cell.textview.isEditable = isNew! ? true : false
             return cell
         }
+    }
+    
+    // Delete Transaction Method
+    func DeleteTransaction() {
+        
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
+        let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
+        alert.addAction(action)
+        alert.addAction(noAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func YesPressed(action : UIAlertAction) {
+        print("Kar de Delete")
+        TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func NoPressed(action : UIAlertAction) {
+        print("Nhn Kr Delete")
     }
     
     func textViewDidChange(_ textView: UITextView) {
@@ -567,7 +588,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     
     //Transaction Delegate
     func transactionAdded(_ transaction: Transaction) {
-        print("dsfdf")
+        print("Aya kuch")
     }
     
     func transactionDeleted(_ transaction: Transaction) {
@@ -584,12 +605,8 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func transactionUpdated(_ transaction: Transaction) {
         if self.transaction!.id == transaction.id {
             self.transaction = transaction
-            let alert = UIAlertController(title: "Alert", message: "This Transaction Has been Updated", preferredStyle: .alert)
-            let action = UIAlertAction(title: "OK", style: .default) { (flag) in
-                self.tableView.reloadData()
-            }
-            alert.addAction(action)
-            present(alert, animated: true, completion: nil)
+            self.tableView.reloadSections([0], with: .automatic)
+            
         }
     }
 

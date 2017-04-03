@@ -35,9 +35,6 @@ class TaskManager {
             data["comment"] = task.comment
         }
         
-        if task.payeeID != nil {
-            data["payee"] = task.payeeID
-        }
         
         newTask.setValue(data)
         
@@ -84,10 +81,6 @@ class TaskManager {
         
         if task.comment != nil {
             data["comment"] = task.comment
-        }
-        
-        if task.payeeID != nil {
-            data["payee"] = task.payeeID!
         }
         
         

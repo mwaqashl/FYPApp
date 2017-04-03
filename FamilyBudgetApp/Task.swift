@@ -40,10 +40,6 @@ class Task {
         return nil
     }
     var doneByID: String?
-    var payee: User? {
-        return payeeID != nil ? Resource.sharedInstance().users[payeeID!] : nil
-    }
-    var payeeID: String?
     var members: [User] {
         var _members :[User] = []
         for(key,value) in Resource.sharedInstance().users {
@@ -67,14 +63,13 @@ class Task {
     var timeLeftObserver : ((Double, Task) -> Void)?
 
     
-    init(taskID : String, title: String, categoryID: String, amount: Double, comment: String?, dueDate: Double, startDate: Double, creatorID: String, status: TaskStatus, doneByID: String?, payeeID: String?, memberIDs: [String], walletID: String) {
+    init(taskID : String, title: String, categoryID: String, amount: Double, comment: String?, dueDate: Double, startDate: Double, creatorID: String, status: TaskStatus, doneByID: String?,  memberIDs: [String], walletID: String) {
         self.amount = amount
         self.categoryID = categoryID
         self.comment = comment
         self.creatorID = creatorID
         self.doneByID = doneByID
         self.dueDate = Date(timeIntervalSince1970: dueDate)
-        self.payeeID = payeeID
         self.startDate = Date(timeIntervalSince1970: startDate)
         self.status = status
         self.id = taskID

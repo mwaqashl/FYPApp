@@ -10,7 +10,8 @@ import UIKit
 
 class DeleteTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var DeleteTransactionbtn: UIButton!
+    
+    @IBOutlet weak var DeleteBtn: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()
