@@ -10,8 +10,9 @@ import UIKit
 
 
 
-class AddTransactionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate {
+class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate {
     
+    var newView : UIView?
     
     @IBOutlet weak var DoneBtn: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
@@ -38,6 +39,14 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        newView = UIView(frame: self.view.frame)
+        newView!.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
+        tap.delegate = self
+        tap.numberOfTapsRequired = 1
+        newView!.addGestureRecognizer(tap)
+        
         
         TransactionCategoryID = nil
         
@@ -283,6 +292,8 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             cell.textView.tag = 4
             cell.textView.isEditable = isNew! ? true : false
             
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+            
             return cell
             
         case "Category":
@@ -301,12 +312,15 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             cell.icon.layer.borderWidth = 1
             cell.icon.layer.cornerRadius = cell.icon.frame.width/2
             
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+
             return cell
             
         case "Delete":
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeleteCell") as! DeleteTableViewCell
             cell.DeleteBtn.addTarget(nil, action: #selector(self.DeleteTransaction), for: .touchUpInside)
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
             
         case "Transaction By":
@@ -314,7 +328,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             let cell = tableView.dequeueReusableCell(withIdentifier: "transactionbyCell") as! TransactionByTableViewCell
             cell.name.text = transaction?.transactionBy.userName
             let type = Resource.sharedInstance().currentWallet?.memberTypes[(transaction?.transactionById)!]
-            cell.personimage.image = #imageLiteral(resourceName: "persontemp")
+            cell.personimage.image = #imageLiteral(resourceName: "dp-male")
             
             if type == .admin {
                 print("admin")
@@ -328,7 +342,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                 print("member")
                 cell.type.text = "Member"
             }
-            
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
             
         default:
@@ -363,6 +377,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                 cell.textview.tag = 3
             }
             cell.textview.isEditable = isNew! ? true : false
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
         }
     }
@@ -370,7 +385,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     // Delete Transaction Method
     func DeleteTransaction() {
         
-        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .actionSheet)
         let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
         let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
         alert.addAction(action)
@@ -503,20 +518,27 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     }
     
     // Adding Category View
+    
+    func ViewTap() {
+        removeView()
+    }
+    
     func addView() {
+        newView = UIView(frame: self.view.frame)
+        newView!.backgroundColor = .lightGray
+        newView!.alpha = 0.5
+        newView!.isUserInteractionEnabled = true
         CategoryCollectionView.reloadData()
         CategoryView.layer.shadowColor = UIColor.black.cgColor
         CategoryView.layer.shadowOpacity = 0.7
         CategoryView.layer.shadowOffset = CGSize(width: 0, height: 0)
         CategoryView.layer.shadowRadius = 22.0
+        view.addSubview(newView!)
         view.addSubview(CategoryView)
         CategoryView.center = self.view.center
         CategoryView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
         CategoryView.alpha = 0
-        tableView.alpha = 0.2
-        segmentbtn.alpha = 0.2
-        segmentbtn.isEnabled = false
-        headertitle.layer.opacity = 0.2
+//        self.navigationController!.isNavigationBarHidden = true
         UIView.animate(withDuration: 0.4, animations: {
             self.CategoryView.alpha = 1.0
             self.CategoryView.transform = CGAffineTransform.identity
@@ -530,10 +552,8 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             
         }) { (Success) in
             self.CategoryView.removeFromSuperview()
-            self.headertitle.layer.opacity = 1
-            self.tableView.alpha = 1
-            self.segmentbtn.isEnabled = true
-            self.segmentbtn.alpha = 1
+            self.newView!.removeFromSuperview()
+//            self.navigationController?.isNavigationBarHidden = false
         }
     }
     
@@ -576,12 +596,12 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             if wallet.isOpen {
                 if (transaction!.transactionById == Resource.sharedInstance().currentUserId || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner) && Resource.sharedInstance().currentWallet!.isOpen {
                     DoneBtn.isEnabled = true
-                    DoneBtn.tintColor = .blue
+                    DoneBtn.tintColor = self.navigationItem.leftBarButtonItem?.tintColor
                     cells.append("Delete")
                 }
-                let range = NSMakeRange(0, self.tableView.numberOfSections)
-                let sections = NSIndexSet(indexesIn: range)
-                self.tableView.reloadSections(sections as IndexSet, with: .automatic)
+//                let range = NSMakeRange(0, self.tableView.numberOfSections)
+//                let sections = NSIndexSet(indexesIn: range)
+                self.tableView.reloadSections([0], with: .automatic)
             }
         }
     }
@@ -606,7 +626,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         if self.transaction!.id == transaction.id {
             self.transaction = transaction
             self.tableView.reloadSections([0], with: .automatic)
-            
         }
     }
 
