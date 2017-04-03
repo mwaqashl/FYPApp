@@ -15,6 +15,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     var walletIDs : [String] = []
+    var addWalletBtn = UIBarButtonItem()
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -34,12 +35,13 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.tableView.delegate = self
                 self.tableView.dataSource = self
                 
-                
             }
             
         }
         
         self.navigationItem.title = "All Wallets"
+        addWalletBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(self.addWalletBtnAction))
+        self.navigationItem.rightBarButtonItem = addWalletBtn
         
         Resource.sharedInstance().currentWalletID = "-KgKJagYIYwOtiAN3HrW"
         
@@ -50,6 +52,18 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+    func addWalletBtnAction() {
+        
+        guard let cont = self.storyboard?.instantiateViewController(withIdentifier: "newWallet") as? AddwalletViewController else {
+            return
+        }
+        
+        self.present(cont, animated: true, completion: nil)
+        
+    }
+    
     
     // TableView Delegate and Datasources
     
@@ -73,9 +87,23 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.icon.layer.borderColor = this!.color.cgColor
         cell.icon.clipsToBounds = true
         cell.icon.textColor = this!.color
-        
+        cell.selectionStyle = .none
         for view in cell.views {
             view.backgroundColor = this!.color
+        }
+        cell.ownerName.text = this?.creator.userName
+        this?.creator.getImage({ (data) in
+            cell.ownerImage.image = UIImage(data: data) ?? #imageLiteral(resourceName: "persontemp")
+        })
+        
+        if this!.isPersonal {
+            cell.membersCollectionView.isHidden = true
+            cell.membersLabel.isHidden = true
+        }
+        else {
+            
+            cell.membersCollectionView.isHidden = false
+            cell.membersLabel.isHidden = false
         }
         
         cell.icon.text = this?.icon

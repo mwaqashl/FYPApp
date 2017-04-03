@@ -30,7 +30,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
 //        barBtnColor = AddBtn.tintColor!
         
         Segmentbtn.selectedSegmentIndex = 0
-        
+        UserObserver.sharedInstance().startObserving()
         Delegate.sharedInstance().addTransactionDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)
         Delegate.sharedInstance().addWalletMemberDelegate(self)
@@ -76,6 +76,12 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         tableview.reloadData()
     }
 
+    
+    func allWalletsBtnTapped() {
+        
+        let cont = self.storyboard?.instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
+        self.navigationController?.pushViewController(cont, animated: true)
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

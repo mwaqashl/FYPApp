@@ -166,20 +166,20 @@ class UserWallet : Wallet {
 extension UIColor{
     var stringRepresentation : String {
         let color = self.cgColor
-        
         let numComponents = color.numberOfComponents;
         
         if numComponents == 4 {
             let components = color.components;
-            let red = components?[0];
-            let green = components?[1];
-            let blue = components?[2];
-            let alpha = components?[3];
-            return "\(red!):\(green!):\(blue!):\(alpha!)"
+            let red = components![0]*255;
+            let green = components![1]*255;
+            let blue = components![2]*255;
+            let alpha = components![3];
+            return "\(red):\(green):\(blue):\(alpha)"
         }
         return ""
     }
     convenience init(string : String) {
+
         let comps = string.components(separatedBy: ":")
         if comps.count == 4 {
             self.init(red: CGFloat(Double(comps[0])!)/255, green: CGFloat(Double(comps[1])!)/255, blue: CGFloat(Double(comps[2])!)/255, alpha: CGFloat(Double(comps[3])!))

@@ -86,11 +86,13 @@ import Firebase
                     Resource.sharedInstance().currentWalletID = thisUser.getUserID()
                     
                     if defaultSettings.value(forKey: "lastUserIDs") == nil {
-                        let strarr : [String] = []
+                        let strarr : [String:String] = [:]
                         defaultSettings.set(strarr, forKey: "lastUserIDs")
                     }
                     
-                    if (defaultSettings.value(forKey: "lastUserIDs") as! [String]).contains(thisUser.getUserID()){
+                    if (defaultSettings.value(forKey: "lastUserIDs") as! [String:String]).contains(where: { (this) -> Bool in
+                        return this.0 == thisUser.getUserID()
+                    }){
                         
                         Resource.sharedInstance().currentUserId = user!.uid
                         UserManager.sharedInstance().userLoggedIn(thisUser.getUserID())
@@ -103,8 +105,8 @@ import Firebase
                             if success {
                                 
                                 //did for quick logging in; refer to DefaultKeys for detail;
-                                var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String])
-                                users.append(thisUser.getUserID())
+                                var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String:String])
+                                users[thisUser.getUserID()] = thisUser.getUserID()
                                 defaultSettings.setValue(users, forKey: "lastUserIDs")
                                 callback(false, nil)
                                 

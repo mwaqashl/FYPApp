@@ -8,23 +8,30 @@
 
 import UIKit
 
-class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     // For Signup
     var date : Double?
     var selectedrow = 0 , previous = 0
     var gend = ["Male","Female"]
     
+    @IBOutlet weak var userImage: UIImageView!
     @IBOutlet weak var userName: UITextField!
     @IBOutlet weak var email: UITextField!
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var repassword: UITextField!
     @IBOutlet weak var gender: UITextField!
     @IBOutlet weak var dateofbirth: UITextField!
+    @IBOutlet weak var registerBtn: UIButton!
+    @IBOutlet weak var nextBtn: UIButton!
 
     var datepicker = UIDatePicker()
     var genderpicker = UIPickerView()
     let dateformat = DateFormatter()
+    let imagePicker = UIImagePickerController()
+    var selectedImage : UIImage?
+    
+    
     
     
     override func viewDidLoad() {
@@ -32,6 +39,9 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         print(Resource.sharedInstance().currencies.count)
         genderpicker.delegate = self
         genderpicker.dataSource = self
+        imagePicker.delegate = self
+        userImage.layer.cornerRadius = userImage.frame.width/2
+        
         gender.inputView = genderpicker
         dateofbirth.inputView = datepicker
         
@@ -40,6 +50,9 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
 //        
         genderpicker.backgroundColor = .white
         datepicker.backgroundColor = .white
+        
+        registerBtn.layer.borderColor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1).cgColor
+        registerBtn.layer.borderWidth = 1
         
         
         let toolbar = UIToolbar()
@@ -54,7 +67,18 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         gender.inputAccessoryView = toolbar
         dateofbirth.inputAccessoryView = toolbar
         
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
+        self.view.addGestureRecognizer(tap)
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+    }
+    
+    func viewTapped() {
+        
+        self.view.endEditing(true)
     }
     
     func donepressed(){
@@ -68,6 +92,14 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             gender.text = gend[selectedrow]
             previous = selectedrow
         }
+        
+        if gend[selectedrow] == "Male" && userImage.image == #imageLiteral(resourceName: "dp-female") {
+            userImage.image = #imageLiteral(resourceName: "dp-male")
+        }
+        else if gend[selectedrow] == "Female" && userImage.image == #imageLiteral(resourceName: "dp-male") {
+            userImage.image = #imageLiteral(resourceName: "dp-female")
+        }
+        
         self.view.endEditing(true)
     }
     
@@ -162,6 +194,59 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         self.dismiss(animated: true, completion: nil)
         
+    }
+    
+    func keyboardWillShow(notification: NSNotification) {
+        
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            self.view.frame.origin.y -= keyboardSize.height
+        }
+        
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            self.view.frame.origin.y += keyboardSize.height
+        }
+    }
+    
+    @IBAction func imageTapped(_ sender: UITapGestureRecognizer) {
+        
+        imagePicker.allowsEditing = false
+        imagePicker.sourceType = .photoLibrary
+        
+        self.present(imagePicker, animated: true, completion: nil)
+        
+    }
+    
+    internal func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            selectedImage = pickedImage
+        }
+        
+        userImage.image = selectedImage != nil ? selectedImage : (gend[selectedrow] == "Male" ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+//    private func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+//        if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+//            selectedImage = pickedImage
+//        }
+//        
+//        userImage.image = selectedImage != nil ? selectedImage : #imageLiteral(resourceName: "persontemp")
+//        
+//        dismiss(animated: true, completion: nil)
+//    }
+    
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        
+        
+        userImage.image = selectedImage != nil ? selectedImage : (gend[selectedrow] == "Male" ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+        
+        dismiss(animated: true, completion: nil)
     }
     
     /*

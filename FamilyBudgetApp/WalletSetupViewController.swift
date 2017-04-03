@@ -8,21 +8,35 @@
 
 import UIKit
 
-class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     //Currency
     var selectedindex = 0
     
     
     //For Wallet Setup
+    @IBOutlet weak var walletIcon: UILabel!
+    @IBOutlet weak var walletIconHeader: UILabel!
     @IBOutlet weak var walletname: UITextField!
     @IBOutlet weak var initialamount: UITextField!
     @IBOutlet weak var currencyName: UITextField!
     @IBOutlet weak var currencyCode: UITextField!
     @IBOutlet weak var currencyIcon: UILabel!
+    @IBOutlet weak var popoverView: UIView!
+    @IBOutlet weak var iconsCollectionView: UICollectionView!
+    @IBOutlet weak var colorsCollectionView: UICollectionView!
+    
+    @IBOutlet weak var finishBtn: UIButton!
+    
     
     var currencypicker = UIPickerView()
     var wallet : UserWallet?
+    var backView = UIView()
+    var selectedIcon = ""
+    var selectedColor : UIColor = .blue
+    var pSelectedIcon = ""
+    var pSelectedColor : UIColor = .blue
+    var colors : [UIColor] = [.blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +48,23 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         currencyCode.inputView = currencypicker
         
         currencypicker.backgroundColor = .white
+        backView = UIView(frame: self.view.frame)
+        backView.backgroundColor = UIColor.init(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.2)
+        
+        popoverView.isHidden = true
+        popoverView.layer.cornerRadius = 10
+        popoverView.layer.shadowColor = UIColor.gray.cgColor
+        popoverView.layer.shadowRadius = 2
+        
+        finishBtn.layer.borderColor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1).cgColor
+        finishBtn.layer.borderWidth = 1
+        
+        selectedIcon = "\u{A037}"
+        walletIcon.textColor = selectedColor
+        walletIconHeader.textColor = selectedColor
+        walletIcon.text = selectedIcon
+        walletIconHeader.text = selectedIcon
+        
         
         wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [:], isOpen: true, color: UIColor.blue.stringRepresentation)
         
@@ -50,6 +81,35 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         currencyCode.inputAccessoryView = toolbar
 
         // Do any additional setup after loading the view.
+    }
+    
+    func showPopUp() {
+        
+        self.view.addSubview(backView)
+        backView.alpha = 0
+        popoverView.isHidden = false
+        self.view.bringSubview(toFront: popoverView)
+        popoverView.transform = CGAffineTransform(scaleX: 0, y: 0)
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: .curveEaseInOut, animations: {() -> Void in
+            self.popoverView.transform = CGAffineTransform.identity
+            self.backView.alpha = 1
+        },completion: { _ in })
+        
+    }
+    
+    func hidePopUp() {
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: .curveEaseInOut, animations: {() -> Void in
+            self.popoverView.transform = CGAffineTransform(scaleX: 0, y: 0)
+            self.backView.alpha = 0
+        },completion: { _ in
+            
+            self.popoverView.isHidden = true
+            self.backView.removeFromSuperview()
+        
+        })
+        
     }
     
     func donepressed(){
@@ -84,7 +144,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
     {
-        var pickerLabel = UILabel()
+        let pickerLabel = UILabel()
         pickerLabel.textColor = UIColor.black
         let all = Array(Resource.sharedInstance().currencies.keys)
         let this = all[row]
@@ -133,7 +193,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         if error == "" {
             
-            let personalWallet = UserWallet(id: "", name: walletname!.text!, icon: "", currencyID: "", creatorID: Auth.sharedInstance().authUser!.getUserID(), balance: Double(initialamount.text!)!, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970*1000, isPersonal: true, memberTypes: [(Auth.sharedInstance().authUser?.getUserID())! : .owner], isOpen: true, color: "10:188:228:1")
+            let personalWallet = UserWallet(id: "", name: walletname!.text!, icon: selectedIcon, currencyID: wallet!.currencyID, creatorID: Auth.sharedInstance().authUser!.getUserID(), balance: Double(initialamount.text!)!, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [(Auth.sharedInstance().authUser?.getUserID())! : .owner], isOpen: true, color: selectedColor.stringRepresentation)
             
             let walletid = WalletManager.sharedInstance().addWallet(personalWallet)
             if walletid != "" {
@@ -160,8 +220,6 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
             return findFirstVC(cont: cont.presentingViewController!)
         }
         
-        
-        
     }
     
     @IBAction func backBtnAction(_ sender: Any) {
@@ -177,6 +235,140 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         })
         
         
+    }
+    
+    @IBAction func doneBtnAction(_ sender: Any) {
+        
+        hidePopUp()
+        
+        walletIcon.textColor = selectedColor
+        walletIconHeader.textColor = selectedColor
+        walletIcon.text = selectedIcon
+        walletIconHeader.text = selectedIcon
+    }
+    
+    @IBAction func cancelBtnAction(_ sender: Any) {
+        
+        
+        hidePopUp()
+        
+        walletIcon.textColor = pSelectedColor
+        walletIconHeader.textColor = pSelectedColor
+        walletIcon.text = pSelectedIcon
+        walletIconHeader.text = pSelectedIcon
+    }
+    
+    
+    @IBAction func changeIconAction(_ sender: Any) {
+        
+        showPopUp()
+        
+        pSelectedColor = selectedColor
+        pSelectedIcon = selectedIcon
+    }
+    
+    
+    // CollectionView Delegate and Datasources
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        
+        if collectionView.tag == 1 {
+            
+            let index = selectedIcon.unicodeScalars.first!.value - 41011
+            
+            let prev = collectionView.cellForItem(at: IndexPath.init(item: Int(index), section: 0)) as! DefaultCollectionViewCell
+            
+            prev.layer.borderColor = UIColor.lightGray.cgColor
+            prev.icon.textColor = UIColor.lightGray
+            
+            let cell = collectionView.cellForItem(at: indexPath) as! DefaultCollectionViewCell
+//            pSelectedIcon = selectedIcon
+            selectedIcon = "\(UnicodeScalar(indexPath.item + 41011)!)"
+            cell.layer.borderColor = selectedColor.cgColor
+            cell.icon.textColor = selectedColor
+            
+            
+            
+        }
+        else if collectionView.tag == 2 {
+            
+            let index = selectedIcon.unicodeScalars.first!.value - 41011
+
+            let prev = collectionView.cellForItem(at: IndexPath.init(item: colors.index(of: selectedColor)!, section: 0))
+            
+            prev?.layer.borderColor = UIColor.white.cgColor
+//            pSelectedColor = selectedColor
+            selectedColor = colors[indexPath.item]
+            
+            let new = collectionView.cellForItem(at: indexPath)
+            new?.layer.borderColor = selectedColor.cgColor
+            
+            let iconCell = iconsCollectionView.cellForItem(at: IndexPath.init(item: Int(index), section: 0)) as! DefaultCollectionViewCell
+            
+            iconCell.layer.borderColor = selectedColor.cgColor
+            iconCell.icon.textColor = selectedColor
+
+        }
+        
+        
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return collectionView.tag == 1 ? 29 : colors.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if collectionView.tag == 1 {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "icon", for: indexPath) as! DefaultCollectionViewCell
+
+            cell.icon.text = "\(UnicodeScalar(indexPath.item + 41011)!)"
+            cell.layer.borderWidth = 1
+            cell.layer.cornerRadius = cell.frame.width/2
+
+            if "\(UnicodeScalar(indexPath.item + 41011)!)" == selectedIcon {
+                cell.layer.borderColor = selectedColor.cgColor
+                cell.icon.textColor = selectedColor
+            }
+            else {
+                cell.layer.borderColor = UIColor.lightGray.cgColor
+                cell.icon.textColor = UIColor.lightGray
+            }
+            
+            return cell
+        }
+        else if collectionView.tag == 2 {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "color", for: indexPath)
+            
+            cell.layer.cornerRadius = 12
+            cell.backgroundColor = colors[indexPath.item]
+            
+            if cell.backgroundColor == selectedColor {
+                
+                cell.layer.borderColor = selectedColor.cgColor
+                cell.layer.borderWidth = 1
+                
+            }
+            else {
+                cell.layer.borderWidth = 1
+                cell.layer.borderColor = UIColor.white.cgColor
+            }
+            
+            return cell
+        }
+        
+        return UICollectionViewCell()
+        
+        
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return collectionView.tag == 1 ? CGSize(width: 50, height: 50) : CGSize(width: 24, height: 24)
     }
 
     /*
