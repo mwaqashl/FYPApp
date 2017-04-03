@@ -127,7 +127,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "373"
             endingLineNumber = "373"
-            landmarkName = "textViewDidChange(_:)"
+            landmarkName = "DeleteTransaction()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -143,8 +143,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "375"
             endingLineNumber = "375"
-            landmarkName = "AddTransactionViewController"
-            landmarkType = "3">
+            landmarkName = "DeleteTransaction()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -159,7 +159,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "373"
             endingLineNumber = "373"
-            landmarkName = "textViewDidChange(_:)"
+            landmarkName = "DeleteTransaction()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
