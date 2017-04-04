@@ -26,7 +26,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="anW-fc-kUU" kind="show" id="AML-0x-087"/>
+                        <segue destination="anW-fc-kUU" kind="relationship" relationship="rootViewController" id="ABA-dc-uMs"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mq6-YD-A56" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -56,6 +56,9 @@
                                     <segment title="Closed"/>
                                 </segments>
                                 <color key="tintColor" red="0.1688722372" green="0.74465757610000005" blue="0.90145617720000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <action selector="segmentBtnValueChanged:" destination="anW-fc-kUU" eventType="valueChanged" id="nCY-Zx-hy7"/>
+                                </connections>
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="70" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="oJf-ch-y4V">
                                 <rect key="frame" x="0.0" y="121" width="375" height="546"/>
@@ -107,7 +110,7 @@
                                                         <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                                     </collectionViewFlowLayout>
                                                     <cells>
-                                                        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="117-Kw-V6M" customClass="TaskMembersCollectionViewCell" customModule="FamilyBudgetApp" customModuleProvider="target">
+                                                        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="memberCell" id="117-Kw-V6M" customClass="TaskMembersCollectionViewCell" customModule="FamilyBudgetApp" customModuleProvider="target">
                                                             <rect key="frame" x="0.0" y="0.0" width="80" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -126,6 +129,13 @@
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
+                                                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="k" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fNp-FW-kgQ">
+                                                                        <rect key="frame" x="72" y="2" width="7" height="6"/>
+                                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                                        <nil key="textColor"/>
+                                                                        <nil key="highlightedColor"/>
+                                                                    </label>
                                                                 </subviews>
                                                             </view>
                                                             <constraints>
@@ -137,6 +147,11 @@
                                                                 <constraint firstAttribute="trailing" secondItem="mK7-Gl-5DK" secondAttribute="trailing" id="rRk-PF-5ax"/>
                                                                 <constraint firstItem="mK7-Gl-5DK" firstAttribute="leading" secondItem="TmO-7R-T8D" secondAttribute="trailing" constant="2" id="wni-PG-efQ"/>
                                                             </constraints>
+                                                            <connections>
+                                                                <outlet property="image" destination="TmO-7R-T8D" id="VaI-Ob-pfR"/>
+                                                                <outlet property="memberSelected" destination="fNp-FW-kgQ" id="2m6-dp-Jip"/>
+                                                                <outlet property="name" destination="mK7-Gl-5DK" id="HQD-C1-jyW"/>
+                                                            </connections>
                                                         </collectionViewCell>
                                                     </cells>
                                                 </collectionView>
@@ -195,7 +210,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="azR-OE-T64" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3401" y="811"/>
+            <point key="canvasLocation" x="3400.8000000000002" y="810.94452773613204"/>
         </scene>
         <!--Add Task View Controller-->
         <scene sceneID="6Yr-SC-195">
@@ -370,7 +385,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="bRn-St-BBT">
-                                                    <rect key="frame" x="18" y="39" width="349" height="36.5"/>
+                                                    <rect key="frame" x="18" y="39" width="349" height="37"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="4sC-93-of2">
                                                         <size key="itemSize" width="109" height="15"/>
@@ -394,7 +409,7 @@
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ry2-rw-YMc">
                                                                         <rect key="frame" x="17" y="0.0" width="92" height="15"/>
-                                                                        <color key="backgroundColor" red="0.1688722372" green="0.74465757610000005" blue="0.90145617720000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                        <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                         <nil key="highlightedColor"/>
@@ -408,6 +423,7 @@
                                                                     </label>
                                                                 </subviews>
                                                             </view>
+                                                            <color key="backgroundColor" red="0.1688722372" green="0.74465757610000005" blue="0.90145617720000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <constraints>
                                                                 <constraint firstItem="Csv-ef-YXs" firstAttribute="top" secondItem="vfh-qV-K5U" secondAttribute="top" id="1R2-NF-uxe"/>
                                                                 <constraint firstItem="Ry2-rw-YMc" firstAttribute="top" secondItem="vfh-qV-K5U" secondAttribute="top" id="3Oe-f4-D2F"/>
@@ -455,7 +471,7 @@
                                             <outlet property="membersCollection" destination="bRn-St-BBT" id="PnC-RC-77F"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="gO8-aM-0xU" customClass="DeleteTableViewCell" customModule="FamilyBudgetApp" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="deleteCell" id="gO8-aM-0xU" customClass="DeleteTableViewCell" customModule="FamilyBudgetApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="363" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gO8-aM-0xU" id="d0k-z0-hvW">
@@ -463,7 +479,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q3V-4m-uAn">
-                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                                     <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                                                     <state key="normal" title="DELETE TASK">
@@ -490,13 +506,13 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Transaction By" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d07-xm-Wwl">
-                                                    <rect key="frame" x="8" y="19" width="132.5" height="23"/>
+                                                    <rect key="frame" x="8" y="19" width="133" height="23"/>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="19"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="77P-CN-5c2">
-                                                    <rect key="frame" x="325" y="11.5" width="40" height="40"/>
+                                                    <rect key="frame" x="325" y="11" width="40" height="40"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="40" id="0tz-mH-Vyd"/>
                                                         <constraint firstAttribute="width" constant="40" id="MJI-F9-Voo"/>
@@ -577,10 +593,6 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BPc-Cg-2OF">
                                 <rect key="frame" x="36" y="597" width="150" height="50"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="150" id="9tS-JF-pfr"/>
-                                    <constraint firstAttribute="height" constant="50" id="yQx-hd-BK1"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <state key="normal" title="ACCEPT">
                                     <color key="titleColor" red="0.354736328125" green="0.64263237847222221" blue="0.97396594282500004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -601,11 +613,13 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="VDS-55-QS6" firstAttribute="top" secondItem="PCn-aV-zEK" secondAttribute="bottom" constant="20" id="4SP-vB-QXe"/>
+                            <constraint firstItem="BPc-Cg-2OF" firstAttribute="width" secondItem="PCn-aV-zEK" secondAttribute="width" id="4rW-mo-QH2"/>
                             <constraint firstItem="bed-ny-XuB" firstAttribute="top" secondItem="lte-kq-wPQ" secondAttribute="bottom" constant="8" id="5o4-rE-Zcx"/>
                             <constraint firstItem="lte-kq-wPQ" firstAttribute="top" secondItem="cFr-Gj-WnN" secondAttribute="bottom" constant="70" id="5oC-CZ-N1h"/>
                             <constraint firstItem="bed-ny-XuB" firstAttribute="leading" secondItem="qyX-Zp-Nwl" secondAttribute="leading" id="GCk-hs-CIK"/>
                             <constraint firstItem="VDS-55-QS6" firstAttribute="top" secondItem="BPc-Cg-2OF" secondAttribute="bottom" constant="20" id="GUC-YO-eJC"/>
                             <constraint firstItem="lte-kq-wPQ" firstAttribute="leading" secondItem="bed-ny-XuB" secondAttribute="leading" constant="20" id="Sc4-bX-kd6"/>
+                            <constraint firstItem="BPc-Cg-2OF" firstAttribute="height" secondItem="PCn-aV-zEK" secondAttribute="height" id="VwM-ZZ-BBO"/>
                             <constraint firstItem="PCn-aV-zEK" firstAttribute="leading" secondItem="BPc-Cg-2OF" secondAttribute="trailing" constant="3" id="WjX-Os-c5v"/>
                             <constraint firstAttribute="trailing" secondItem="bed-ny-XuB" secondAttribute="trailing" id="eya-2g-idA"/>
                             <constraint firstItem="BPc-Cg-2OF" firstAttribute="leading" secondItem="qyX-Zp-Nwl" secondAttribute="leadingMargin" constant="20" id="lrD-ZW-97S"/>
@@ -948,6 +962,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="99j-Kg-g2j"/>
+        <segue reference="Klo-GZ-arA"/>
     </inferredMetricsTieBreakers>
 </document>

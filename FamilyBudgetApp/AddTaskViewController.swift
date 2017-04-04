@@ -64,6 +64,15 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             categoriesKeys.append(key)
         }
         
+        acceptBtn.layer.cornerRadius = acceptBtn.layer.frame.height/2
+        rejectBtn.layer.cornerRadius = rejectBtn.layer.frame.height/2
+        
+        acceptBtn.layer.borderWidth = 1
+        rejectBtn.layer.borderWidth = 1
+        
+        acceptBtn.layer.borderColor = UIColor.blue.cgColor
+        rejectBtn.layer.borderColor = UIColor.red.cgColor
+        
         acceptBtn.isHidden = true
         rejectBtn.isHidden = true
         
@@ -78,16 +87,16 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         else if !(isNew!) {
             TaskCategoryID = task!.categoryID
             cells.insert("Created By", at: 0)
-            if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || task!.creatorID == Resource.sharedInstance().currentUserId || task!.doneByID == Resource.sharedInstance().currentUserId {
+            if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || task!.creatorID == Resource.sharedInstance().currentUserId {
 
                 AddTaskBtn.title = "EDIT"
                 cells.append("Delete")
             }
-            if self.task?.status == .open && (task?.memberIDs.contains(Resource.sharedInstance().currentUserId!))! {
+            if self.task!.status == .open && (task?.doneByID == "" || task?.doneByID == nil) {
                 acceptBtn.isHidden = false
                 rejectBtn.isHidden = false
             }
-            else if self.task?.status != .open  {
+            if self.task!.status != .open && task!.doneByID == Resource.sharedInstance().currentUserId {
                 acceptBtn.setTitle("COMPLETED", for: .normal)
                 rejectBtn.setTitle("NOT DOING", for: .normal)
                 acceptBtn.isHidden = false
@@ -144,7 +153,9 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             cell.taskTitle.isEditable = isNew! ? true : false
             cell.taskTitle.isUserInteractionEnabled = isNew! ? true : false
             cell.taskTitle.delegate = self
-            cell.taskTitle.tag = 0                                         // tag 0 for title
+            cell.taskTitle.tag = 1                  // tag 1 for title
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+
             return cell
             
         case "Comments":
@@ -167,7 +178,8 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             if cell.textView.contentSize.height > cell.frame.height {
                 cell.frame.size.height += (cell.textView.contentSize.height - cell.frame.height) + 8
             }
-            
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+
             return cell
             
             
@@ -183,7 +195,8 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             cell.icon.layer.borderColor = task!.category!.color.cgColor
             cell.icon.layer.borderWidth = 1
             cell.icon.layer.cornerRadius = cell.icon.frame.width/2
-            
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+
             return cell
             
         case "AssignTo":
@@ -194,6 +207,8 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             cell.membersCollection.dataSource = self
             cell.membersCollection.reloadData()
             cell.addmemberBtn.isHidden = isNew! ? false : true
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+
             return cell
             
         case "Delete":
@@ -206,9 +221,10 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         case "Created By":
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "transactionbyCell") as! TransactionByTableViewCell
+            cell.title.text = "Created By :"
             cell.name.text = task!.creator!.userName
             let type = Resource.sharedInstance().currentWallet?.memberTypes[(task!.creatorID)]
-            cell.personimage.image = #imageLiteral(resourceName: "persontemp")
+            cell.personimage.image = #imageLiteral(resourceName: "dp-male")
             
             if type == .admin {
                 print("admin")
@@ -222,7 +238,8 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 print("member")
                 cell.type.text = "Member"
             }
-            
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+
             return cell
             
         default:
@@ -233,7 +250,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             
             if cell.title.text == "Amount" {
                 cell.textview.text = task?.amount != 0.0 ? "\(task?.amount ?? 0)" : "0"
-                cell.textview.tag = 1                   // amount tag 1
+                cell.textview.tag = 2                   // amount tag 2
             }
                 
             else if cell.title.text == "Date" {
@@ -252,6 +269,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             cell.textview.isEditable = isNew! ? true : false
             cell.textview.isUserInteractionEnabled = isNew! ? true : false
             cell.textview.delegate = self
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
         }//Switch End
         
@@ -275,8 +293,8 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     
     
 //    TextView Delegates
-//    Title tag == 0
-//    Amount tag == 1
+//    Title tag == 1
+//    Amount tag == 2
 //    comment tag == 5
     
     func textViewDidChange(_ textView: UITextView) {
@@ -285,22 +303,29 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         textView.textColor = .black
-        if textView.tag == 0 || textView.tag == 5 {
-            if textView.text == "Write Here" || textView.text == "Enter Title" {
+        if textView.tag == 5 {
+            if textView.text == "Write Here" {
                 textView.text = ""
             }
         }
         if textView.tag == 1 {
+            if textView.text == "Enter Title" {
+                textView.text = ""
+            }
+        }
+        if textView.tag == 2 {
             textView.text = textView.text == "0" ? "" : "\(task!.amount)"
         }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.tag == 0 {
+        if textView.tag == 1 {
             task!.title = textView.text
+            textView.text = task?.title != nil || task?.title != "" ? task?.title : "Enter Title"
         }
-        else if textView.tag == 1 {
+        else if textView.tag == 2 {
             task!.amount = Double(textView.text) ?? 0.0
+            textView.text = "\(task!.amount)"
         }
         else if textView.tag == 5 {
             task!.comment = textView.text
@@ -353,7 +378,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         
         else if collectionView == membersCollectionView {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "memberCell", for: indexPath) as! TaskMembersCollectionViewCell
-            cell.image.image = #imageLiteral(resourceName: "persontemp")
+            cell.image.image = #imageLiteral(resourceName: "dp-male")
             cell.name.text = walletmembers![indexPath.item].userName
             cell.memberSelected.isHidden = true
             return cell
@@ -361,7 +386,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             // table cell collection view
         else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "memberCell", for: indexPath) as! TaskMembersCollectionViewCell
-            cell.image.image = #imageLiteral(resourceName: "persontemp")
+            cell.image.image = #imageLiteral(resourceName: "dp-male")
             cell.name.text = task?.members[indexPath.item].userName
             cell.name.layer.cornerRadius = cell.name.layer.frame.height/2
             cell.memberSelected.isHidden = true
@@ -408,6 +433,10 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     
     
     @IBAction func AcceptBtnPressed(_ sender: Any) {
+        task!.doneByID = Resource.sharedInstance().currentUserId
+//        TaskManager.sharedInstance().updateTask(task!)
+        TaskManager.sharedInstance().taskStatusChanged(task!)
+        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func RejectBtnPressed(_ sender: Any) {
@@ -493,12 +522,8 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             acceptBtn.isHidden = true
             rejectBtn.isHidden = true
             isNew! = true
-            
-            let indexpath = IndexPath(item: cells.count, section: 0)
-            tableview.reloadRows(at: [indexpath], with: .automatic)
-//            let range = NSMakeRange(0, tableView.numberOfSections)
-//            let sections = NSIndexSet(indexesIn: range)
-//            self.tableView.reloadSections(sections as IndexSet, with: .automatic)
+    
+            tableview.reloadSections([0], with: .automatic)
         }
     }
     

@@ -104,7 +104,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
-                
+                // currency not available right now
                 if self.isNew! {
                     self.transaction = Transaction(transactionId: "", amount: 0, categoryId: "", comments: nil, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: "-KUSVorHYEOc4zYoAwgp", isExpense: true, walletID: Resource.sharedInstance().currentWalletID!)
                     self.cells.append("Comments")
@@ -327,7 +327,8 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "transactionbyCell") as! TransactionByTableViewCell
             cell.name.text = transaction?.transactionBy.userName
-            let type = Resource.sharedInstance().currentWallet?.memberTypes[(transaction?.transactionById)!]
+            let type = Resource.sharedInstance().currentWallet!.memberTypes[(transaction!.transactionById)]
+            
             cell.personimage.image = #imageLiteral(resourceName: "dp-male")
             
             if type == .admin {

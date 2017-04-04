@@ -28,6 +28,8 @@
 		04C2BD6A1E924BD80064AADB /* DeleteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD691E924BD80064AADB /* DeleteTableViewCell.swift */; };
 		04C2BD6C1E924BF20064AADB /* TransactionByTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD6B1E924BF20064AADB /* TransactionByTableViewCell.swift */; };
 		04C2BD6E1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */; };
+		04C2BD701E92DEFE0064AADB /* TasksListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD6F1E92DEFE0064AADB /* TasksListViewController.swift */; };
+		04C2BD721E92E2140064AADB /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD711E92E2140064AADB /* TaskTableViewCell.swift */; };
 		543F485DAE600F08C8532E77 /* Pods_FamilyBudgetApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */; };
 		7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C51E8717D80074CD60 /* iconFont.ttf */; };
 		7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */; };
@@ -89,6 +91,8 @@
 		04C2BD691E924BD80064AADB /* DeleteTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteTableViewCell.swift; sourceTree = "<group>"; };
 		04C2BD6B1E924BF20064AADB /* TransactionByTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionByTableViewCell.swift; sourceTree = "<group>"; };
 		04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategorySelectionCollectionViewCell.swift; sourceTree = "<group>"; };
+		04C2BD6F1E92DEFE0064AADB /* TasksListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksListViewController.swift; sourceTree = "<group>"; };
+		04C2BD711E92E2140064AADB /* TaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
 		7706A6C51E8717D80074CD60 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = SOURCE_ROOT; };
 		7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = SOURCE_ROOT; };
@@ -170,10 +174,11 @@
 			children = (
 				773859541E90675E004BFBF2 /* Transaction */,
 				773859531E906751004BFBF2 /* Login */,
+				04C2BD6F1E92DEFE0064AADB /* TasksListViewController.swift */,
+				04C2BD511E9247BF0064AADB /* AddTaskViewController.swift */,
 				04343C041E5EBDC800417C91 /* HomeViewController.swift */,
 				04C2BD6B1E924BF20064AADB /* TransactionByTableViewCell.swift */,
 				04C2BD671E924B850064AADB /* AssignToTableViewCell.swift */,
-				04C2BD511E9247BF0064AADB /* AddTaskViewController.swift */,
 				04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */,
 				04C2BD691E924BD80064AADB /* DeleteTableViewCell.swift */,
 				04C2BD651E924B780064AADB /* TaskTitleTableViewCell.swift */,
@@ -204,6 +209,7 @@
 		773859551E906777004BFBF2 /* UISubClasses */ = {
 			isa = PBXGroup;
 			children = (
+				04C2BD711E92E2140064AADB /* TaskTableViewCell.swift */,
 				774DFABE1E8FA3070067010A /* DefaultCollectionViewCell.swift */,
 				777D02981E8A860000C682F2 /* WalletTableViewCell.swift */,
 				773CC7021E92CD3F0046E90F /* UserSearchResultTableViewCell.swift */,
@@ -472,6 +478,7 @@
 				04C2BD661E924B780064AADB /* TaskTitleTableViewCell.swift in Sources */,
 				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
 				775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */,
+				04C2BD721E92E2140064AADB /* TaskTableViewCell.swift in Sources */,
 				04C2BD611E9247BF0064AADB /* (null) in Sources */,
 				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
 				04C2BD631E9247BF0064AADB /* (null) in Sources */,
@@ -508,6 +515,7 @@
 				775C2A1B1E5B11AD00E409B6 /* TaskObserver.swift in Sources */,
 				04C2BD5F1E9247BF0064AADB /* TaskMembersCollectionViewCell.swift in Sources */,
 				04C2BD681E924B850064AADB /* AssignToTableViewCell.swift in Sources */,
+				04C2BD701E92DEFE0064AADB /* TasksListViewController.swift in Sources */,
 				775C2A191E5B11AD00E409B6 /* Task.swift in Sources */,
 				044B713B1E81618200613ECA /* WalletSetupViewController.swift in Sources */,
 			);
