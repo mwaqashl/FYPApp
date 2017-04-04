@@ -60,9 +60,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         
         walletmembers = Resource.sharedInstance().currentWallet!.members
         
-        for key in Resource.sharedInstance().categories.keys {
-            categoriesKeys.append(key)
-        }
+        categoriesKeys = Array(Resource.sharedInstance().categories.keys)
         
         acceptBtn.layer.cornerRadius = acceptBtn.layer.frame.height/2
         rejectBtn.layer.cornerRadius = rejectBtn.layer.frame.height/2
@@ -76,35 +74,45 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         acceptBtn.isHidden = true
         rejectBtn.isHidden = true
         
-        // Creating New Task
-        
-        if self.isNew! {
-            self.task = Task.init(taskID: "", title: "", categoryID: "", amount: 0.0, comment: nil, dueDate: Date().timeIntervalSince1970, startDate: Date().timeIntervalSince1970, creatorID: Resource.sharedInstance().currentUserId!, status: .open, doneByID: "", memberIDs: [], walletID:Resource.sharedInstance().currentWalletID!)
-        }
+        HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             
-        // Previous Tasks Viewing
-        
-        else if !(isNew!) {
-            TaskCategoryID = task!.categoryID
-            cells.insert("Created By", at: 0)
-            if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || task!.creatorID == Resource.sharedInstance().currentUserId {
+            if flag {
+                
+                // Creating New Task
+                
+                if self.isNew! {
+                    self.task = Task.init(taskID: "", title: "", categoryID: "", amount: 0.0, comment: nil, dueDate: Date().timeIntervalSince1970, startDate: Date().timeIntervalSince1970, creatorID: Resource.sharedInstance().currentUserId!, status: .open, doneByID: "", memberIDs: [], walletID:Resource.sharedInstance().currentWalletID!)
+                }
+                    
+                    // Previous Tasks Viewing
+                    
+                else if !(self.isNew!) {
+                    self.TaskCategoryID = self.task!.categoryID
+                    self.cells.insert("Created By", at: 0)
+                    if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || self.task!.creatorID == Resource.sharedInstance().currentUserId {
+                        
+                        self.AddTaskBtn.title = "EDIT"
+                        self.cells.append("Delete")
+                    }
+                    if self.task!.status == .open && (self.task?.doneByID == "" || self.task?.doneByID == nil) {
+                        self.acceptBtn.isHidden = false
+                        self.rejectBtn.isHidden = false
+                    }
+                    if self.task!.status != .open && self.task!.doneByID == Resource.sharedInstance().currentUserId {
+                        self.acceptBtn.setTitle("COMPLETED", for: .normal)
+                        self.rejectBtn.setTitle("NOT DOING", for: .normal)
+                        self.acceptBtn.isHidden = false
+                        self.rejectBtn.isHidden = false
+                    }
+                    
+                }
 
-                AddTaskBtn.title = "EDIT"
-                cells.append("Delete")
-            }
-            if self.task!.status == .open && (task?.doneByID == "" || task?.doneByID == nil) {
-                acceptBtn.isHidden = false
-                rejectBtn.isHidden = false
-            }
-            if self.task!.status != .open && task!.doneByID == Resource.sharedInstance().currentUserId {
-                acceptBtn.setTitle("COMPLETED", for: .normal)
-                rejectBtn.setTitle("NOT DOING", for: .normal)
-                acceptBtn.isHidden = false
-                rejectBtn.isHidden = false
+                
             }
             
         }
-        // Do any additional setup after loading the view.
+        
+                // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {

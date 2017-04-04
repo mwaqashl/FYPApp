@@ -46,7 +46,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         dateformat.dateFormat = "dd-MMM-yyyy"
         
         
-//        let CurrIcon = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
@@ -60,6 +59,9 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                     self.AddBtn.isEnabled = false
                     self.AddBtn.tintColor = .clear
                 }
+                
+                
+                let CurrIcon = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
 
             }
         }
@@ -95,7 +97,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     func allWalletsBtnTapped() {
         
         let cont = self.storyboard?.instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
-        self.navigationController?.pushViewController(cont, animated: true)
+        self.present(cont, animated: true, completion: nil)
     }
     
     override func didReceiveMemoryWarning() {

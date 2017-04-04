@@ -37,9 +37,9 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         Delegate.sharedInstance().addWalletMemberDelegate(self)
         Delegate.sharedInstance().addTaskMemberDelegate(self)
 
-//        UserObserver.sharedInstance().startObserving()          // home page pr lage ga..:D
+        //        UserObserver.sharedInstance().startObserving()
+        TaskObserver.sharedInstance().autoObserve = true          // home page pr lage ga..:D
         TaskObserver.sharedInstance().startObserving(TasksOf: Resource.sharedInstance().currentWallet!)
-        TaskObserver.sharedInstance().autoObserve = true
         
         // Do any additional setup after loading the view.
     }
@@ -255,6 +255,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     func taskUpdated(_ task: Task) {
         if task.walletID == Resource.sharedInstance().currentWalletID {
+            
             tableview.reloadData()
         }
     }
