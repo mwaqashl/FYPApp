@@ -41,6 +41,18 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         TaskObserver.sharedInstance().autoObserve = true          // home page pr lage ga..:D
         TaskObserver.sharedInstance().startObserving(TasksOf: Resource.sharedInstance().currentWallet!)
         
+        for key in Resource.sharedInstance().tasks.keys {
+            let task = Resource.sharedInstance().tasks[key]
+            if task!.walletID == Resource.sharedInstance().currentWalletID {
+                Tasks.append(task!)
+                if SegmentBtn.selectedSegmentIndex == 0 {
+                    if task!.status == .open {
+                        filterTask.append(task!)
+                    }
+                }
+            }
+        }
+        
         // Do any additional setup after loading the view.
     }
     
@@ -244,19 +256,33 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     func taskDeleted(_ task: Task) {
         if task.walletID == Resource.sharedInstance().currentWalletID {
-//            for i in 0..<taskskey.count {
-//                if taskskey[i] == task.id {
-//                    taskskey.remove(at: i)
-//                    tableview.reloadData()
-//              }
-//            }
+            for i in 0..<Tasks.count {
+                if Tasks[i].id == task.id {
+                    Tasks.remove(at: i)
+              }
+            }
+            for i in 0..<filterTask.count {
+                if filterTask[i].id == task.id {
+                    filterTask.remove(at: i)
+                    tableview.reloadSections([0], with: .automatic)
+                }
+            }
         }
     }
     
     func taskUpdated(_ task: Task) {
         if task.walletID == Resource.sharedInstance().currentWalletID {
-            
-            tableview.reloadData()
+            for i in 0..<filterTask.count {
+                if task.id == filterTask[i].id {
+                    filterTask[i] = task
+                    tableview.reloadSections([0], with: .automatic)
+                }
+            }
+            for i in 0..<Tasks.count {
+                if task.id == Tasks[i].id {
+                    Tasks[i] = task
+                }
+            }
         }
     }
     
@@ -278,12 +304,34 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     func memberAdded(_ member : User, task : Task) {
         if task.walletID == Resource.sharedInstance().currentWalletID {
-            tableview.reloadData()
+            for i in 0..<filterTask.count {
+                if task.id == filterTask[i].id {
+                    filterTask[i] = task
+                    tableview.reloadSections([0], with: .automatic)
+                }
+            }
+            for i in 0..<Tasks.count {
+                if task.id == Tasks[i].id {
+                    Tasks[i] = task
+                }
+            }
         }
     }
     
     func memberLeft(_ member : User, task : Task) {
-        tableview.reloadData()
+        if task.walletID == Resource.sharedInstance().currentWalletID {
+            for i in 0..<filterTask.count {
+                if task.id == filterTask[i].id {
+                    filterTask[i] = task
+                    tableview.reloadSections([0], with: .automatic)
+                }
+            }
+            for i in 0..<Tasks.count {
+                if task.id == Tasks[i].id {
+                    Tasks[i] = task
+                }
+            }
+        }
     }
     
         
