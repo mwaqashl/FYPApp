@@ -10,12 +10,7 @@ import UIKit
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, WalletDelegate {
 
-    @IBOutlet weak var label1: UILabel!
-    @IBOutlet weak var label2: UILabel!
-    
-    
     var walletIDs : [String] = []
-    var addWalletBtn = UIBarButtonItem()
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -39,12 +34,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         }
         
-        self.navigationItem.title = "All Wallets"
-        addWalletBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(self.addWalletBtnAction))
-        self.navigationItem.rightBarButtonItem = addWalletBtn
-        
-        Resource.sharedInstance().currentWalletID = "-KgKJagYIYwOtiAN3HrW"
-        
         // Do any additional setup after loading the view.
     }
 
@@ -53,8 +42,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Dispose of any resources that can be recreated.
     }
     
-    
-    func addWalletBtnAction() {
+    @IBAction func addWalletBtnAction(sender: UIButton) {
         
         guard let cont = self.storyboard?.instantiateViewController(withIdentifier: "newWallet") as? AddwalletViewController else {
             return
@@ -64,6 +52,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     }
     
+    @IBAction func backBtnAction(sender: UIButton) {
+        
+        self.dismiss(animated: true, completion: nil)
+        
+    }
     
     // TableView Delegate and Datasources
     

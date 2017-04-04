@@ -251,7 +251,8 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         
         hidePopUp()
-        
+        print(selectedIcon)
+        print(pSelectedIcon)
         walletIcon.textColor = pSelectedColor
         walletIconHeader.textColor = pSelectedColor
         walletIcon.text = pSelectedIcon

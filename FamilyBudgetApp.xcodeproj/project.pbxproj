@@ -33,6 +33,8 @@
 		7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */; };
 		7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */; };
 		770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */; };
+		773CC7031E92CD3F0046E90F /* UserSearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773CC7021E92CD3F0046E90F /* UserSearchResultTableViewCell.swift */; };
+		773CC7051E92F9F60046E90F /* MembersCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773CC7041E92F9F60046E90F /* MembersCollectionViewCell.swift */; };
 		7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B51E57231C006A25AF /* AppDelegate.swift */; };
 		7742C7B81E57231C006A25AF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B71E57231C006A25AF /* ViewController.swift */; };
 		7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7B91E57231C006A25AF /* Main.storyboard */; };
@@ -92,6 +94,8 @@
 		7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = SOURCE_ROOT; };
 		7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-25.ttf"; sourceTree = SOURCE_ROOT; };
 		770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		773CC7021E92CD3F0046E90F /* UserSearchResultTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSearchResultTableViewCell.swift; sourceTree = "<group>"; };
+		773CC7041E92F9F60046E90F /* MembersCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MembersCollectionViewCell.swift; sourceTree = "<group>"; };
 		7742C7B21E57231C006A25AF /* FamilyBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7742C7B51E57231C006A25AF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7742C7B71E57231C006A25AF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -202,9 +206,11 @@
 			children = (
 				774DFABE1E8FA3070067010A /* DefaultCollectionViewCell.swift */,
 				777D02981E8A860000C682F2 /* WalletTableViewCell.swift */,
+				773CC7021E92CD3F0046E90F /* UserSearchResultTableViewCell.swift */,
 				04B093991E82801D003E26DE /* CommentsTableViewCell.swift */,
 				044B71421E8188D600613ECA /* TimelineTableViewCell.swift */,
 				04B093971E827FFE003E26DE /* CategoryTableViewCell.swift */,
+				773CC7041E92F9F60046E90F /* MembersCollectionViewCell.swift */,
 				04B093951E827F81003E26DE /* DefaultTableViewCell.swift */,
 			);
 			name = UISubClasses;
@@ -357,7 +363,7 @@
 				TargetAttributes = {
 					7742C7B11E57231C006A25AF = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 4947Y2A6XF;
+						DevelopmentTeam = M9MSRMULXS;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
@@ -455,9 +461,11 @@
 			files = (
 				046DCDAC1E8AA1DF00A3BC15 /* (null) in Sources */,
 				04C2BD6E1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift in Sources */,
+				773CC7051E92F9F60046E90F /* MembersCollectionViewCell.swift in Sources */,
 				777D02991E8A860000C682F2 /* WalletTableViewCell.swift in Sources */,
 				775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */,
 				774DFABF1E8FA3070067010A /* DefaultCollectionViewCell.swift in Sources */,
+				773CC7031E92CD3F0046E90F /* UserSearchResultTableViewCell.swift in Sources */,
 				04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */,
 				775C2A181E5B11AD00E409B6 /* Resource.swift in Sources */,
 				775C2A261E5B173300E409B6 /* Assets.swift in Sources */,
@@ -623,7 +631,7 @@
 			baseConfigurationReference = 2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4947Y2A6XF;
+				DEVELOPMENT_TEAM = M9MSRMULXS;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetApp;
@@ -637,7 +645,7 @@
 			baseConfigurationReference = 8A8B1FA4EAEBCFC2910F799F /* Pods-FamilyBudgetApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4947Y2A6XF;
+				DEVELOPMENT_TEAM = M9MSRMULXS;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetApp;
