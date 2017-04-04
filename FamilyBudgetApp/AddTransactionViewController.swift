@@ -10,11 +10,10 @@ import UIKit
 
 
 
-class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate {
+class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate, UICollectionViewDelegateFlowLayout {
     
     var newView : UIView?
     
-    @IBOutlet weak var DoneBtn: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var CategoryCollectionView: UICollectionView!
     
@@ -23,7 +22,6 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     
     @IBOutlet var CategoryView: UIView!
     
-    var TransactionCategoryID : String? = nil
     var date : Double?
     
     var cells = ["Amount","Category","Date"]
@@ -31,15 +29,21 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     
     var datepicker = UIDatePicker()
     let toolbar = UIToolbar()
-    var isNew : Bool?
+    var isNew : Bool = true
+    var isEdit: Bool = true
+    var addBtn = UIBarButtonItem()
+    var editBtn = UIBarButtonItem()
     let dateformatter = DateFormatter()
-    
+    var selectedCategory = ""
+    var pSelectedCategory = ""
     var Income = [String]()
     var Expense = [String]()
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        isEdit = isNew
+        CategoryView.isHidden = true
         newView = UIView(frame: self.view.frame)
         newView!.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
@@ -47,42 +51,22 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         tap.numberOfTapsRequired = 1
         newView!.addGestureRecognizer(tap)
         
+        newView = UIView(frame: self.view.frame)
+        newView!.backgroundColor = .lightGray
+        newView!.alpha = 0.5
+        newView!.isUserInteractionEnabled = true
         
-        TransactionCategoryID = nil
+        addBtn = UIBarButtonItem(title: "\u{A009}", style: .plain, target: self, action: #selector(self.addBtnPressed))
+        addBtn.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
         
-        if !(isNew!) {
-            TransactionCategoryID = transaction!.categoryId
-            headertitle.text = "TRANSACTION DETAIL"
-            DoneBtn.title = "EDIT"
-            DoneBtn.isEnabled = false
-            DoneBtn.tintColor = .clear
-            cells.insert("Transaction By", at: 0)       // first row for transaction By
-            if transaction!.comments != nil {
-                cells.append("Comments")                // if Comments are not nil add comments line
-            }
-            if (transaction!.transactionById == Resource.sharedInstance().currentUserId || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner) && Resource.sharedInstance().currentWallet!.isOpen {
-                DoneBtn.isEnabled = true
-                DoneBtn.tintColor = .blue
-                cells.append("Delete")
-            }
-            if transaction!.isExpense {
-                segmentbtn.selectedSegmentIndex = 0
-            }
-            else {
-                segmentbtn.selectedSegmentIndex = 1
-            }
-            segmentbtn.isEnabled = false
-        }
         
-        tableView.dataSource = self
-        tableView.delegate = self
+        editBtn = UIBarButtonItem(title: "\u{A013}", style: .plain, target: self, action: #selector(self.editBtnPressed))
+        editBtn.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
+        addBtn.tintColor = bluethemecolor
+        editBtn.tintColor = bluethemecolor
         
-        CategoryCollectionView.delegate = self
-        CategoryCollectionView.dataSource = self
+        self.navigationItem.backBarButtonItem?.tintColor = bluethemecolor
         
-//        tableView.estimatedRowHeight = 80
-//        tableView.rowHeight = UITableViewAutomaticDimension
-
         datepicker.maximumDate = Date()
         datepicker.datePickerMode = .date
         datepicker.backgroundColor = .white
@@ -105,28 +89,131 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
                 // currency not available right now
-                if self.isNew! {
-                    self.transaction = Transaction(transactionId: "", amount: 0, categoryId: "", comments: nil, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: "-KUSVorHYEOc4zYoAwgp", isExpense: true, walletID: Resource.sharedInstance().currentWalletID!)
+                if self.isNew {
+                    self.transaction = Transaction(transactionId: "", amount: 0, categoryId: "", comments: nil, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: Resource.sharedInstance().currentWallet!.currencyID, isExpense: true, walletID: Resource.sharedInstance().currentWalletID!)
                     self.cells.append("Comments")
+                    
+                    self.navigationItem.rightBarButtonItem = self.addBtn
                 }
+                else {
+                    self.headertitle.text = "TRANSACTION DETAILS"
+                    
+                    self.cells.append("Transaction By")       // first row for transaction By
+                    if self.transaction!.comments != nil {
+                        self.cells.append("Comments")                // if Comments are not nil add comments line
+                    }
+                    if (self.transaction!.transactionById == Resource.sharedInstance().currentUserId || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner) && Resource.sharedInstance().currentWallet!.isOpen {
+                        self.cells.append("Delete")
+                    }
+                    
+                    self.navigationItem.rightBarButtonItem = self.editBtn
+                }
+                self.selectedCategory = self.transaction?.categoryId ?? ""
+                self.pSelectedCategory = self.selectedCategory
+                
+                if self.transaction!.isExpense {
+                    self.segmentbtn.selectedSegmentIndex = 0
+                }
+                else {
+                    self.segmentbtn.selectedSegmentIndex = 1
+                }
+                
+                self.tableView.dataSource = self
+                self.tableView.delegate = self
+                
+                self.CategoryCollectionView.delegate = self
+                self.CategoryCollectionView.dataSource = self
+                
             }
         }
     }
     
     
-    override func viewWillAppear(_ animated: Bool) {
-        if TransactionCategoryID != nil {
-            transaction?.categoryId = TransactionCategoryID!
+    func addBtnPressed() {
+        
+        var error = ""
+        var errorDis = ""
+        
+        if transaction!.amount == 0 {
+            error = "Error"
+            errorDis = "Amount cannot be empty"
         }
+        else if transaction!.categoryId == ""  {
+            error = "Error"
+            errorDis = "Category cannot be empty"
+        }
+        else if transaction?.date == nil {
+            error = "Error"
+            errorDis = "Date cannot be empty"
+        }
+        
+        if error == "" {
+            TransactionManager.sharedInstance().AddTransactionInWallet(transaction!)
+            self.navigationController!.popViewController(animated: true)
+        }
+        else {
+            let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            
+            alert.addAction(action)
+            present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func editBtnPressed(sender: UIBarButtonItem) {
+        
+        if isEdit {
+            
+            var error = ""
+            var errorDis = ""
+            
+            if transaction!.amount == 0 {
+                error = "Error"
+                errorDis = "Amount cannot be empty"
+            }
+            else if transaction!.categoryId == "" {
+                error = "Error"
+                errorDis = "Category cannot be empty"
+            }
+            if error == "" {
+                isEdit = false
+                sender.title = "\u{A013}"
+                TransactionManager.sharedInstance().updateTransactionInWallet(transaction!)
+            }
+            else {
+                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+            
+        }
+        else {
+            isEdit = true
+            cells.remove(at: cells.index(of: "Transaction By")!)
+            cells.remove(at: cells.index(of: "Delete")!)
+            if !cells.contains("Comments") {
+                cells.append("Comments")
+            }
+            sender.title = "\u{A009}"
+            segmentbtn.isEnabled = true
+            self.tableView.reloadSections([0], with: .automatic)
+        }
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
         tableView.reloadData()
     }
+    
     
     // Do any additional setup after loading the view.
     
     
     func donepressed(){
         let cell = tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as! DefaultTableViewCell
-        cell.textview.isEditable = true
         cell.textview.text = dateformatter.string(from: datepicker.date)
         date = datepicker.date.timeIntervalSince1970
         transaction!.date = datepicker.date
@@ -135,7 +222,6 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     
     func cancelpressed(){
         let cell = tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as! DefaultTableViewCell
-        cell.textview.isEditable = true
         self.view.endEditing(true)
     }
     
@@ -146,124 +232,29 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     }
     
     
-    @IBAction func DoneBtnPressed(_ sender: Any) {
-        
-        var cell : DefaultTableViewCell?
-        var categorycell : CategoryTableViewCell?
-        
-        if DoneBtn.title != "EDIT" {
-            cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! DefaultTableViewCell
-            categorycell = tableView.cellForRow(at: IndexPath(row: isNew! ? 1 : 2, section: 0)) as! CategoryTableViewCell
-        }
-        
-        if DoneBtn.title == "DONE" {
-            
-            transaction?.amount = Double(cell!.textview.text!) ?? 0
-            var error = ""
-            var errorDis = ""
-            
-            if transaction!.amount == 0 {
-                error = "Error"
-                errorDis = "Amount cannot be empty"
-            }
-            else if transaction!.categoryId == "" || categorycell!.name.text == "None" {
-                error = "Error"
-                errorDis = "Category cannot be empty"
-            }
-            else if transaction?.date == nil {
-                error = "Error"
-                errorDis = "Date cannot be empty"
-            }
-            
-            if error == "" {
-                TransactionManager.sharedInstance().AddTransactionInWallet(transaction!)
-                self.navigationController!.popViewController(animated: true)
-            }
-            else {
-                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
-                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
-                
-                alert.addAction(action)
-                present(alert, animated: true, completion: nil)
-            }
-        }
-        else if DoneBtn.title == "SAVE" {
-            
-            transaction?.amount = Double(cell!.textview.text!) ?? 0
-            var error = ""
-            var errorDis = ""
-            
-            if transaction!.amount == 0 {
-                error = "Error"
-                errorDis = "Amount cannot be empty"
-            }
-            else if transaction!.categoryId == "" || categorycell!.name.text == "None" {
-                error = "Error"
-                errorDis = "Category cannot be empty"
-            }
-            if error == "" {
-                TransactionManager.sharedInstance().updateTransactionInWallet(transaction!)
-            }
-            else {
-                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
-                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
-                
-                alert.addAction(action)
-                present(alert, animated: true, completion: nil)
-            }
-        }
-            
-        else if DoneBtn.title == "EDIT" {
-            isNew = true                                // to allow editing
-            DoneBtn.title = "SAVE"
-            cells.remove(at: 0)
-            if !(cells.contains("Comments")) {
-                cells.remove(at: cells.count-1)
-                cells.append("Comments")                        // Remove Delete Cell
-            }
-            else {
-                cells.remove(at: cells.count-1)
-            }
-            segmentbtn.isEnabled = true
-            let range = NSMakeRange(0, self.tableView.numberOfSections)
-            let sections = NSIndexSet(indexesIn: range)
-            self.tableView.reloadSections(sections as IndexSet, with: .automatic)
-        }
-        
-    }
     
     // TableView Functions Delegate and Datasources
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if isNew! {
-            return indexPath.row == 1 || indexPath.row == 3 ? 70 : 50
+        switch cells[indexPath.row] {
+            
+            case "Comments", "Category", "Transaction By" :
+            return 70
+            
+        default:
+            return 50
+            
         }
-        else {
-            if cells.contains("Comments") {
-                return indexPath.row == 2 || indexPath.row == 0 || indexPath.row == 4 ? 70 : 50
-            }
-            else {
-                return indexPath.row == 2 || indexPath.row == 0 ? 70 : 50
-            }
-        }
+        
+        
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if isNew! {
-            if indexPath.row == 1 {
+        if isEdit {
+            if cells[indexPath.row] == "Category" {
                 addView()
             }
-        }
-        else if !(isNew!) && Resource.sharedInstance().currentWallet!.isOpen {
-            var error = "Alert" , errorDes = "You don't have rights to Change this Transaction"
-            if DoneBtn.isEnabled {
-                errorDes = "Press Edit To Make Changes"
-            }
-            let alert = UIAlertController(title: error, message: errorDes, preferredStyle: .alert)
-            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alert.addAction(action)
-            present(alert, animated: true, completion: nil)
         }
         
     }
@@ -290,9 +281,10 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             
             cell.textView.delegate = self
             cell.textView.tag = 4
-            cell.textView.isEditable = isNew! ? true : false
+            cell.textView.isEditable = isEdit
             
             cell.selectionStyle = UITableViewCellSelectionStyle.none
+            
             
             return cell
             
@@ -300,7 +292,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
             
-            cell.name.text = TransactionCategoryID == nil ? "None" : ( (transaction?.category.isExpense)! && segmentbtn.selectedSegmentIndex == 1 ? "None" : ( !((transaction?.category.isExpense)!) && segmentbtn.selectedSegmentIndex == 0 ? "None" : transaction!.category.name ))
+            cell.name.text = selectedCategory == "" ? "None" : ( (transaction?.category.isExpense)! && segmentbtn.selectedSegmentIndex == 1 ? "None" : ( !((transaction?.category.isExpense)!) && segmentbtn.selectedSegmentIndex == 0 ? "None" : transaction!.category.name ))
             
             print("Category name : \(cell.name.text)")
             
@@ -354,13 +346,10 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             
             if cell.title.text == "Amount" {
                 cell.textview.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : "0"
-                if isNew! {
-                    cell.textview.isUserInteractionEnabled = true
-                }
-                if !(isNew!) {
-                    cell.textview.isUserInteractionEnabled = false
-                }
-                cell.textview.tag = 0
+                
+                cell.textview.isUserInteractionEnabled = isEdit
+                
+                cell.textview.tag = 1
                 cell.textview.delegate = self
             }
                 
@@ -377,7 +366,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
                 cell.textview.isUserInteractionEnabled = true
                 cell.textview.tag = 3
             }
-            cell.textview.isEditable = isNew! ? true : false
+            cell.textview.isUserInteractionEnabled = isEdit
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
         }
@@ -397,7 +386,6 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     func YesPressed(action : UIAlertAction) {
         print("Kar de Delete")
         TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
-        self.navigationController?.popViewController(animated: true)
     }
     
     func NoPressed(action : UIAlertAction) {
@@ -406,18 +394,27 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     
     func textViewDidChange(_ textView: UITextView) {
 
-        guard let cell = tableView.cellForRow(at: IndexPath(row: cells.endIndex-1, section: 0)) as? CommentsTableViewCell else {
-            return
-        }
-        let newTextView = textView
-        let fixedWidth = newTextView.frame.size.width;
-        let newSize = newTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        if newSize.height > textView.frame.height + 16 {
+        if textView.tag == 1 {
             
-            cell.frame.size.height = newSize.height+18
-            textView.frame.size.height = newSize.height
-            tableView.contentSize.height += 20
+            transaction?.amount = Double(textView.text!) ?? 0
+            
         }
+        else if textView.tag == 4 {
+            guard let cell = tableView.cellForRow(at: IndexPath(row: cells.endIndex-1, section: 0)) as? CommentsTableViewCell else {
+                return
+            }
+            let newTextView = textView
+            let fixedWidth = newTextView.frame.size.width;
+            let newSize = newTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+            if newSize.height > textView.frame.height + 16 {
+                
+                cell.frame.size.height = newSize.height+18
+                textView.frame.size.height = newSize.height
+                tableView.contentSize.height += 20
+            }
+        }
+        
+        
     }
     
     
@@ -460,10 +457,16 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         else if segmentbtn.selectedSegmentIndex == 1 {
             transaction!.isExpense = false
         }
+        selectedCategory = ""
         tableView.reloadData()
     }
     
     // Category CollectionVIew
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 50, height: 60)
+    }
+    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if segmentbtn.selectedSegmentIndex == 0 {
@@ -487,72 +490,93 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         cell.icon.text = category!.icon
         
         cell.icon.textColor = category!.color
-        cell.icon.backgroundColor = .white
-        cell.icon.layer.borderColor = category!.color.cgColor
-        cell.icon.layer.borderWidth = 1
-        cell.icon.layer.cornerRadius = cell.icon.frame.width/2
+        cell.icon.layer.borderColor = category?.color.cgColor
+        cell.icon.layer.borderWidth = 0
         
         if transaction?.categoryId == category?.id {
-            cell.selectedCategory.isHidden = false
-            cell.selectedCategory.layer.cornerRadius = cell.selectedCategory.layer.frame.width/2
-            cell.selectedCategory.layer.borderWidth = 1
-            cell.selectedCategory.layer.borderColor = cell.selectedCategory.textColor.cgColor
-            cell.selectedCategory.backgroundColor = .white
+            cell.icon.layer.borderWidth = 1
         }
-        else {
-            cell.selectedCategory.isHidden = true
-        }
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
         if segmentbtn.selectedSegmentIndex == 0 {
-            transaction!.categoryId = Expense[indexPath.item]
-            TransactionCategoryID = Expense[indexPath.item]
+            
+            if selectedCategory != "" {
+                guard let pCell = collectionView.cellForItem(at: IndexPath(item: Expense.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell else {
+                    return
+                }
+                
+                pCell.icon.layer.borderWidth = 0
+            }
+            
+            selectedCategory = Expense[indexPath.item]
+            
+            
+            
         }
         else if segmentbtn.selectedSegmentIndex == 1 {
-            transaction!.categoryId = Income[indexPath.item]
-            TransactionCategoryID = Income[indexPath.item]
+            
+            
+            if selectedCategory != "" {
+                guard let pCell = collectionView.cellForItem(at: IndexPath(item: Income.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell else {
+                    return
+                }
+                
+                pCell.icon.layer.borderWidth = 0
+            }
+            selectedCategory = Income[indexPath.item]
         }
-        tableView.reloadData()
-        removeView()
+        
+        
+        let cell = collectionView.cellForItem(at: indexPath) as! CategorySelectionCollectionViewCell
+        cell.icon.layer.borderWidth = 1
+//        cell.icon.layer.borderColor = Resource.sharedInstance().categories[selectedCategory]!.color.cgColor
+        
     }
     
     // Adding Category View
+    
+    
+    @IBAction func doneBtnAction(_ sender: Any) {
+        pSelectedCategory = selectedCategory
+        transaction?.categoryId = selectedCategory
+        tableView.reloadData()
+        removeView()
+        
+    }
+    
+    @IBAction func cancelBtnAction(_ sender: Any) {
+        
+        transaction?.categoryId = pSelectedCategory
+        tableView.reloadData()
+        removeView()
+    }
     
     func ViewTap() {
         removeView()
     }
     
     func addView() {
-        newView = UIView(frame: self.view.frame)
-        newView!.backgroundColor = .lightGray
-        newView!.alpha = 0.5
-        newView!.isUserInteractionEnabled = true
         CategoryCollectionView.reloadData()
-        CategoryView.layer.shadowColor = UIColor.black.cgColor
-        CategoryView.layer.shadowOpacity = 0.7
-        CategoryView.layer.shadowOffset = CGSize(width: 0, height: 0)
-        CategoryView.layer.shadowRadius = 22.0
+        
         view.addSubview(newView!)
-        view.addSubview(CategoryView)
-        CategoryView.center = self.view.center
-        CategoryView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
         CategoryView.alpha = 0
-//        self.navigationController!.isNavigationBarHidden = true
-        UIView.animate(withDuration: 0.4, animations: {
+        CategoryView.isHidden = false
+        self.view.bringSubview(toFront: CategoryView)
+        UIView.animate(withDuration: 0.3, animations: {
             self.CategoryView.alpha = 1.0
-            self.CategoryView.transform = CGAffineTransform.identity
         })
     }
     
     func removeView() {
         UIView.animate(withDuration: 0.3, animations: {
-            self.CategoryView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
             self.CategoryView.alpha = 0
             
         }) { (Success) in
-            self.CategoryView.removeFromSuperview()
+            self.CategoryView.isHidden = true
             self.newView!.removeFromSuperview()
 //            self.navigationController?.isNavigationBarHidden = false
         }
@@ -580,24 +604,21 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             if !(wallet.isOpen) {
                 let alert = UIAlertController(title: "Alert", message: "This Wallet Has been closed", preferredStyle: .alert)
                 let action = UIAlertAction(title: "Ok", style: .default, handler: { flag in
-                    if self.isNew! {
+                    if self.isNew {
                         self.navigationController?.popViewController(animated: true)
                     }
                     else {
                         if self.cells[self.cells.count-1] == "Delete" {
                             self.cells.remove(at: self.cells.count-1)
                         }
-                        self.DoneBtn.tintColor = .clear
                         self.tableView.reloadData()
                     }
                 })
                 alert.addAction(action)
                 present(alert, animated: true, completion: nil)
             }
-            if wallet.isOpen {
+            else {
                 if (transaction!.transactionById == Resource.sharedInstance().currentUserId || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner) && Resource.sharedInstance().currentWallet!.isOpen {
-                    DoneBtn.isEnabled = true
-                    DoneBtn.tintColor = self.navigationItem.leftBarButtonItem?.tintColor
                     cells.append("Delete")
                 }
 //                let range = NSMakeRange(0, self.tableView.numberOfSections)
