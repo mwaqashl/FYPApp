@@ -25,7 +25,18 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             if flag {
                 
-                self.walletIDs = Array(Resource.sharedInstance().userWallets.keys)
+                self.walletIDs = [Resource.sharedInstance().currentUserId!]
+                
+                for wallet in  Resource.sharedInstance().userWallets.filter({ (_wallet) -> Bool in
+                    return _wallet.value.memberTypes.contains(where: { (_member) -> Bool in
+                    return _member.key == Resource.sharedInstance().currentUserId!
+                    }) && !_wallet.value.isPersonal
+                }) {
+                    
+                    self.walletIDs.append(wallet.key)
+                    
+                }
+                
                 print(self.walletIDs)
                 self.tableView.delegate = self
                 self.tableView.dataSource = self
@@ -62,6 +73,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        
+        Resource.sharedInstance().currentWalletID = walletIDs[indexPath.row]
+        self.dismiss(animated: true, completion: nil)
         
     }
     

@@ -124,6 +124,10 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                     
                     if Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || self.task!.creatorID == Resource.sharedInstance().currentUserId {
                         
+<<<<<<< HEAD
+=======
+                        self.AddTaskBtn.title = "\u{A013}"
+>>>>>>> origin/master
                         self.cells.append("Delete")
                     }
                     if self.task!.status == .open && (self.task?.doneByID == "" || self.task?.doneByID == nil) && self.task!.memberIDs.contains(Resource.sharedInstance().currentUserId!) {
@@ -528,29 +532,22 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         
         if collectionView == categoryCollectionView {
             
-            let Categorycell = collectionView.dequeueReusableCell(withReuseIdentifier: "categoryCell", for: indexPath) as! CategorySelectionCollectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "categoryCell", for: indexPath) as! CategorySelectionCollectionViewCell
         
             let category = Resource.sharedInstance().categories[categoriesKeys[indexPath.item]]
-            Categorycell.name.text = category!.name
-            Categorycell.icon.text = category!.icon
-        
-            if task?.categoryID == category!.id {
-                Categorycell.selectedCategory.isHidden = false
-                Categorycell.selectedCategory.layer.cornerRadius = Categorycell.selectedCategory.layer.frame.width/2
-                Categorycell.selectedCategory.layer.borderWidth = 1
-                Categorycell.selectedCategory.layer.borderColor = Categorycell.selectedCategory.textColor.cgColor
-                Categorycell.selectedCategory.backgroundColor = .white
-            }
-            else {
-                Categorycell.selectedCategory.isHidden = true
+            cell.name.text = category!.name
+            cell.icon.text = category!.icon
+            
+            cell.icon.textColor = category!.color
+            cell.icon.layer.borderColor = UIColor.gray.cgColor
+            cell.icon.layer.borderWidth = 1
+            cell.icon.layer.cornerRadius = cell.icon.frame.width/2
+            
+            if task?.categoryID == category?.id {
+                cell.icon.layer.borderColor = category?.color.cgColor
             }
             
-            Categorycell.icon.textColor = category!.color
-            Categorycell.icon.layer.cornerRadius = Categorycell.icon.layer.frame.width/2
-            Categorycell.icon.layer.borderWidth = 1
-            Categorycell.icon.layer.borderColor = Categorycell.icon.textColor.cgColor
-        
-            return Categorycell
+            return cell
         }
         
         else if collectionView == membersCollectionView {
@@ -627,6 +624,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     }
     
     @IBAction func RejectBtnPressed(_ sender: Any) {
+<<<<<<< HEAD
         if rejectBtn.titleLabel!.text == "REJECT" {
             task!.removeMember(Resource.sharedInstance().currentUserId!)
             acceptBtn.isHidden = true
@@ -636,6 +634,87 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         if rejectBtn.titleLabel!.text == "NOT DOING" {
             task!.doneByID = nil
             TaskManager.sharedInstance().updateTask(task!)
+=======
+    }
+    
+    @IBAction func AddTaskBtnPressed(_ sender: Any) {
+        
+        if AddTaskBtn.title == "ADD" {
+            
+            var error = ""
+            var errorDis = ""
+            
+            if task!.title == "" {
+                error = "Error"
+                errorDis = "Task Title cannot be empty"
+            }
+            else if task!.amount == 0 || task!.amount == 0.0 {
+                error = "Error"
+                errorDis = "Amount cannot be empty"
+            }
+            else if task!.categoryID == "" {
+                error = "Error"
+                errorDis = "Category cannot be empty"
+            }
+            else if task!.members.count == 0 {
+                error = "Error"
+                errorDis = "Select any member to assign this task"
+            }
+            
+            if error == "" {
+                TaskManager.sharedInstance().addNewTask(task!)
+                self.navigationController!.popViewController(animated: true)
+            }
+            else {
+                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+        }
+        else if AddTaskBtn.title == "\u{A009}" {
+            
+            var error = ""
+            var errorDis = ""
+            
+            if task!.title == "" {
+                error = "Error"
+                errorDis = "Task Title cannot be empty"
+            }
+            else if task!.amount == 0 || task!.amount == 0.0 {
+                error = "Error"
+                errorDis = "Amount cannot be empty"
+            }
+            else if task!.categoryID == "" {
+                error = "Error"
+                errorDis = "Category cannot be empty"
+            }
+            else if task!.members.count == 0 {
+                error = "Error"
+                errorDis = "Select any member to assign this task"
+            }
+            
+            if error == "" {
+                TaskManager.sharedInstance().updateTask(task!)
+                self.navigationController!.popViewController(animated: true)
+            }
+            else {
+                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+        }
+            
+        else if AddTaskBtn.title == "\u{A013}" {
+            AddTaskBtn.title = "\u{A009}"
+            cells.remove(at: 0)
+            if cells[cells.count-1] == "Delete" {
+                cells.remove(at: cells.count-1)
+            }
+>>>>>>> origin/master
             acceptBtn.isHidden = true
             rejectBtn.isHidden = true
             tableview.reloadSections([0], with: .automatic)

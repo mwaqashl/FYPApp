@@ -10,7 +10,6 @@ import UIKit
 
 class CategorySelectionCollectionViewCell: UICollectionViewCell {
     
-    @IBOutlet weak var selectedCategory: UILabel!
     @IBOutlet weak var icon: UILabel!
     @IBOutlet weak var name: UILabel!
 }
