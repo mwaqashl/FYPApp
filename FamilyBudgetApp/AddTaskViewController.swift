@@ -122,12 +122,10 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                     }
                     
                     
+                    self.AddTaskBtn.title = "\u{A013}"
                     if Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || self.task!.creatorID == Resource.sharedInstance().currentUserId {
                         
-<<<<<<< HEAD
-=======
-                        self.AddTaskBtn.title = "\u{A013}"
->>>>>>> origin/master
+                        
                         self.cells.append("Delete")
                     }
                     if self.task!.status == .open && (self.task?.doneByID == "" || self.task?.doneByID == nil) && self.task!.memberIDs.contains(Resource.sharedInstance().currentUserId!) {
@@ -624,7 +622,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     }
     
     @IBAction func RejectBtnPressed(_ sender: Any) {
-<<<<<<< HEAD
+
         if rejectBtn.titleLabel!.text == "REJECT" {
             task!.removeMember(Resource.sharedInstance().currentUserId!)
             acceptBtn.isHidden = true
@@ -634,7 +632,10 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         if rejectBtn.titleLabel!.text == "NOT DOING" {
             task!.doneByID = nil
             TaskManager.sharedInstance().updateTask(task!)
-=======
+            acceptBtn.isHidden = true
+            rejectBtn.isHidden = true
+            tableview.reloadSections([0], with: .automatic)
+        }
     }
     
     @IBAction func AddTaskBtnPressed(_ sender: Any) {
@@ -714,10 +715,6 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             if cells[cells.count-1] == "Delete" {
                 cells.remove(at: cells.count-1)
             }
->>>>>>> origin/master
-            acceptBtn.isHidden = true
-            rejectBtn.isHidden = true
-            tableview.reloadSections([0], with: .automatic)
         }
     }
     
