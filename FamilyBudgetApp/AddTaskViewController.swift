@@ -296,7 +296,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 cell.textView.text = task!.title
                 cell.textView.textColor = .black
             }
-            cell.textView.isUserInteractionEnabled = isNew! || isEdit ? true : false
+            cell.textView.isUserInteractionEnabled = isNew! || isEdit
             cell.textView.delegate = self
             cell.textView.tag = 5                                             // tag 5 for comments
             
@@ -618,6 +618,12 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     
     
     @IBAction func AcceptBtnPressed(_ sender: Any) {
+        if acceptBtn.titleLabel?.text == "ACCEPT" {
+            task!.doneByID = Resource.sharedInstance().currentUserId
+        }
+        if acceptBtn.titleLabel?.text == "COMPLETED" {
+            task!.status = .completed
+        }
         TaskManager.sharedInstance().taskStatusChanged(task!)
     }
     
@@ -790,34 +796,103 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     func taskUpdated(_ task: Task) {
         if task.walletID == Resource.sharedInstance().currentWalletID {
             if task.id == self.task!.id {
-                self.task! = task
-                if task.memberIDs.contains(Resource.sharedInstance().currentUserId!) {
-                    if task.doneByID == nil {
-                        acceptBtn.titleLabel!.text = "ACCEPT"
-                        rejectBtn.titleLabel!.text = "REJECT"
-                        acceptBtn.isHidden = true
-                        rejectBtn.isHidden = true
-                    }
-                    else if task.doneByID == Resource.sharedInstance().currentUserId {
-                        acceptBtn.titleLabel!.text = "ACCEPT"
-                        rejectBtn.titleLabel!.text = "REJECT"
-                        acceptBtn.isHidden = true
-                        rejectBtn.isHidden = true
-                    }
-                    else if task.status == .completed {
-                        acceptBtn.isHidden = true
-                        rejectBtn.isHidden = true
-                    }
-                }
+                self.updateCells()
                 self.tableview.reloadSections([0], with: .automatic)
             }
         }
     }
     
+//    func refresh() {
+//        self.cells = ["Title","Amount","Category","Created By","Date"]
+//        
+//        if self.task!.status == .open {
+//            if self.task!.doneByID == nil || self.task!.doneByID == "" {
+//                self.cells.insert("AssignTo", at: 3)
+//            }
+//            else if self.task!.doneByID != nil {
+//                self.cells.insert("In Progress By", at: 3)
+//            }
+//        }
+//        else if self.task!.status == .completed {
+//            self.cells.insert("In Progress By", at: 3)
+//        }
+//        
+//        self.navigationItem.rightBarButtonItem = self.Edit
+//        self.TitleForPage.text = "TASK DETAILS"
+//        
+//        self.TaskCategoryID = self.task!.categoryID
+//        if self.task!.comment != nil || self.task!.comment != "" {
+//            self.cells.append("Comments")
+//        }
+//        
+//        
+//        self.AddTaskBtn.title = "\u{A013}"
+//        if Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || self.task!.creatorID == Resource.sharedInstance().currentUserId {
+//            
+//            
+//            self.cells.append("Delete")
+//        }
+//        if self.task!.status == .open && (self.task?.doneByID == "" || self.task?.doneByID == nil) && self.task!.memberIDs.contains(Resource.sharedInstance().currentUserId!) {
+//            self.acceptBtn.isHidden = false
+//            self.rejectBtn.isHidden = false
+//        }
+//        if self.task!.status == .open && self.task!.doneByID == Resource.sharedInstance().currentUserId! {
+//            self.acceptBtn.setTitle("COMPLETED", for: .normal)
+//            self.rejectBtn.setTitle("NOT DOING", for: .normal)
+//            self.acceptBtn.isHidden = false
+//            self.rejectBtn.isHidden = false
+//        }
+//    }
+
     
+    
+    func updateCells() {
+        
+        self.cells = ["Title","Amount","Category","Created By","Date"]
+        
+        if self.task!.status == .open {
+            if self.task!.doneByID == nil || self.task!.doneByID == "" {
+                self.cells.insert("AssignTo", at: 3)
+            }
+            else if self.task!.doneByID != nil {
+                self.cells.insert("In Progress By", at: 3)
+            }
+        }
+        else if self.task!.status == .completed {
+            self.cells.insert("In Progress By", at: 3)
+        }
+        
+        self.navigationItem.rightBarButtonItem = self.Edit
+        self.TitleForPage.text = "TASK DETAILS"
+        
+        self.TaskCategoryID = self.task!.categoryID
+        if self.task!.comment != nil || self.task!.comment != "" {
+            self.cells.append("Comments")
+        }
+        
+        
+        self.AddTaskBtn.title = "\u{A013}"
+        if Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || self.task!.creatorID == Resource.sharedInstance().currentUserId {
+            
+            
+            self.cells.append("Delete")
+        }
+        if self.task!.status == .open && (self.task?.doneByID == "" || self.task?.doneByID == nil) && self.task!.memberIDs.contains(Resource.sharedInstance().currentUserId!) {
+            self.acceptBtn.isHidden = false
+            self.rejectBtn.isHidden = false
+        }
+        if self.task!.status == .open && self.task!.doneByID == Resource.sharedInstance().currentUserId! {
+            self.acceptBtn.setTitle("COMPLETED", for: .normal)
+            self.rejectBtn.setTitle("NOT DOING", for: .normal)
+            self.acceptBtn.isHidden = false
+            self.rejectBtn.isHidden = false
+        }
+    }
+
+
     //
-    
-    
+
+
     /*
     // MARK: - Navigation
 

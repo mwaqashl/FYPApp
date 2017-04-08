@@ -58,6 +58,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         finishBtn.layer.borderColor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1).cgColor
         finishBtn.layer.borderWidth = 1
+        finishBtn.layer.cornerRadius = finishBtn.layer.frame.height/2
         
         selectedIcon = "\u{A037}"
         walletIcon.textColor = selectedColor

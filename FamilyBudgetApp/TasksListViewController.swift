@@ -28,30 +28,38 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         
         dateformat.dateFormat = "dd-MMM-yyyy"
         
-        Resource.sharedInstance().currentWalletID = "-KgKJagYIYwOtiAN3HrW"
-        
         tableview.dataSource = self
         tableview.delegate = self
         
         Delegate.sharedInstance().addTaskDelegate(self)
         Delegate.sharedInstance().addWalletMemberDelegate(self)
         Delegate.sharedInstance().addTaskMemberDelegate(self)
-
-        //        UserObserver.sharedInstance().startObserving()
-        TaskObserver.sharedInstance().autoObserve = true          // home page pr lage ga..:D
-        TaskObserver.sharedInstance().startObserving(TasksOf: Resource.sharedInstance().currentWallet!)
         
-        for key in Resource.sharedInstance().tasks.keys {
-            let task = Resource.sharedInstance().tasks[key]
-            if task!.walletID == Resource.sharedInstance().currentWalletID {
-                Tasks.append(task!)
-                if SegmentBtn.selectedSegmentIndex == 0 {
-                    if task!.status == .open {
-                        filterTask.append(task!)
+        HelperObservers.sharedInstance().getUserAndWallet { (flag) in
+            
+            if flag {
+                
+                TaskObserver.sharedInstance().autoObserve = true          // home page pr lage ga..:D
+                TaskObserver.sharedInstance().startObserving(TasksOf: Resource.sharedInstance().currentWallet!)
+                
+                for key in Resource.sharedInstance().tasks.keys {
+                    let task = Resource.sharedInstance().tasks[key]
+                    if task!.walletID == Resource.sharedInstance().currentWalletID {
+                        self.Tasks.append(task!)
+                        if self.SegmentBtn.selectedSegmentIndex == 0 {
+                            if task!.status == .open {
+                                self.filterTask.append(task!)
+                            }
+                        }
                     }
                 }
+
+                
             }
+            
         }
+        
+        //        UserObserver.sharedInstance().startObserving()
         
         // Do any additional setup after loading the view.
     }

@@ -47,6 +47,20 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         // Do any additional setup after loading the view.
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if defaultSettings.value(forKey: "homeTutorials") == nil {
+            
+            let cont = UIStoryboard(name: "Tutorials", bundle: nil).instantiateInitialViewController() as! TutorialViewController
+            
+            cont.tutorialType = TutorialType.wallets
+            defaultSettings.setValue(true, forKey: "homeTutorials")
+
+            self.present(cont, animated: true, completion: nil)
+            
+        }
+        
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

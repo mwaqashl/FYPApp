@@ -61,28 +61,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                     self.AddBtn.isEnabled = false
                     self.AddBtn.tintColor = .clear
                 }
-                
-                for trans in Resource.sharedInstance().transactions.filter({ (_trans) -> Bool in
-                    return _trans.value.walletID == Resource.sharedInstance().currentWalletID!
-                }) {
-                    
-                    
-                    if var _trans = self.transactions[self.dateformat.string(from: trans.value.date)] {
-                        
-                        
-                        if !_trans.contains(where: { (find) -> Bool in
-                            return find.id == trans.key
-                        }) {
-                            
-                            _trans.append(trans.value)
-                            self.transactions[self.dateformat.string(from: trans.value.date)] = _trans
-                        }
-                    }
-                    else {
-                        self.transactions[self.dateformat.string(from: trans.value.date)] = [trans.value]
-                    }
-                    
-                }
+
+                self.SegmentbtnAction(self.Segmentbtn)
                 
                 self.filteredTransactions = self.transactions
                 self.filteredDates = Array(self.transactions.keys)
@@ -106,16 +86,15 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewDidAppear(_ animated: Bool) {
         
-        //        if defaultSettings.value(forKey: "timelineTutorials") == nil {
-        //
-        //            let cont = UIStoryboard(name: "Tutorials", bundle: nil).instantiateInitialViewController() as! TutorialViewController
-        //
-        //            cont.tutorialType = TutorialType.timeline
-        //
-        //            self.present(cont, animated: true, completion: nil)
-        //            
-        //        }
-        //        
+        if defaultSettings.value(forKey: "timelineTutorials") == nil {
+            
+            let cont = UIStoryboard(name: "Tutorials", bundle: nil).instantiateInitialViewController() as! TutorialViewController
+            
+            cont.tutorialType = TutorialType.timeline
+            defaultSettings.setValue(true, forKey: "timelineTutorials")
+            self.present(cont, animated: true, completion: nil)
+            
+        }
         
         viewDidLoad()
         
@@ -154,7 +133,19 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
+        var label = UILabel()
         
+        
+        if filteredDates.count == 0 {
+            label.text = "no transactions yet."
+            label.textAlignment = .center
+            label.sizeToFit()
+            
+            tableView.backgroundView = label
+        }
+        else {
+            tableView.backgroundView = nil
+        }
         return filteredDates.count
     }
     
@@ -186,37 +177,43 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
 
         return cell
     }
-    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if filteredTransactions.count == 0 {
+            return "No transactions to show. Add a new one."
+        }
+        return ""
+    }
+
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
         return filteredDates[section] == dateformat.string(from: Date()) ? "Today" : filteredDates[section] == dateformat.string(from: Date(timeIntervalSinceNow : Double(-24*3600))) ? "Yesterday" : filteredDates[section]
     }
     
-    
-    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        
-        view.alpha = 0
-        let transform = CATransform3DTranslate(CATransform3DIdentity, -200, 0, 0)
-        view.layer.transform = transform
-        
-        UIView.animate(withDuration: 0.5) {
-            view.alpha = 1.0
-            view.layer.transform = CATransform3DIdentity
-        }
-        
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
-        cell.alpha = 0
-        let transform = CATransform3DTranslate(CATransform3DIdentity, -200, 0, 0)
-        cell.layer.transform = transform
-
-        UIView.animate(withDuration: 0.5) {
-            cell.alpha = 1.0
-            cell.layer.transform = CATransform3DIdentity
-        }
-    }
+//    
+//    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+//        
+//        view.alpha = 0
+//        let transform = CATransform3DTranslate(CATransform3DIdentity, -200, 0, 0)
+//        view.layer.transform = transform
+//        
+//        UIView.animate(withDuration: 0.5) {
+//            view.alpha = 1.0
+//            view.layer.transform = CATransform3DIdentity
+//        }
+//        
+//    }
+//    
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        
+//        cell.alpha = 0
+//        let transform = CATransform3DTranslate(CATransform3DIdentity, -200, 0, 0)
+//        cell.layer.transform = transform
+//
+//        UIView.animate(withDuration: 0.5) {
+//            cell.alpha = 1.0
+//            cell.layer.transform = CATransform3DIdentity
+//        }
+//    }
     
     @IBAction func addTransaction(_ sender: Any) {
         if (Resource.sharedInstance().currentWallet!.isOpen) {
@@ -253,10 +250,10 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         filteredTransactions = [:]
         if Segmentbtn.selectedSegmentIndex == 0 {
             self.transactions = [:]
+            self.transDates = []
             for trans in Resource.sharedInstance().transactions.filter({ (_trans) -> Bool in
                 return _trans.value.walletID == Resource.sharedInstance().currentWalletID!
             }) {
-                
                 
                 if var _trans = self.transactions[self.dateformat.string(from: trans.value.date)] {
                     if !_trans.contains(where: { (_tra) -> Bool in
@@ -342,43 +339,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 transactions[date] = [transaction]
             }
             SegmentbtnAction(Segmentbtn)
-//            if Segmentbtn.selectedSegmentIndex == 0 {
-//                filteredDates = transDates
-//                filteredTransactions = transactions
-//            }                                                           // below code can be removed if i set segmentbtn to 0
-//            else if Segmentbtn.selectedSegmentIndex == 1 {
-//                if transaction.isExpense {
-//                    if filteredDates.contains(date) {
-//                        if !filteredTransactions[date]!.contains(where: { (_trans) -> Bool in
-//                            return _trans.id == transaction.id
-//                        }) {
-//                            filteredTransactions[date]!.append(transaction)
-//                        }
-//                    }
-//                    else {
-//                        filteredDates.append(date)
-//                        filteredTransactions[date] = [transaction]
-//                    }
-//                }
-//            }
-//            else if Segmentbtn.selectedSegmentIndex == 2 {
-//                if !transaction.isExpense {
-//                    if filteredDates.contains(date) {
-//                        if !filteredTransactions[date]!.contains(where: { (_trans) -> Bool in
-//                            return _trans.id == transaction.id
-//                        }) {
-//                            filteredTransactions[date]!.append(transaction)
-//                        }
-//                    }
-//                    else {
-//                        filteredDates.append(date)
-//                        filteredTransactions[date] = [transaction]
-//                    }
-//                }
-//            }
-//            sortDates()
-//            tableview.reloadData()
-            
+//            
             IncomeAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalIncome)" : "0"
             ExpenseAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalExpense)" : "0"
             BalanceAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.balance)" : "0"

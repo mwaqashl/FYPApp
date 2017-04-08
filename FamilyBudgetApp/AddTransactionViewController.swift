@@ -97,7 +97,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
                 }
                 else {
                     self.headertitle.text = "TRANSACTION DETAILS"
-                    
+                    self.segmentbtn.isEnabled = false
                     self.cells.append("Transaction By")       // first row for transaction By
                     if self.transaction!.comments != nil {
                         self.cells.append("Comments")                // if Comments are not nil add comments line
@@ -191,6 +191,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         }
         else {
             isEdit = true
+            segmentbtn.isEnabled = true
             cells.remove(at: cells.index(of: "Transaction By")!)
             cells.remove(at: cells.index(of: "Delete")!)
             if !cells.contains("Comments") {
@@ -424,9 +425,6 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         }
         if textView.tag == 0 {
             textView.text = textView.text == "0" ? "" : "\(transaction!.amount)"
-            if transaction!.amount == floor(transaction!.amount) && transaction!.amount != 0 {
-                textView.text = "\(Int(transaction!.amount))"
-            }
         }
     }
     
@@ -451,14 +449,18 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     }
     
     @IBAction func segmentbtnAction(_ sender: Any) {
-        if segmentbtn.selectedSegmentIndex == 0 {
-            transaction!.isExpense = true
+        
+        if isEdit {
+            if segmentbtn.selectedSegmentIndex == 0 {
+                transaction!.isExpense = true
+            }
+            else if segmentbtn.selectedSegmentIndex == 1 {
+                transaction!.isExpense = false
+            }
+            selectedCategory = ""
+            tableView.reloadData()
         }
-        else if segmentbtn.selectedSegmentIndex == 1 {
-            transaction!.isExpense = false
-        }
-        selectedCategory = ""
-        tableView.reloadData()
+        
     }
     
     // Category CollectionVIew
@@ -619,7 +621,9 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             }
             else {
                 if (transaction!.transactionById == Resource.sharedInstance().currentUserId || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner) && Resource.sharedInstance().currentWallet!.isOpen {
-                    cells.append("Delete")
+                    if !cells.contains("Delete") {
+                        cells.append("Delete")
+                    }
                 }
 //                let range = NSMakeRange(0, self.tableView.numberOfSections)
 //                let sections = NSIndexSet(indexesIn: range)

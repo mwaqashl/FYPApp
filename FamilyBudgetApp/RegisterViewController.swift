@@ -12,7 +12,8 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
 
     // For Signup
     var date : Double?
-    var selectedrow = 0 , previous = 0
+    var selectedrow = 0
+    var previous : Int?
     var gend = ["Male","Female"]
     
     @IBOutlet weak var userImage: UIImageView!
@@ -105,7 +106,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     func cancelpressed(){
         if gender.isEditing {
-            gender.text = gend[previous]
+            gender.text = previous == nil ? "" : gend[previous!]
         }
         self.view.endEditing(true)
     }
@@ -160,7 +161,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
 
         if error == "" {
-            let User = CurrentUser.init(id: "", email: email.text!, userName: userName.text!, imageURL: "", birthdate: date! , deviceID: "", gender: previous)
+            let User = CurrentUser.init(id: "", email: email.text!, userName: userName.text!, imageURL: "", birthdate: date! , deviceID: "", gender: previous!)
             
             Auth.sharedInstance().createUser(email: email.text!, password: password.text!, user: User, callback: { (_error) in
                 if _error != nil {

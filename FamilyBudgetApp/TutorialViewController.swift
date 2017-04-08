@@ -10,7 +10,7 @@ import UIKit
 
 enum TutorialType {
     
-    case startup, timeline, transaction, task, stats, chat
+    case startup, timeline, transaction, task, stats, chat, wallets
     
 }
 
@@ -25,6 +25,8 @@ class TutorialViewController: UIViewController {
     var tutorialType : TutorialType! = .startup
     
     var startup : [UIImage] = [#imageLiteral(resourceName: "into-1"),#imageLiteral(resourceName: "into-2"),#imageLiteral(resourceName: "into-3")]
+    var timeline = [#imageLiteral(resourceName: "timeline")]
+    var wallets = [#imageLiteral(resourceName: "wallets 1"), #imageLiteral(resourceName: "addWallets")]
     var workingArray : [UIImage] = []
     var selected = 0
     
@@ -48,6 +50,13 @@ class TutorialViewController: UIViewController {
         }
         else {
             
+            if tutorialType == .wallets {
+                workingArray = wallets
+            }
+            else if tutorialType == .timeline {
+                workingArray = timeline
+            }
+            imageView.image = workingArray.first
             closeBtn.isHidden = false
             alreadyUserBtn.isHidden = true
             registerBtn.isHidden = true
