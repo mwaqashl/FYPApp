@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TasksListViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource,TaskDelegate , WalletMemberDelegate, TaskMemberDelegate{
+class TasksListViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource,TaskDelegate , WalletMemberDelegate, TaskMemberDelegate, WalletDelegate{
     
     @IBOutlet weak var SegmentBtn: UISegmentedControl!
     @IBOutlet weak var addBtn: UIBarButtonItem!
@@ -17,11 +17,13 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     var dateformat = DateFormatter()
     var selectedrow : IndexPath?
     
-    var taskDates = [String]()
     var Tasks = [Task]()
-    
-    var filterDates = [String]()
     var filterTask = [Task]()
+    
+    var isDataAvailable = false
+    
+    var allWalletsBtn = UIBarButtonItem()
+    var add = UIBarButtonItem()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,63 +36,65 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         Delegate.sharedInstance().addTaskDelegate(self)
         Delegate.sharedInstance().addWalletMemberDelegate(self)
         Delegate.sharedInstance().addTaskMemberDelegate(self)
+        Delegate.sharedInstance().addWalletDelegate(self)
+        
+        allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
+        allWalletsBtn.tintColor = bluethemecolor
+        self.navigationItem.leftBarButtonItem = allWalletsBtn
+        
+        
+        add = self.navigationItem.rightBarButtonItem!
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             
             if flag {
-                
-                TaskObserver.sharedInstance().autoObserve = true          // home page pr lage ga..:D
-                TaskObserver.sharedInstance().startObserving(TasksOf: Resource.sharedInstance().currentWallet!)
-                
-                for key in Resource.sharedInstance().tasks.keys {
-                    let task = Resource.sharedInstance().tasks[key]
-                    if task!.walletID == Resource.sharedInstance().currentWalletID {
-                        self.Tasks.append(task!)
-                        if self.SegmentBtn.selectedSegmentIndex == 0 {
-                            if task!.status == .open {
-                                self.filterTask.append(task!)
-                            }
-                        }
-                    }
-                }
-
-                
+                self.isDataAvailable = true
+                self.TaskExtraction()
             }
             
         }
-        
-        //        UserObserver.sharedInstance().startObserving()
         
         // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        tableview.reloadData()
+        if isDataAvailable {
+            TaskExtraction()
+            tableview.reloadData()
+        }
     }
-
+    
+    func TaskExtraction() {
+        TaskObserver.sharedInstance().startObserving(TasksOf: Resource.sharedInstance().currentWallet!)
+        Tasks = []
+        filterTask = []
+        for key in Resource.sharedInstance().tasks.keys {
+            let task = Resource.sharedInstance().tasks[key]
+            if task?.walletID == Resource.sharedInstance().currentWalletID {
+                self.Tasks.append(task!)
+                if self.SegmentBtn.selectedSegmentIndex == 0 {
+                    if task!.status == .open {
+                        self.filterTask.append(task!)
+                    }
+                }
+                else if self.SegmentBtn.selectedSegmentIndex == 1 {
+                    if task!.status == .completed {
+                        self.filterTask.append(task!)
+                    }
+                }
+            }
+        }
+    }
+    
+    func allWalletsBtnTapped() {
+        let storyboard = UIStoryboard(name: "HuzaifaStroyboard", bundle: nil)
+        let cont = storyboard.instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
+        self.present(cont, animated: true, completion: nil)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    func sortDates() {
-        
-        var Dates = [Date]()
-        var ArrangeDates = [String]()
-        
-        for i in 0..<filterDates.count {
-            Dates.append(dateformat.date(from: filterDates[i])!)
-        }
-        
-        Dates.sort { (a, b) -> Bool in
-            a.compare(b) == .orderedDescending
-        }
-        
-        for i in 0..<Dates.count {
-            ArrangeDates.append(dateformat.string(from: Dates[i]))
-            print(" Date : \(ArrangeDates)")
-        }
-        filterDates = ArrangeDates
     }
     
     @IBAction func segmentBtnValueChanged(_ sender: Any) {
@@ -111,10 +115,8 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
                 }
             }
         }
-//        sortDates()
         tableview.reloadData()
     }
-    
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -133,7 +135,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         
         if tasks.status == .open {
             if tasks.doneByID == nil || tasks.doneByID == "" {
-                 cell.status.layer.backgroundColor = UIColor.green.cgColor
+                cell.status.layer.backgroundColor = UIColor.green.cgColor
                 cell.assignTotag.text = "Assign To : "
             }
             else if tasks.doneByID != "" {
@@ -142,6 +144,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
             }
         }
         else {
+            cell.assignTotag.text = "Completed By : "
             cell.status.layer.backgroundColor = UIColor.white.cgColor
         }
         
@@ -153,7 +156,6 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         cell.taskMembers.delegate = self
         cell.taskMembers.dataSource = self
         cell.taskMembers.tag = indexPath.row
-        print("Inside Table View : \(tasks.members.count)")
         cell.taskMembers.reloadData()
         
         return cell
@@ -224,34 +226,34 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         performSegue(withIdentifier: "addTask", sender: nil)
     }
 
-    func ConfirmDeletion(task : Task) {
-        let alert = UIAlertController(title: "Delete Task", message: "Are you sure you want to permanently delete this Task", preferredStyle: .actionSheet)
-        let deleteAction = UIAlertAction(title: "Delete", style: .destructive, handler: DeleteTask)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: Cancel)
-        
-        alert.addAction(deleteAction)
-        alert.addAction(cancelAction)
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    func DeleteTask(alertAction : UIAlertAction!) {
-        if let indexPath = selectedrow {
-            tableview.beginUpdates()
-            filterTask.remove(at: indexPath.row)
-            tableview.deleteRows(at: [indexPath], with: .left)
-            selectedrow = nil
-            tableview.endUpdates()
-        }
-    }
-    
-    func Cancel(alertAction : UIAlertAction!) {
-        selectedrow = nil
-    }
+//    func ConfirmDeletion(task : Task) {
+//        let alert = UIAlertController(title: "Delete Task", message: "Are you sure you want to permanently delete this Task", preferredStyle: .actionSheet)
+//        let deleteAction = UIAlertAction(title: "Delete", style: .destructive, handler: DeleteTask)
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: Cancel)
+//        
+//        alert.addAction(deleteAction)
+//        alert.addAction(cancelAction)
+//        
+//        self.present(alert, animated: true, completion: nil)
+//    }
+//    
+//    func DeleteTask(alertAction : UIAlertAction!) {
+//        if let indexPath = selectedrow {
+//            tableview.beginUpdates()
+//            filterTask.remove(at: indexPath.row)
+//            tableview.deleteRows(at: [indexPath], with: .left)
+//            selectedrow = nil
+//            tableview.endUpdates()
+//        }
+//    }
+//    
+//    func Cancel(alertAction : UIAlertAction!) {
+//        selectedrow = nil
+//    }
     
     func taskAdded(_ task: Task) {
-        if Resource.sharedInstance().currentWalletID == task.walletID {
-            Tasks.append(task)
+        if Resource.sharedInstance().currentWalletID == task.walletID && isDataAvailable {
+            Tasks.insert(task, at: 0)
             if task.status == .open && SegmentBtn.selectedSegmentIndex == 0 {
                 filterTask.append(task)
             }
@@ -264,17 +266,8 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     func taskDeleted(_ task: Task) {
         if task.walletID == Resource.sharedInstance().currentWalletID {
-            for i in 0..<Tasks.count {
-                if Tasks[i].id == task.id {
-                    Tasks.remove(at: i)
-              }
-            }
-            for i in 0..<filterTask.count {
-                if filterTask[i].id == task.id {
-                    filterTask.remove(at: i)
-                    tableview.reloadSections([0], with: .automatic)
-                }
-            }
+            self.TaskExtraction()
+            self.tableview.reloadData()
         }
     }
     
@@ -342,6 +335,29 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         }
     }
     
+    
+    //Wallet Delegatee
+    func walletAdded(_ wallet: UserWallet) {
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if wallet.id == Resource.sharedInstance().currentWalletID {
+            if wallet.isOpen {
+                navigationItem.rightBarButtonItem = add
+            }
+            else if !wallet.isOpen {
+                navigationItem.rightBarButtonItem = nil
+            }
+        }
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        if wallet.id == Resource.sharedInstance().currentWalletID {
+            Resource.sharedInstance().currentWalletID = Resource.sharedInstance().currentUserId
+            TaskExtraction()
+            self.tableview.reloadData()
+        }
+    }
         
     /*
     // MARK: - Navigation

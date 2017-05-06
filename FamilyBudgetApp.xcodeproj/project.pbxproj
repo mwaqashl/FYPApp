@@ -151,6 +151,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		045B3ABB1E98DAF30017C115 /* Task */ = {
+			isa = PBXGroup;
+			children = (
+				04C2BD511E9247BF0064AADB /* AddTaskViewController.swift */,
+				04845D261E93C77000BDA0FC /* TasksListViewController.swift */,
+			);
+			name = Task;
+			sourceTree = "<group>";
+		};
 		44BB0B31E715C6598EB081CD /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -172,10 +181,9 @@
 		773859521E90673D004BFBF2 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				045B3ABB1E98DAF30017C115 /* Task */,
 				773859541E90675E004BFBF2 /* Transaction */,
 				773859531E906751004BFBF2 /* Login */,
-				04C2BD511E9247BF0064AADB /* AddTaskViewController.swift */,
-				04845D261E93C77000BDA0FC /* TasksListViewController.swift */,
 				04343C041E5EBDC800417C91 /* HomeViewController.swift */,
 				04C2BD6B1E924BF20064AADB /* TransactionByTableViewCell.swift */,
 				04C2BD671E924B850064AADB /* AssignToTableViewCell.swift */,
