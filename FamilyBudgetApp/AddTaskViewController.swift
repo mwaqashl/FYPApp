@@ -777,7 +777,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         self.cells = ["Title","Amount","Category","Created By","Date"]
         
         if self.task!.status == .open {
-            if self.task!.doneByID == nil || self.task!.doneByID == "" {
+            if self.task!.doneByID == nil {
                 self.cells.insert("AssignTo", at: 3)
             }
             else {
