@@ -14,7 +14,7 @@ class TransactionObserver {
         "isExpense", //8
         "date"] //9
     
-    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var ref = Database.database().reference()
     fileprivate static var singleInstance : TransactionObserver?
     fileprivate var isObservingTransactionsOf : [String] = []
     class func sharedInstance() -> TransactionObserver {
@@ -33,14 +33,14 @@ class TransactionObserver {
         }
     }
     func stopObservingTransaction(ofWallet wallet : String){
-        FIRDatabase.database().reference().child(FIRKeys[0]).child(wallet).removeAllObservers()
+        Database.database().reference().child(FIRKeys[0]).child(wallet).removeAllObservers()
         if isObservingTransactionsOf.contains(wallet){
             isObservingTransactionsOf.remove(at: isObservingTransactionsOf.index(of: wallet)!)
         }
     }
     fileprivate func observeTransactionAdded(_ wallet: String) {
         let transactionRef = ref.child(FIRKeys[0]).child(wallet)
-        transactionRef.observe(FIRDataEventType.childAdded, with: {(snapshot) in
+        transactionRef.observe(DataEventType.childAdded, with: {(snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return
             }
@@ -62,7 +62,7 @@ class TransactionObserver {
     }
     fileprivate func observeTransactionUpdated(_ wallet: String) {
         let transactionRef = ref.child(FIRKeys[0]).child(wallet)
-        transactionRef.observe(FIRDataEventType.childChanged, with: {(snapshot) in
+        transactionRef.observe(DataEventType.childChanged, with: {(snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return
             }
@@ -81,7 +81,7 @@ class TransactionObserver {
     }
     fileprivate func observeTransactionDeleted(_ wallet: String) {
         let transactionRef = ref.child(FIRKeys[0]).child(wallet)
-        transactionRef.observe(FIRDataEventType.childRemoved, with: {(snapshot) in
+        transactionRef.observe(DataEventType.childRemoved, with: {(snapshot) in
             guard (snapshot.value as? NSDictionary) != nil else {
                 return
             }

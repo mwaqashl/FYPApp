@@ -45,10 +45,14 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
         allWalletsBtn.tintColor = bluethemecolor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
+        self.tabBarController?.tabBar.barTintColor = .white
+
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
+                self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
+                self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
                 self.isDataAvailable = true
                 self.ExtractBudget()
                 self.ExtractTransactions()
@@ -111,6 +115,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
+            self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
+            self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             ExtractBudget()
             ExtractTransactions()

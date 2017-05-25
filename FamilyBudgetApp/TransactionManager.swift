@@ -4,7 +4,7 @@ import Firebase
 
 class TransactionManager {
     
-    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var ref = Database.database().reference()
     fileprivate static var singleTonInstance = TransactionManager()
     
     static func sharedInstance() -> TransactionManager {
@@ -53,7 +53,7 @@ class TransactionManager {
         
         let walletRef = ref.child("Wallets/\(transaction.walletID)")
         
-        walletRef.runTransactionBlock({ (currentData: FIRMutableData) -> FIRTransactionResult in
+        walletRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
             if var walletData = currentData.value as? [String : Any] {
                 print(walletData["balance"])
                 var balance = walletData["balance"] as! Double
@@ -75,9 +75,9 @@ class TransactionManager {
                 
                 currentData.value = walletData
                 
-                return FIRTransactionResult.success(withValue: currentData)
+                return TransactionResult.success(withValue: currentData)
             }
-            return FIRTransactionResult.success(withValue: currentData)
+            return TransactionResult.success(withValue: currentData)
 
         }) { (error, committed, snapshot) in
             if let error = error {
@@ -120,7 +120,7 @@ class TransactionManager {
             }
             else {
                 
-                transRef.runTransactionBlock({ (currentData) -> FIRTransactionResult in
+                transRef.runTransactionBlock({ (currentData) -> TransactionResult in
                     
                     if var walletData = currentData.value as? [String:Any] {
                         
@@ -159,10 +159,10 @@ class TransactionManager {
                         walletData["totIncome"] = totInc
                         walletData["totExpense"] = totExp
                         
-                        return FIRTransactionResult.success(withValue: currentData)
+                        return TransactionResult.success(withValue: currentData)
                     }
                     
-                    return FIRTransactionResult.success(withValue: currentData)
+                    return TransactionResult.success(withValue: currentData)
                     
                 }, andCompletionBlock: { (error, commit, data) in
                     
@@ -188,7 +188,7 @@ class TransactionManager {
     func removeTransactionInWallet(_ transaction: Transaction, wallet: UserWallet) {
         ref.child("Transactions/\(wallet.id)/\(transaction.id)").removeValue()
         
-        ref.child("Wallets").child(wallet.id).runTransactionBlock { (currentData) -> FIRTransactionResult in
+        ref.child("Wallets").child(wallet.id).runTransactionBlock { (currentData) -> TransactionResult in
             
             if var walletData = currentData.value as? [String:Any] {
                 
@@ -202,10 +202,10 @@ class TransactionManager {
                 }
                 
                 currentData.value = walletData
-                return FIRTransactionResult.success(withValue: currentData)
+                return TransactionResult.success(withValue: currentData)
             }
             
-            return FIRTransactionResult.success(withValue: currentData)
+            return TransactionResult.success(withValue: currentData)
         }
         
     }

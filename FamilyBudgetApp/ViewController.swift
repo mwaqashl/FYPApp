@@ -84,7 +84,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         if error == "" {
             
-            Auth.sharedInstance().signIn(email: emailAddress.text!, password: password.text!, callback: { (isNewUser, _error) in
+            Authentication.sharedInstance().signIn(email: emailAddress.text!, password: password.text!, callback: { (isNewUser, _error) in
                 if _error != nil {
                     error = "Error"
                     errorDis = _error?.localizedDescription ?? "Some error Occured"

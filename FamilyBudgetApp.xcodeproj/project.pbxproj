@@ -34,6 +34,7 @@
 		04C2BD6E1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */; };
 		04D3C3301EBF03C600EB1488 /* AddBudgetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D3C32F1EBF03C600EB1488 /* AddBudgetViewController.swift */; };
 		04D3C3321EBF096600EB1488 /* BudgetStatsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D3C3311EBF096600EB1488 /* BudgetStatsTableViewCell.swift */; };
+		04FFF4581ED60C7E005E95E1 /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFF4571ED60C7E005E95E1 /* StatisticsViewController.swift */; };
 		543F485DAE600F08C8532E77 /* Pods_FamilyBudgetApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */; };
 		7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C51E8717D80074CD60 /* iconFont.ttf */; };
 		7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */; };
@@ -101,6 +102,8 @@
 		04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategorySelectionCollectionViewCell.swift; sourceTree = "<group>"; };
 		04D3C32F1EBF03C600EB1488 /* AddBudgetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddBudgetViewController.swift; sourceTree = "<group>"; };
 		04D3C3311EBF096600EB1488 /* BudgetStatsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetStatsTableViewCell.swift; sourceTree = "<group>"; };
+		04FFF4571ED60C7E005E95E1 /* StatisticsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatisticsViewController.swift; sourceTree = "<group>"; };
+		04FFF45D1ED69091005E95E1 /* Charts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Charts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
 		7706A6C51E8717D80074CD60 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = SOURCE_ROOT; };
 		7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = SOURCE_ROOT; };
@@ -177,6 +180,14 @@
 			name = Budget;
 			sourceTree = "<group>";
 		};
+		04FFF4561ED60C3D005E95E1 /* Stats */ = {
+			isa = PBXGroup;
+			children = (
+				04FFF4571ED60C7E005E95E1 /* StatisticsViewController.swift */,
+			);
+			name = Stats;
+			sourceTree = "<group>";
+		};
 		44BB0B31E715C6598EB081CD /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,6 +209,7 @@
 		773859521E90673D004BFBF2 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				04FFF4561ED60C3D005E95E1 /* Stats */,
 				0477E8AA1EBE4B3400EB9C00 /* Budget */,
 				045B3ABB1E98DAF30017C115 /* Task */,
 				773859541E90675E004BFBF2 /* Transaction */,
@@ -253,6 +265,7 @@
 		7742C7A91E57231C006A25AF = {
 			isa = PBXGroup;
 			children = (
+				04FFF45D1ED69091005E95E1 /* Charts.framework */,
 				7742C7B41E57231C006A25AF /* FamilyBudgetApp */,
 				7742C7B31E57231C006A25AF /* Products */,
 				44BB0B31E715C6598EB081CD /* Pods */,
@@ -483,7 +496,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -524,6 +537,7 @@
 				04343C051E5EBDC800417C91 /* HomeViewController.swift in Sources */,
 				044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */,
 				775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */,
+				04FFF4581ED60C7E005E95E1 /* StatisticsViewController.swift in Sources */,
 				0477E8AE1EBE4C1200EB9C00 /* BudgetTableViewCell.swift in Sources */,
 				0477E8AC1EBE4B7C00EB9C00 /* BudgetViewController.swift in Sources */,
 				775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */,

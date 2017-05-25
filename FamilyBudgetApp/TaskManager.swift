@@ -14,7 +14,7 @@ class TaskManager {
     // Add a new task to Database ! required arg is task object
     func addNewTask(_ task: Task) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         let walletTasksRef = ref.child("Tasks/\(task.walletID)")
         let newTask = walletTasksRef.childByAutoId()
         task.id = newTask.key
@@ -50,7 +50,7 @@ class TaskManager {
     
     // Delete task from database // required arg is task object
     func deleteTask(_ task: Task) {
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         
         ref.child("Tasks/\(task.walletID)/\(task.id)").removeValue()
         
@@ -65,7 +65,7 @@ class TaskManager {
     // Update task in database // required arg is task object
     func updateTask(_ task: Task) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         
         
         let taskRef = ref.child("Tasks/\(task.walletID)/\(task.id)")
@@ -91,10 +91,10 @@ class TaskManager {
     // When someone want to do or dont do any task ! required argument is object of that Task
     func taskStatusChanged(_ task: Task) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         let taskRef = ref.child("Tasks").child(task.walletID).child(task.id)
         
-        taskRef.runTransactionBlock { (oldData) -> FIRTransactionResult in
+        taskRef.runTransactionBlock { (oldData) -> TransactionResult in
             if var transData = oldData.value as? [String:Any] {
                 
                 guard let _ = transData["doneBy"] as? String else {
@@ -106,7 +106,7 @@ class TaskManager {
                         transData.removeValue(forKey: "doneBy")
                     }
                     oldData.value = transData
-                    return FIRTransactionResult.success(withValue: oldData)
+                    return TransactionResult.success(withValue: oldData)
                 }
                 
                 if task.doneByID == nil {
@@ -114,12 +114,12 @@ class TaskManager {
                 }
                 
                 oldData.value = transData
-                return FIRTransactionResult.success(withValue: oldData)
+                return TransactionResult.success(withValue: oldData)
             }
             
             // Send local notification to user that someone has already doing this task !
             
-            return FIRTransactionResult.success(withValue: oldData)
+            return TransactionResult.success(withValue: oldData)
             
         }
         
@@ -127,7 +127,7 @@ class TaskManager {
     
     func taskCompleted(task: Task) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         
         let taskRef = ref.child("Tasks").child(task.walletID).child(task.id)
         
@@ -139,14 +139,14 @@ class TaskManager {
     // Add a member to task, req args are taskID and userID of that member
     func addMemberToTask(_ taskID: String, member: String) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         ref.child("TasksMemberships/\(taskID)/\(member)").setValue(true)
     }
     
     // Remove a member to task, req args are taskID and userID of that member
     func removeMemberFromTask(_ taskID: String, member: String) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         ref.child("TasksMemberships/\(taskID)/\(member)").removeValue()
         
     }

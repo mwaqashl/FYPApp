@@ -5,6 +5,7 @@ target 'FamilyBudgetApp' do
   # Comment this line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
 
+  pod 'Charts'
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
   pod 'Firebase'

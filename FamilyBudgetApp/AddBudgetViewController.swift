@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UITextViewDelegate {
+class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UITextViewDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
 
     
     @IBOutlet weak var CategoryAndMembercollectionview: UICollectionView!
@@ -25,6 +25,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     var Add = UIBarButtonItem()
     var Edit = UIBarButtonItem()
     
+    var NoOfDays = UIPickerView()
     var datepicker = UIDatePicker()
     var dateformat = DateFormatter()
     let toolbar = UIToolbar()
@@ -41,6 +42,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     var pselectedMembers = [String]()
     
     var cells = ["Title","Amount","Category","AssignTo","Date","NoOfDays","Comments"]
+    var Days = [7,15,30]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,6 +63,10 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.tableview.dataSource = self
         self.tableview.delegate = self
+        
+        self.NoOfDays.dataSource = self
+        self.NoOfDays.delegate = self
+        self.NoOfDays.backgroundColor = .white
         
         CategoryAndMembercollectionview.dataSource = self
         CategoryAndMembercollectionview.delegate = self
@@ -85,6 +91,18 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
         }
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return Days.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return "\(Days[row])"
     }
     
     func UpdateCells() {
@@ -342,7 +360,15 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             
                 else if cell.title.text == "NoOfDays" {
+                    cell.textview.inputView = NoOfDays
                     cell.textview.text = "\(budget!.daysInbudget())"
+                    let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
+                    let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
+                    let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+                    self.toolbar.setItems([cancel,spaceButton,done], animated: false)
+                    cell.textview.inputAccessoryView = self.toolbar
+                    self.toolbar.backgroundColor = .lightGray
+                    cell.textview.isUserInteractionEnabled = true
                     cell.textview.tag = 4
                 }
                 
@@ -460,9 +486,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             cell.name.text = user!.userName
             cell.image.image = #imageLiteral(resourceName: "dp-male")
-            cell.selectedmember.layer.cornerRadius = 5
             if budget!.getMemberIDs().contains(walletmembers[indexPath.item].getUserID()) && collectionView == self.CategoryAndMembercollectionview {
                 cell.selectedmember.isHidden = false
+                cell.selectedmember.layer.borderWidth = 1
             }
             else {
                 cell.selectedmember.isHidden = true

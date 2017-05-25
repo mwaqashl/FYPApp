@@ -194,7 +194,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         if error == "" {
             
-            let personalWallet = UserWallet(id: "", name: walletname!.text!, icon: selectedIcon, currencyID: wallet!.currencyID, creatorID: Auth.sharedInstance().authUser!.getUserID(), balance: Double(initialamount.text!)!, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [(Auth.sharedInstance().authUser?.getUserID())! : .owner], isOpen: true, color: selectedColor.stringRepresentation)
+            let personalWallet = UserWallet(id: "", name: walletname!.text!, icon: selectedIcon, currencyID: wallet!.currencyID, creatorID: Authentication.sharedInstance().authUser!.getUserID(), balance: Double(initialamount.text!)!, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [(Authentication.sharedInstance().authUser?.getUserID())! : .owner], isOpen: true, color: selectedColor.stringRepresentation)
             
             let walletid = WalletManager.sharedInstance().addWallet(personalWallet)
             if walletid != "" {
@@ -224,7 +224,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     @IBAction func backBtnAction(_ sender: Any) {
-        Auth.sharedInstance().logOutUser(callback: {
+        Authentication.sharedInstance().logOutUser(callback: {
             (err) in
             
             if err == nil {

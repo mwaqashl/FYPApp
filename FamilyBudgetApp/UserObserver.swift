@@ -4,7 +4,7 @@ import Foundation
 import Firebase
 
 class UserObserver {
-    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var ref = Database.database().reference()
     fileprivate static var singleInstance : UserObserver?
     class func sharedInstance() -> UserObserver {
         guard let instance = UserObserver.singleInstance else {
@@ -18,11 +18,11 @@ class UserObserver {
         observeUserUpdated()
     }
     func stopObserving(){
-        FIRDatabase.database().reference().child("Users").removeAllObservers()
+        Database.database().reference().child("Users").removeAllObservers()
     }
     fileprivate func observeUserAdded(){
         let userRef = ref.child("Users")
-        userRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+        userRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return
             }
@@ -39,7 +39,7 @@ class UserObserver {
     }
     fileprivate func observeUserUpdated(){
         let userRef = ref.child("Users")
-        userRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
+        userRef.observe(DataEventType.childChanged, with:  { (snapshot) in
             guard let dict = snapshot.value as? NSDictionary else {
                 return
             }

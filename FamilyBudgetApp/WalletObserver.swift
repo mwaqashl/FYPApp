@@ -4,7 +4,7 @@ import Foundation
 import Firebase
 
 class WalletObserver {
-    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var ref = Database.database().reference()
     fileprivate var isObservingWallets = false
     fileprivate var isObservingWallet : [String: Bool] = [:]
     
@@ -86,10 +86,10 @@ class WalletObserver {
         }
     }
     func stopObserving(){
-        FIRDatabase.database().reference().child("UserWallets").removeAllObservers()
-        FIRDatabase.database().reference().child("Wallets").removeAllObservers()
-        FIRDatabase.database().reference().child("WalletMembers").removeAllObservers()
-        FIRDatabase.database().reference().child("WalletCategories").removeAllObservers()
+        Database.database().reference().child("UserWallets").removeAllObservers()
+        Database.database().reference().child("Wallets").removeAllObservers()
+        Database.database().reference().child("WalletMembers").removeAllObservers()
+        Database.database().reference().child("WalletCategories").removeAllObservers()
     }
     
     func startObserving(PartsOf wallet :  UserWallet){
@@ -103,8 +103,8 @@ class WalletObserver {
     }
     func stopObserving(PartsOf wallet :  UserWallet){
         if let flag = isObservingWallet[wallet.id] , flag {
-            FIRDatabase.database().reference().child("WalletMembers").child(wallet.id).removeAllObservers()
-            FIRDatabase.database().reference().child("WalletCategories").child(wallet.id).removeAllObservers()
+            Database.database().reference().child("WalletMembers").child(wallet.id).removeAllObservers()
+            Database.database().reference().child("WalletCategories").child(wallet.id).removeAllObservers()
             isObservingWallet[wallet.id] = false
         }
     }
@@ -133,9 +133,9 @@ class WalletObserver {
     fileprivate func observeWalletAdded(){
         //print(Resource.sharedInstance().currentUserId)
         let walletsRef = ref.child("UserWallets").child(Resource.sharedInstance().currentUserId!)
-        walletsRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+        walletsRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             let walletRef = self.ref.child("Wallets").child(snapshot.key)
-            walletRef.observe(FIRDataEventType.value, with: { (snapshot1) in
+            walletRef.observe(DataEventType.value, with: { (snapshot1) in
                 guard let dict = snapshot1.value as? [String: Any] else {
                     print("Wallet value isnt a dictionary \(snapshot.key)")
                     return
@@ -178,7 +178,7 @@ class WalletObserver {
     }
     fileprivate func observeWalletDeleted(){
         let walletsRef = ref.child("UserWallets").child(Resource.sharedInstance().currentUserId!)
-        walletsRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
+        walletsRef.observe(DataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -197,7 +197,7 @@ class WalletObserver {
     }
     fileprivate func observeWalletMemberAdded(_ wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let walletRef = ref.child("WalletMembers").child(wallet.id)
-        walletRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+        walletRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -214,7 +214,7 @@ class WalletObserver {
     }
     fileprivate func observeWalletMemberUpdated(_ wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let walletRef = ref.child("WalletMembers").child(wallet.id)
-        walletRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
+        walletRef.observe(DataEventType.childChanged, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -231,7 +231,7 @@ class WalletObserver {
     }
     fileprivate func observeWalletMemberRemoved(_ wallet: Wallet){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let walletRef = ref.child("WalletMembers").child(wallet.id)
-        walletRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
+        walletRef.observe(DataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }

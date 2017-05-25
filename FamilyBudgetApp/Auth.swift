@@ -2,18 +2,18 @@
 import Foundation
 import Firebase
 
- class Auth {
+ class Authentication {
     
     var authUser : CurrentUser?
     var isAuthenticated = false
-    fileprivate static var singleTonInstance : Auth?
+    fileprivate static var singleTonInstance : Authentication?
     
     func logOutUser(callback: (Error?) -> Void) {
         do{
-            try FIRAuth.auth()?.signOut()
+            try Auth.auth().signOut()
             isAuthenticated = false
             Resource.sharedInstance().reset()
-            FIRDatabase.database().reference().removeAllObservers()
+            Database.database().reference().removeAllObservers()
             return callback(nil)
         }catch let error as NSError{
             print(error.localizedDescription)
@@ -21,9 +21,9 @@ import Firebase
         }
     }
     
-    class func sharedInstance() -> Auth {
+    class func sharedInstance() -> Authentication {
         guard let instance = singleTonInstance else{
-            singleTonInstance = Auth()
+            singleTonInstance = Authentication()
             return singleTonInstance!
         }
         return instance
@@ -32,7 +32,7 @@ import Firebase
     
     func createUser(email: String, password: String, user: CurrentUser, callback: @escaping (Error?) -> Void) {
         
-        FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (firuser, err) in
+        Auth.auth().createUser(withEmail: email, password: password, completion: { (firuser, err) in
             if err != nil {
                 print(err!.localizedDescription)
                 callback(err!)
@@ -54,7 +54,7 @@ import Firebase
     
     func signIn(email: String, password: String, callback: @escaping (Bool, Error?)->Void) {
         
-        FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user, error) in
+        Auth.auth().signIn(withEmail: email, password: password, completion: { (user, error) in
             
             if error != nil {
                 
@@ -67,7 +67,7 @@ import Firebase
             }
             else {
                 
-                FIRDatabase.database().reference().child("Users").child(user!.uid).observeSingleEvent(of: .value, with: { (snap) in
+                Database.database().reference().child("Users").child(user!.uid).observeSingleEvent(of: .value, with: { (snap) in
                     print(snap.value)
                     print(snap.key)
                     guard let data = snap.value as? NSDictionary else {

@@ -41,13 +41,18 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
         allWalletsBtn.tintColor = bluethemecolor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
-        
+        self.tabBarController?.tabBar.barTintColor = .white
         
         add = self.navigationItem.rightBarButtonItem!
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             
             if flag {
+                self.tabBarController?.tabBar.backgroundColor?.withAlphaComponent(0.5)
+                self.tabBarController?.tabBar.backgroundColor = Resource.sharedInstance().currentWallet!.color
+                self.tabBarController?.tabBar.unselectedItemTintColor = .gray
+                self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
+                self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
                 self.isDataAvailable = true
                 self.TaskExtraction()
             }
@@ -59,6 +64,11 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
+            self.tabBarController?.tabBar.backgroundColor?.withAlphaComponent(0.5)
+            self.tabBarController?.tabBar.backgroundColor = Resource.sharedInstance().currentWallet!.color
+            self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
+            self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet?.color
+            self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             TaskExtraction()
             tableview.reloadData()
         }
@@ -122,7 +132,17 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         return 1
     }
     
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if filterTask.count == 0 {
+            let label = UILabel.init()
+            label.text = "No Task Available"
+            label.textAlignment = .center
+            self.tableview.backgroundView = label
+        }
+        else {
+            self.tableview.backgroundView = nil
+        }
         return filterTask.count
     }
     
@@ -157,7 +177,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         cell.taskMembers.dataSource = self
         cell.taskMembers.tag = indexPath.row
         cell.taskMembers.reloadData()
-        
+        cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell
     }
     
@@ -178,21 +198,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         }
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-//        let tasks = Resource.sharedInstance().tasks[taskskey[indexPath.row]]
-        
-//        if Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet?.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || tasks!.creatorID == Resource.sharedInstance().currentUserId || tasks!.doneByID == Resource.sharedInstance().currentUserId {
-//            if editingStyle == .delete {
-//                deleteIndex = indexPath
-//                let deletingtask = tasks!
-//                ConfirmDeletion(task: deletingtask)
-//            }
-//        }
-    }
-    
 //    CollectionView
-
-
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let a = filterTask[collectionView.tag]
@@ -226,31 +232,6 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         performSegue(withIdentifier: "addTask", sender: nil)
     }
 
-//    func ConfirmDeletion(task : Task) {
-//        let alert = UIAlertController(title: "Delete Task", message: "Are you sure you want to permanently delete this Task", preferredStyle: .actionSheet)
-//        let deleteAction = UIAlertAction(title: "Delete", style: .destructive, handler: DeleteTask)
-//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: Cancel)
-//        
-//        alert.addAction(deleteAction)
-//        alert.addAction(cancelAction)
-//        
-//        self.present(alert, animated: true, completion: nil)
-//    }
-//    
-//    func DeleteTask(alertAction : UIAlertAction!) {
-//        if let indexPath = selectedrow {
-//            tableview.beginUpdates()
-//            filterTask.remove(at: indexPath.row)
-//            tableview.deleteRows(at: [indexPath], with: .left)
-//            selectedrow = nil
-//            tableview.endUpdates()
-//        }
-//    }
-//    
-//    func Cancel(alertAction : UIAlertAction!) {
-//        selectedrow = nil
-//    }
-    
     func taskAdded(_ task: Task) {
         if Resource.sharedInstance().currentWalletID == task.walletID && isDataAvailable {
             Tasks.insert(task, at: 0)

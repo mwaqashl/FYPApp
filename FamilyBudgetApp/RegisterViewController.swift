@@ -163,7 +163,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         if error == "" {
             let User = CurrentUser.init(id: "", email: email.text!, userName: userName.text!, imageURL: "", birthdate: date! , deviceID: "", gender: previous!)
             
-            Auth.sharedInstance().createUser(email: email.text!, password: password.text!, user: User, callback: { (_error) in
+            Authentication.sharedInstance().createUser(email: email.text!, password: password.text!, user: User, callback: { (_error) in
                 if _error != nil {
                     error = "Error"
                     errorDis = _error!.localizedDescription

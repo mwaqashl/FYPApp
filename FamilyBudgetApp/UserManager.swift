@@ -6,7 +6,7 @@ import Firebase
 class UserManager {
     
     fileprivate static var singleTonInstance = UserManager()
-    fileprivate let ref = FIRDatabase.database().reference()
+    fileprivate let ref = Database.database().reference()
     let defaultSettings = UserDefaults.standard
     
     static func sharedInstance() -> UserManager {
@@ -18,9 +18,9 @@ class UserManager {
         
         let data = UIImageJPEGRepresentation(user.image!, 0.5)
         
-        let ref = FIRStorage.storage().reference()
+        let ref = Storage.storage().reference()
         
-        ref.child("User").child(user.getUserID()).child(user.imageURL).put(data!, metadata: nil) { (meta, error) in
+        ref.child("User").child(user.getUserID()).child(user.imageURL).putData(data!, metadata: nil) { (meta, error) in
             if error != nil {
                 callBack(false)
                 return
@@ -52,7 +52,7 @@ class UserManager {
             data["birthDate"] = user.birthdate!.timeIntervalSince1970*1000
         }
         data["deviceID"] = user.deviceID
-        data["lastSeen"] = FIRServerValue.timestamp()
+        data["lastSeen"] = ServerValue.timestamp()
         
         userInfo.setValue(data)
         
@@ -69,7 +69,7 @@ class UserManager {
             "gender" : user.gender
         ]
         
-        data.setValue(FIRServerValue.timestamp(), forKey: "lastSeen")
+        data.setValue(ServerValue.timestamp(), forKey: "lastSeen")
         
         userInfo.updateChildValues(data as! [AnyHashable:Any])
 
@@ -112,7 +112,7 @@ class UserManager {
         // add the device in deviceIDs
         let deviceRef = ref.child("Users").child(user)
         if let deviceToken = defaultSettings.value(forKey: "deviceToken") as? String {
-            deviceRef.updateChildValues(["deviceID":deviceToken,"lastSeen": FIRServerValue.timestamp()])
+            deviceRef.updateChildValues(["deviceID":deviceToken,"lastSeen": ServerValue.timestamp()])
         }
     }
     

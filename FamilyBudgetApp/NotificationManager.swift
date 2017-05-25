@@ -32,7 +32,7 @@ import Firebase
 class NotificationManager {
     
     fileprivate static var singleTonInstance = NotificationManager()
-    fileprivate let ref = FIRDatabase.database().reference()
+    fileprivate let ref = Database.database().reference()
     
     static func sharedInstance() -> NotificationManager {
         return singleTonInstance

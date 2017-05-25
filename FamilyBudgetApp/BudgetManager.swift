@@ -20,7 +20,7 @@ class BudgetManager {
      */
     func addNewBudget(_ budget: Budget) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         let budRef = ref.child("Budgets").child(budget.walletID).childByAutoId()
         
         let data : NSMutableDictionary = [
@@ -51,7 +51,7 @@ class BudgetManager {
      
      */
     func removeBudgetFromWallet(_ budget: Budget) {
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         ref.child("Budgets/\(budget.walletID)/\(budget.id)").removeValue()
         ref.child("BudgetCategories/\(budget.id)").removeValue()
         ref.child("BudgetMembers/\(budget.id)").removeValue()
@@ -65,7 +65,7 @@ class BudgetManager {
      */
     func updateBudgetInWallet(_ budget: Budget) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         let budRef = ref.child("Budgets/\(budget.walletID)/\(budget.id)")
         
         var data : [String:Any] = [
@@ -93,7 +93,7 @@ class BudgetManager {
      */
     func addCategoriesToBudget(_ budgetID: String, categories: [String]) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         let catRef = ref.child("BudgetCategories/\(budgetID)")
         
         var data = [String:Bool]()
@@ -113,7 +113,7 @@ class BudgetManager {
      */
     func addMembersToBudget(_ budgetID: String, members: [String]) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         let memRef = ref.child("BudgetMembers/\(budgetID)")
         
         var data = [String:Bool]()

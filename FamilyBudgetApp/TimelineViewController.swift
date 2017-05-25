@@ -47,10 +47,14 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
         dateformat.dateFormat = "dd-MMM-yyyy"
         
-        
+        self.tabBarController?.tabBar.barTintColor = .white
+
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
+                
+                self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
+                self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
                 
                 self.IncomeAmount.text = "\(Resource.sharedInstance().currentWallet!.totalIncome)"
                 self.ExpenseAmount.text = "\(Resource.sharedInstance().currentWallet!.totalExpense)"

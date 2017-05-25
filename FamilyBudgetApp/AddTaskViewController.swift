@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddTaskViewController: UIViewController, UITableViewDataSource , UITableViewDelegate , UITextViewDelegate , UICollectionViewDelegate , UICollectionViewDataSource, TaskDelegate, WalletMemberDelegate, TaskMemberDelegate, WalletDelegate{
+class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UITableViewDataSource , UITableViewDelegate , UITextViewDelegate , UICollectionViewDelegate , UICollectionViewDataSource, TaskDelegate, WalletMemberDelegate, TaskMemberDelegate, WalletDelegate{
 
     @IBOutlet weak var collectionviewTitle: UILabel!
     @IBOutlet weak var collectionview: UICollectionView!
@@ -16,26 +16,30 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     @IBOutlet weak var TitleForPage: UILabel!
     @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var SelectionView: UIView!
+    @IBOutlet weak var DateView: UIView!
+    
+    @IBOutlet weak var datepicker: UIDatePicker!
     
     @IBOutlet weak var acceptBtn: UIButton!
     @IBOutlet weak var rejectBtn: UIButton!
 
+    var newView : UIView?
+    
     var Add = UIBarButtonItem()
     var Edit = UIBarButtonItem()
     
-    var datepicker = UIDatePicker()
     var dateformatter = DateFormatter()
-    let toolbar = UIToolbar()
     var date : Double?
     
     var categoriesKeys = [String]()
     var walletmembers : [User]?
     
-    var cells = ["Title","Amount","Category","Date","Comments"]
+    var cells = ["Title","Amount","Category","Due Date","Comments"]
     
     var task : Task?
     var isNew : Bool?
     var isEdit = false
+    
     var isCategoryView = true
     
     var selectedCategory = String()
@@ -47,10 +51,19 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        newView = UIView(frame: self.view.frame)
+        newView!.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
+        tap.delegate = self
+        tap.numberOfTapsRequired = 1
+        newView!.addGestureRecognizer(tap)
+        newView!.backgroundColor = .lightGray
+        newView!.alpha = 0.5
+        newView!.isUserInteractionEnabled = true
+        
+        
         dateformatter.dateFormat = "dd-MMM-yyyy"
-        datepicker.datePickerMode = .date
-        datepicker.backgroundColor = .white
-        toolbar.sizeToFit()
+        datepicker.minimumDate = Date()
         
         tableview.delegate = self
         tableview.dataSource = self
@@ -73,12 +86,15 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         rejectBtn.isHidden = true
         
         SelectionView.isHidden = true
+        DateView.isHidden = true
         
         Add = UIBarButtonItem.init(title: "\u{A009}", style: .plain, target: self, action: #selector(self.AddTask))
         Add.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
+        Add.tintColor = bluethemecolor
         
         Edit = UIBarButtonItem.init(title: "\u{A013}", style: .plain, target: self, action: #selector(self.EditTask))
         Edit.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
+        Edit.tintColor = bluethemecolor
         
         Delegate.sharedInstance().addWalletMemberDelegate(self)
         Delegate.sharedInstance().addTaskDelegate(self)
@@ -108,6 +124,8 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                     
                 // Previous Tasks Viewing
                 else {
+                    self.acceptBtn.frame.size.width = self.acceptBtn.frame.width*2
+                    self.acceptBtn.center = self.view.center
                     self.selectedCategory = self.task!.categoryID
                     self.pselectedCategory = self.selectedCategory
                     self.selectedMembers = self.task!.memberIDs
@@ -125,21 +143,14 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         // Dispose of any resources that can be recreated.
     }
     
-    // date button actions
-    func donepressed(){
-        let cell = tableview.cellForRow(at: IndexPath(row: 3, section: 0)) as! DefaultTableViewCell
-        cell.textview.text = dateformatter.string(from: datepicker.date)
-        date = datepicker.date.timeIntervalSince1970
-        task!.dueDate = datepicker.date
-        self.view.endEditing(true)
-    }
-    
-    func cancelpressed(){
-        self.view.endEditing(true)
+    func ViewTap() {
+        removeView()
     }
     
     // Bar Button Actions
     func AddTask() {
+        
+        self.view.endEditing(true)
         
         var error = ""
         var errorDis = ""
@@ -269,7 +280,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 cell.textView.textColor = .gray
             }
             else {
-                cell.textView.text = task!.title
+                cell.textView.text = task!.comment
                 cell.textView.textColor = .black
             }
             cell.textView.isUserInteractionEnabled = isEdit
@@ -307,7 +318,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             cell.membersCollection.dataSource = self
             cell.membersCollection.dataSource = self
             cell.membersCollection.reloadData()
-            cell.addmemberBtn.isHidden = isEdit ? false : true
+            cell.addmemberBtn.isHidden = !isEdit
             cell.selectionStyle = UITableViewCellSelectionStyle.none
 
             return cell
@@ -378,16 +389,8 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 cell.textview.tag = 2                   // amount tag 2
             }
                 
-            else if cell.title.text == "Date" {
-                
-                cell.textview.inputView = datepicker
+            else if cell.title.text == "Due Date" {
                 cell.textview.text = dateformatter.string(from: task!.dueDate)
-                let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
-                let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
-                let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-                self.toolbar.setItems([cancel,spaceButton,done], animated: false)
-                cell.textview.inputAccessoryView = self.toolbar
-                self.toolbar.backgroundColor = .lightGray
                 cell.textview.isUserInteractionEnabled = true
                 cell.textview.tag = 3                   // Date tag 3
             }
@@ -404,10 +407,9 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         
         if isEdit {
             if indexPath.item == 2 {
-                SelectionView.isHidden = false
                 isCategoryView = true
                 collectionviewTitle.text = "SELECT CATEGORY"
-                collectionview.reloadData()
+                self.addView(SelectionView)
             }
         }
         else {
@@ -425,14 +427,43 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
 //    Title,Amount, category, assign to / inprogess by / completed by, assign by, date, comments
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if isNew! {
-            return indexPath.row == 2 || indexPath.row == 4 || indexPath.row == 5 ? 70 : 50
-        }
-        else if !isEdit {
-            return indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 6 ? 70 : 50
+
+        if cells[indexPath.row] == "Category" || cells[indexPath.row] == "Created By" || cells[indexPath.row] == "In Progress By" || cells[indexPath.row] == "Comments" || cells[indexPath.row] == "AssignTo" {
+            return 70
         }
         else {
-            return indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 5 ? 70 : 50
+            return 45
+        }
+    }
+    
+    func addView(_ showView : UIView) {
+        self.collectionview.reloadData()
+        view.addSubview(newView!)
+        if showView == SelectionView {
+            SelectionView.isHidden = false
+            collectionview.alpha = 0
+            collectionview.isHidden = false
+            self.view.bringSubview(toFront: SelectionView)
+            UIView.animate(withDuration: 0.3, animations: {
+                self.collectionview.alpha = 1.0
+            })
+        }
+        else {
+            self.DateView.isHidden = false
+            self.view.bringSubview(toFront: DateView)
+        }
+        
+    }
+    
+    func removeView() {
+        UIView.animate(withDuration: 0.3, animations: {
+            self.collectionview.alpha = 0
+            
+        }) { (Success) in
+            self.DateView.isHidden = true
+            self.SelectionView.isHidden = true
+            self.collectionview.isHidden = true
+            self.newView!.removeFromSuperview()
         }
     }
 
@@ -455,7 +486,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 textView.text = task!.comment
             }
         }
-        if textView.tag == 1 {
+        else if textView.tag == 1 {
             if textView.text == "Enter Title" {
                 textView.text = ""
             }
@@ -463,8 +494,11 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
                 textView.text = task!.title
             }
         }
-        if textView.tag == 2 {
+        else if textView.tag == 2 {
             textView.text = textView.text == "0" ? "" : "\(task!.amount)"
+        }
+        else if textView.tag == 3 {
+            self.addView(DateView)
         }
     }
     
@@ -592,25 +626,21 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             task!.removeMember(Resource.sharedInstance().currentUserId!)
         }
         else if rejectBtn.titleLabel!.text == "NOT DOING" {
-            if Resource.sharedInstance().currentWallet!.isPersonal{
-                TaskManager.sharedInstance().deleteTask(task!)
-            }
-            else {
-                task!.doneByID = nil
-                task!.status = .open
-            }
-            TaskManager.sharedInstance().taskStatusChanged(task!)
-            TaskManager.sharedInstance().updateTask(task!)
-            updateCells()
+            task!.memberIDs.remove(at: task!.memberIDs.index(of: Resource.sharedInstance().currentUserId!)!)
+            task!.doneByID = nil
+            task!.status = .open
         }
+        TaskManager.sharedInstance().taskStatusChanged(task!)
+        TaskManager.sharedInstance().updateTask(task!)
+        updateCells()
+        self.navigationController?.popViewController(animated: true)
     }
     
     
     @IBAction func assignToaddBtnPressed(_ sender: Any) {
-        SelectionView.isHidden = false
         collectionviewTitle.text = "SELECT MEMBERS"
         isCategoryView = false
-        collectionview.reloadData()
+        self.addView(SelectionView)
     }
     
     // Delete Task
@@ -633,30 +663,39 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
 //        print("Nhn Kr Delete")
     }
 
-    //Collection View Buttons Actions
-    @IBAction func DoneButton(_ sender: Any) {
-        if isCategoryView {
-            pselectedCategory = selectedCategory
-            task!.categoryID = selectedCategory
+    //Collection View And Date Buttons Actions
+    @IBAction func DonePressed(_ sender: UIButton) {
+        if sender.tag == 1 {
+            let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "Due Date")!, section: 0)) as! DefaultTableViewCell
+            cell.textview.text = dateformatter.string(from: datepicker.date)
+            date = datepicker.date.timeIntervalSince1970
+            task!.dueDate = datepicker.date
         }
         else {
-            pselecctedMembers = selectedMembers
-            task!.memberIDs = selectedMembers
+            if isCategoryView {
+                pselectedCategory = selectedCategory
+                task!.categoryID = selectedCategory
+            }
+            else {
+                pselecctedMembers = selectedMembers
+                task!.memberIDs = selectedMembers
+            }
         }
-        SelectionView.isHidden = true
+        self.removeView()
         tableview.reloadData()
     }
     
-    @IBAction func CancelButton(_ sender: Any) {
+    @IBAction func CancelPressed(_ sender: UIButton) {
         if isCategoryView {
             selectedCategory = pselectedCategory
         }
         else {
             selectedMembers = pselecctedMembers
         }
-        SelectionView.isHidden = true
+        self.removeView()
         tableview.reloadData()
     }
+    
     
     // Task Delegate
     func taskAdded(_ task: Task) {
@@ -771,10 +810,11 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
     }
     
     func updateCells() {
-        
+        acceptBtn.isHidden = true
+        rejectBtn.isHidden = true
         self.navigationItem.rightBarButtonItem = nil
         
-        self.cells = ["Title","Amount","Category","Created By","Date"]
+        self.cells = ["Title","Amount","Category","Created By","Due Date"]
         
         if self.task!.status == .open {
             if self.task!.doneByID == nil {
@@ -790,7 +830,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
         
         self.TitleForPage.text = "TASK DETAILS"
         
-        if self.task!.comment != nil {
+        if self.task?.comment != nil {
             self.cells.append("Comments")
         }
         
@@ -811,7 +851,7 @@ class AddTaskViewController: UIViewController, UITableViewDataSource , UITableVi
             self.acceptBtn.setTitle("COMPLETED", for: .normal)
             self.rejectBtn.setTitle("NOT DOING", for: .normal)
             self.acceptBtn.isHidden = false
-            self.rejectBtn.isHidden = false
+            self.rejectBtn.isHidden = Resource.sharedInstance().currentWallet!.isPersonal
         }
         if self.task!.status == .completed || !(self.task!.wallet!.isOpen) {
             acceptBtn.isHidden = true

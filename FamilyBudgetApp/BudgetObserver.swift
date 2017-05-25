@@ -12,7 +12,7 @@ class BudgetObserver {
                            "isOpen", //7
                            "walletID", // 8
                            "startDate"] //9
-    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var ref = Database.database().reference()
     fileprivate static var singleInstance : BudgetObserver?
     class func sharedInstance() -> BudgetObserver {
         guard let instance = BudgetObserver.singleInstance else {
@@ -55,20 +55,20 @@ class BudgetObserver {
         observeBudgetCategoryRemoved(budget);
     }
     func stopObservingBudget(_ budget :  Budget){
-        FIRDatabase.database().reference().child(FIRKeys[1]).child(budget.id).removeAllObservers()
-        FIRDatabase.database().reference().child(FIRKeys[2]).child(budget.id).removeAllObservers()
+        Database.database().reference().child(FIRKeys[1]).child(budget.id).removeAllObservers()
+        Database.database().reference().child(FIRKeys[2]).child(budget.id).removeAllObservers()
     }
     func stopObserving(BudgetsOf wallet : UserWallet){
-        FIRDatabase.database().reference().child(FIRKeys[0]).child(wallet.id).removeAllObservers()
-        FIRDatabase.database().reference().child(FIRKeys[1]).child(wallet.id).removeAllObservers()
-        FIRDatabase.database().reference().child(FIRKeys[2]).child(wallet.id).removeAllObservers()
+        Database.database().reference().child(FIRKeys[0]).child(wallet.id).removeAllObservers()
+        Database.database().reference().child(FIRKeys[1]).child(wallet.id).removeAllObservers()
+        Database.database().reference().child(FIRKeys[2]).child(wallet.id).removeAllObservers()
         if isObservingBudgetsOf.contains(wallet.id){
             isObservingBudgetsOf.remove(at: isObservingBudgetsOf.index(of: wallet.id)!)
         }
     }
     fileprivate func observeBudget(AddedOf wallet : UserWallet){
         let budgetRef = ref.child(FIRKeys[0]).child(wallet.id)
-        budgetRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -83,7 +83,7 @@ class BudgetObserver {
     }
     fileprivate func observeBudget(UpdatedOf wallet : UserWallet){
         let budgetRef = ref.child(FIRKeys[0]).child(wallet.id)
-        budgetRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childChanged, with:  { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -101,7 +101,7 @@ class BudgetObserver {
     }
     fileprivate func observeBudget(DeletedOf wallet : UserWallet){
         let budgetRef = ref.child(FIRKeys[0]).child(wallet.id)
-        budgetRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -117,7 +117,7 @@ class BudgetObserver {
     }
     fileprivate func observeBudgetMemberAdded(_ budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let budgetRef = ref.child(FIRKeys[1]).child(budget.id)
-        budgetRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -134,7 +134,7 @@ class BudgetObserver {
     }
     fileprivate func observeBudgetMemberUpdated(_ budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let budgetRef = ref.child(FIRKeys[1]).child(budget.id)
-        budgetRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childChanged, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -164,7 +164,7 @@ class BudgetObserver {
     }
     fileprivate func observeBudgetMemberRemoved(_ budget: Budget){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let budgetRef = ref.child(FIRKeys[1]).child(budget.id)
-        budgetRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -181,7 +181,7 @@ class BudgetObserver {
     }
     fileprivate func observeBudgetCategoryAdded(_ budget : Budget){
         let budgetRef = ref.child(FIRKeys[2]).child(budget.id)
-        budgetRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             guard (snapshot.value) != nil else {
                 return
             }
@@ -199,7 +199,7 @@ class BudgetObserver {
     }
     fileprivate func observeBudgetCategoryUpdated(_ budget : Budget){
         let budgetRef = ref.child(FIRKeys[2]).child(budget.id)
-        budgetRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childChanged, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -228,7 +228,7 @@ class BudgetObserver {
     }
     fileprivate func observeBudgetCategoryRemoved(_ budget : Budget){
         let budgetRef = ref.child(FIRKeys[2]).child(budget.id)
-        budgetRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
+        budgetRef.observe(DataEventType.childRemoved, with:  { (snapshot) in
             guard (snapshot.value) != nil else {
                 return
             }

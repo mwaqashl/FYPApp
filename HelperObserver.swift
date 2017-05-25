@@ -7,7 +7,7 @@ class HelperObservers  {
         "icon", //2
         "Currencies", //3
         "code"] //4
-    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var ref = Database.database().reference()
     fileprivate static var singleInstance : HelperObservers?
     class func sharedInstance() -> HelperObservers {
         guard let instance = HelperObservers.singleInstance else {
@@ -25,8 +25,8 @@ class HelperObservers  {
         observeCurrencyRemoved()
     }
     func stopObserving(){
-        FIRDatabase.database().reference().child("DefaultCategories").removeAllObservers()
-        FIRDatabase.database().reference().child("Currencies").removeAllObservers()
+        Database.database().reference().child("DefaultCategories").removeAllObservers()
+        Database.database().reference().child("Currencies").removeAllObservers()
     }
     
     func getUserAndWallet(_ callback : ((_ success : Bool) -> Void)?){
@@ -40,7 +40,7 @@ class HelperObservers  {
             return
         }
         
-        FIRDatabase.database().reference().child("Users").child(Resource.sharedInstance().currentUserId!).observeSingleEvent(of: .value, with: { (snap) in
+        Database.database().reference().child("Users").child(Resource.sharedInstance().currentUserId!).observeSingleEvent(of: .value, with: { (snap) in
             if let data = snap.value as? NSDictionary {
                 let newUser = CurrentUser(id: Resource.sharedInstance().currentUserId!, email: data["email"] as! String, userName: data["userName"] as! String, imageURL: data["image"] as! String, birthdate: data["birthDate"] as? Double, deviceID: nil, gender: data["gender"] as! Int)
                 Resource.sharedInstance().users[newUser.getUserID()] = newUser
@@ -58,7 +58,7 @@ class HelperObservers  {
         
         //for getting the wallet which is to be shown
         print(Resource.sharedInstance().currentWalletID)
-        FIRDatabase.database().reference().child("Wallets").child(Resource.sharedInstance().currentWalletID!).observeSingleEvent(of: FIRDataEventType.value, with: { (snap) in
+        Database.database().reference().child("Wallets").child(Resource.sharedInstance().currentWalletID!).observeSingleEvent(of: DataEventType.value, with: { (snap) in
             guard let dict = snap.value as? [String: Any] else {
                 print("Wallet value isnt a dictionary \(snap.key)")
                 callback?(false)
@@ -80,7 +80,7 @@ class HelperObservers  {
     
     fileprivate func observeCategoryAdded(){
         let catgoryRef = ref.child(FIRKeys[0])
-        catgoryRef.observe(FIRDataEventType.childAdded, with: { (snapshot) in
+        catgoryRef.observe(DataEventType.childAdded, with: { (snapshot) in
             guard let dict = snapshot.value as? [String: Any] else {
                 return
             }
@@ -93,7 +93,7 @@ class HelperObservers  {
     }
     fileprivate func observeCategoryUpdated(){
         let catgoryRef = ref.child(FIRKeys[0])
-        catgoryRef.observe(FIRDataEventType.childChanged, with: { (snapshot) in
+        catgoryRef.observe(DataEventType.childChanged, with: { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -106,7 +106,7 @@ class HelperObservers  {
     }
     fileprivate func observeCategoryDeleted(){
         let catgoryRef = ref.child(FIRKeys[0])
-        catgoryRef.observe(FIRDataEventType.childRemoved, with: { (snapshot) in
+        catgoryRef.observe(DataEventType.childRemoved, with: { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -120,7 +120,7 @@ class HelperObservers  {
     
     fileprivate func observeCurrencyAdded(){
         let currencyRef = ref.child(FIRKeys[3])
-        currencyRef.observe(FIRDataEventType.childAdded, with: { (snapshot) in
+        currencyRef.observe(DataEventType.childAdded, with: { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -133,7 +133,7 @@ class HelperObservers  {
     }
     fileprivate func observeCurrencyUpdated(){
         let currencyRef = ref.child(FIRKeys[3])
-        currencyRef.observe(FIRDataEventType.childChanged, with: { (snapshot) in
+        currencyRef.observe(DataEventType.childChanged, with: { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else  {
                 return
             }
@@ -146,7 +146,7 @@ class HelperObservers  {
     }
     fileprivate func observeCurrencyRemoved(){
         let currencyRef = ref.child(FIRKeys[3])
-        currencyRef.observe(FIRDataEventType.childRemoved, with: { (snapshot) in
+        currencyRef.observe(DataEventType.childRemoved, with: { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }

@@ -10,7 +10,7 @@ class NotificationObserver {
         "details", //5
         "isSent", //6
         "users"] //7
-    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var ref = Database.database().reference()
     fileprivate static var singleInstance : NotificationObserver?
     class func sharedInstance() -> NotificationObserver {
         guard let instance = NotificationObserver.singleInstance else {
@@ -28,7 +28,7 @@ class NotificationObserver {
     }
     fileprivate func observeNotificationAdded(){
         let notificationRef = ref.child(FIRKeys[0])
-        notificationRef.observe(FIRDataEventType.childAdded, with: { (snapshot) in
+        notificationRef.observe(DataEventType.childAdded, with: { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -41,7 +41,7 @@ class NotificationObserver {
     }
     fileprivate func observeNotificationUpdated(){
         let notificationRef = ref.child(FIRKeys[0])
-        notificationRef.observe(FIRDataEventType.childChanged, with: { (snapshot) in
+        notificationRef.observe(DataEventType.childChanged, with: { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -51,7 +51,7 @@ class NotificationObserver {
     }
     fileprivate func observeNotificationDeleted(){
         let notificationRef = ref.child(FIRKeys[0])
-        notificationRef.observe(FIRDataEventType.childRemoved, with: { (snapshot) in
+        notificationRef.observe(DataEventType.childRemoved, with: { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }

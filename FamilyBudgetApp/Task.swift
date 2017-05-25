@@ -142,7 +142,7 @@ class Task {
             let data = try? Data(contentsOf: imageNSURL)
             completion(data!)
         }else{
-            let imageRef = FIRStorage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("taskImages").child(self.id).child(urlS)
+            let imageRef = Storage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("taskImages").child(self.id).child(urlS)
             imageRef.write(toFile: imageNSURL, completion: { (urlRef, error) in
                 guard error == nil else {
                     return

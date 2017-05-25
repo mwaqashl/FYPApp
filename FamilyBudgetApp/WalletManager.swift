@@ -20,7 +20,7 @@ class WalletManager {
      
      */
     func addWallet(_ wallet: UserWallet) -> String {
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         
         
         var walletRef = ref.child("Wallets")
@@ -43,7 +43,7 @@ class WalletManager {
             "balance" : wallet.balance,
             "totExpense" : wallet.totalExpense,
             "totIncome" : wallet.totalIncome,
-            "creationDate" : FIRServerValue.timestamp(),
+            "creationDate" : ServerValue.timestamp(),
             "isPersonal" : wallet.isPersonal
         ]
         
@@ -67,7 +67,7 @@ class WalletManager {
     
     func removeWallet(_ wallet: UserWallet) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         ref.child("Wallets/\(wallet.id)").removeValue()
         ref.child("WalletCategories/\(wallet.id)").removeValue()
         ref.child("WalletMembers/\(wallet.id)").removeValue()
@@ -84,7 +84,7 @@ class WalletManager {
      */
     func updateWallet(_ wallet: UserWallet) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         let walletRef = ref.child("Wallets/\(wallet.id)")
         
         let data = [
@@ -116,7 +116,7 @@ class WalletManager {
      */
     func addMemberToWallet(_ wallet: UserWallet, member: String, type: MemberType) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         ref.child("WalletMembers/\(wallet.id)/\(member)").setValue(type.hashValue)
         UserManager.sharedInstance().addWalletInUser(member, walletID: wallet.id, isPersonal: wallet.isPersonal)
     }
@@ -130,7 +130,7 @@ class WalletManager {
      */
     func removeMemberFromWallet(_ walletID: String, memberID: String) {
         
-        let ref = FIRDatabase.database().reference()
+        let ref = Database.database().reference()
         ref.child("WalletMembers/\(walletID)/\(memberID)").removeValue()
         UserManager.sharedInstance().removeWalletFromUser(memberID, walletID: walletID)
         
@@ -148,7 +148,7 @@ class CurrencyManager {
     
     func addCurrency(_ currency: Currency) {
         
-        let ref = FIRDatabase.database().reference().child("Currencies").childByAutoId()
+        let ref = Database.database().reference().child("Currencies").childByAutoId()
         
         let data = ["name": currency.name,
             "icon": currency.icon,
@@ -169,7 +169,7 @@ class CategoryManager {
     
     func addDefaultCategory(_ category: Category) {
         
-        let ref = FIRDatabase.database().reference().child("DefaultCategories").childByAutoId()
+        let ref = Database.database().reference().child("DefaultCategories").childByAutoId()
         
         let data = ["name": category.name,
                     "icon": category.icon,

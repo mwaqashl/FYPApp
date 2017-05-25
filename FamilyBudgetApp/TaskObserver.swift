@@ -16,7 +16,7 @@ class TaskObserver {
         "status", //10
         "doneBy", //11
         "walletID"] //12
-    fileprivate var ref = FIRDatabase.database().reference()
+    fileprivate var ref = Database.database().reference()
     fileprivate static var singleInstance : TaskObserver?
     class func sharedInstance() -> TaskObserver {
         guard let instance = TaskObserver.singleInstance else {
@@ -56,18 +56,18 @@ class TaskObserver {
         observeTaskMemberRemoved(task);
     }
     func stopObservingTask(_ task :  Task){
-        FIRDatabase.database().reference().child(FIRKeys[1]).child(task.id).removeAllObservers()
+        Database.database().reference().child(FIRKeys[1]).child(task.id).removeAllObservers()
     }
     func stopObserving(TasksOf wallet : UserWallet){
-        FIRDatabase.database().reference().child(FIRKeys[0]).child(wallet.id).removeAllObservers()
-        FIRDatabase.database().reference().child(FIRKeys[1]).child(wallet.id).removeAllObservers()
+        Database.database().reference().child(FIRKeys[0]).child(wallet.id).removeAllObservers()
+        Database.database().reference().child(FIRKeys[1]).child(wallet.id).removeAllObservers()
         if isObservingTasksOf.contains(wallet.id){
             isObservingTasksOf.remove(at: isObservingTasksOf.index(of: wallet.id)!)
         }
     }
     fileprivate func observeTask(AddedOf wallet : UserWallet){
         let taskRef = ref.child(FIRKeys[0]).child(wallet.id)
-        taskRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+        taskRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -93,7 +93,7 @@ class TaskObserver {
     }
     fileprivate func observeTask(UpdatedOf wallet : UserWallet){
         let taskRef = ref.child(FIRKeys[0]).child(wallet.id)
-        taskRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
+        taskRef.observe(DataEventType.childChanged, with:  { (snapshot) in
             guard let dict = snapshot.value as? [String:Any] else {
                 return
             }
@@ -116,7 +116,7 @@ class TaskObserver {
     }
     fileprivate func observeTask(DeletedOf wallet : UserWallet){
         let taskRef = ref.child(FIRKeys[0]).child(wallet.id)
-        taskRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
+        taskRef.observe(DataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -132,7 +132,7 @@ class TaskObserver {
     
     fileprivate func observeTaskMemberAdded(_ task: Task){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let taskRef = ref.child(FIRKeys[1]).child(task.id)
-        taskRef.observe(FIRDataEventType.childAdded, with:  { (snapshot) in
+        taskRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -154,7 +154,7 @@ class TaskObserver {
     
     fileprivate func observeTaskMemberUpdated(_ task: Task){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let taskRef = ref.child(FIRKeys[1]).child(task.id)
-        taskRef.observe(FIRDataEventType.childChanged, with:  { (snapshot) in
+        taskRef.observe(DataEventType.childChanged, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
@@ -184,7 +184,7 @@ class TaskObserver {
     
     fileprivate func observeTaskMemberRemoved(_ task: Task){ // For this you should implement user delegate and refresh using resource class when a user is added.
         let taskRef = ref.child(FIRKeys[1]).child(task.id)
-        taskRef.observe(FIRDataEventType.childRemoved, with:  { (snapshot) in
+        taskRef.observe(DataEventType.childRemoved, with:  { (snapshot) in
             guard snapshot.value != nil else {
                 return
             }
