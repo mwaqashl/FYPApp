@@ -35,6 +35,9 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
 //        barBtnColor = AddBtn.tintColor!
         
+        
+        
+        
         Segmentbtn.selectedSegmentIndex = 0
         UserObserver.sharedInstance().startObserving()
         Delegate.sharedInstance().addTransactionDelegate(self)

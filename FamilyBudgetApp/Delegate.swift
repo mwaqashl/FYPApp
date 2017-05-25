@@ -24,7 +24,11 @@ class Delegate {
     fileprivate var categoryDelegates : [CategoryDelegate] = []
     fileprivate var currencyDelegates : [CurrencyDelegate] = []
     fileprivate var notificationDelegates : [NotificationDelegate] = []
+    fileprivate var chatDelegates : [ChatDelegate] = []
     
+    func addChatDelegate(_ delegate : ChatDelegate){
+        chatDelegates.append(delegate)
+    }
     func addUserDelegate(_ delegate : UserDelegate){
         userDelegates.append(delegate)
     }
@@ -109,5 +113,8 @@ class Delegate {
     }
     func getNotificationDelegates() -> [NotificationDelegate]{
         return notificationDelegates
+    }
+    func getChatDelegates() -> [ChatDelegate]{
+        return chatDelegates
     }
 }

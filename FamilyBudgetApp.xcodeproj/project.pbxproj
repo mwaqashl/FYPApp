@@ -74,6 +74,9 @@
 		775C2A241E5B11AD00E409B6 /* WalletObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A0F1E5B11AD00E409B6 /* WalletObserver.swift */; };
 		775C2A261E5B173300E409B6 /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A251E5B173300E409B6 /* Assets.swift */; };
 		775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A271E5B37BB00E409B6 /* HelperObserver.swift */; };
+		7765A5841ED76F6C00EA42BB /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5831ED76F6C00EA42BB /* ChatMessage.swift */; };
+		7765A5861ED7717A00EA42BB /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5851ED7717A00EA42BB /* ChatManager.swift */; };
+		7765A5881ED7738C00EA42BB /* ChatObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5871ED7738C00EA42BB /* ChatObserver.swift */; };
 		777D02991E8A860000C682F2 /* WalletTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777D02981E8A860000C682F2 /* WalletTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -103,7 +106,6 @@
 		04D3C32F1EBF03C600EB1488 /* AddBudgetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddBudgetViewController.swift; sourceTree = "<group>"; };
 		04D3C3311EBF096600EB1488 /* BudgetStatsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetStatsTableViewCell.swift; sourceTree = "<group>"; };
 		04FFF4571ED60C7E005E95E1 /* StatisticsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatisticsViewController.swift; sourceTree = "<group>"; };
-		04FFF45D1ED69091005E95E1 /* Charts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Charts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
 		7706A6C51E8717D80074CD60 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = SOURCE_ROOT; };
 		7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = SOURCE_ROOT; };
@@ -145,6 +147,9 @@
 		775C2A0F1E5B11AD00E409B6 /* WalletObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WalletObserver.swift; path = FamilyBudgetApp/WalletObserver.swift; sourceTree = SOURCE_ROOT; };
 		775C2A251E5B173300E409B6 /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Assets.swift; path = FamilyBudgetApp/Assets.swift; sourceTree = SOURCE_ROOT; };
 		775C2A271E5B37BB00E409B6 /* HelperObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperObserver.swift; sourceTree = SOURCE_ROOT; };
+		7765A5831ED76F6C00EA42BB /* ChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = SOURCE_ROOT; };
+		7765A5851ED7717A00EA42BB /* ChatManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = SOURCE_ROOT; };
+		7765A5871ED7738C00EA42BB /* ChatObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatObserver.swift; sourceTree = SOURCE_ROOT; };
 		777D02981E8A860000C682F2 /* WalletTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletTableViewCell.swift; sourceTree = "<group>"; };
 		8A8B1FA4EAEBCFC2910F799F /* Pods-FamilyBudgetApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.release.xcconfig"; sourceTree = "<group>"; };
 		9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FamilyBudgetApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -265,7 +270,6 @@
 		7742C7A91E57231C006A25AF = {
 			isa = PBXGroup;
 			children = (
-				04FFF45D1ED69091005E95E1 /* Charts.framework */,
 				7742C7B41E57231C006A25AF /* FamilyBudgetApp */,
 				7742C7B31E57231C006A25AF /* Products */,
 				44BB0B31E715C6598EB081CD /* Pods */,
@@ -310,6 +314,7 @@
 				775C29FE1E5B11AD00E409B6 /* BudgetObserver.swift */,
 				775C2A021E5B11AD00E409B6 /* NotificationObserver.swift */,
 				775C2A061E5B11AD00E409B6 /* TaskObserver.swift */,
+				7765A5871ED7738C00EA42BB /* ChatObserver.swift */,
 				775C2A271E5B37BB00E409B6 /* HelperObserver.swift */,
 				775C2A091E5B11AD00E409B6 /* TransactionObserver.swift */,
 				775C2A0C1E5B11AD00E409B6 /* UserObserver.swift */,
@@ -324,6 +329,7 @@
 				775C2A011E5B11AD00E409B6 /* NotificationManager.swift */,
 				775C2A051E5B11AD00E409B6 /* TaskManager.swift */,
 				775C2A081E5B11AD00E409B6 /* TransactionManager.swift */,
+				7765A5851ED7717A00EA42BB /* ChatManager.swift */,
 				775C2A0B1E5B11AD00E409B6 /* UserManager.swift */,
 				775C2A0E1E5B11AD00E409B6 /* WalletManager.swift */,
 				775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */,
@@ -338,6 +344,7 @@
 				775C29FC1E5B11AD00E409B6 /* Budget.swift */,
 				775C2A041E5B11AD00E409B6 /* Task.swift */,
 				775C2A071E5B11AD00E409B6 /* Transaction.swift */,
+				7765A5831ED76F6C00EA42BB /* ChatMessage.swift */,
 				775C2A0A1E5B11AD00E409B6 /* User.swift */,
 				775C2A0D1E5B11AD00E409B6 /* Wallet.swift */,
 			);
@@ -496,7 +503,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -516,11 +523,13 @@
 				773CC7031E92CD3F0046E90F /* UserSearchResultTableViewCell.swift in Sources */,
 				04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */,
 				775C2A181E5B11AD00E409B6 /* Resource.swift in Sources */,
+				7765A5881ED7738C00EA42BB /* ChatObserver.swift in Sources */,
 				775C2A261E5B173300E409B6 /* Assets.swift in Sources */,
 				04C2BD661E924B780064AADB /* TaskTitleTableViewCell.swift in Sources */,
 				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
 				775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */,
 				04C2BD611E9247BF0064AADB /* (null) in Sources */,
+				7765A5861ED7717A00EA42BB /* ChatManager.swift in Sources */,
 				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
 				04C2BD631E9247BF0064AADB /* (null) in Sources */,
 				775C2A1C1E5B11AD00E409B6 /* Transaction.swift in Sources */,
@@ -548,6 +557,7 @@
 				044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */,
 				04D3C3321EBF096600EB1488 /* BudgetStatsTableViewCell.swift in Sources */,
 				044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */,
+				7765A5841ED76F6C00EA42BB /* ChatMessage.swift in Sources */,
 				774B0FE11E8D30E000417457 /* TutorialViewController.swift in Sources */,
 				775C2A1F1E5B11AD00E409B6 /* User.swift in Sources */,
 				04B093981E827FFE003E26DE /* CategoryTableViewCell.swift in Sources */,

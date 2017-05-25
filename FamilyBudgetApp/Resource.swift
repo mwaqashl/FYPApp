@@ -23,6 +23,8 @@ class Resource {
     var currentWallet : UserWallet? {
         return self.userWallets[currentWalletID!]
     }
+    var walletChat : [String:[Message]] = [:]
+    
     func reset(){
         let old = Resource.singleInstance
         Resource.singleInstance = Resource()
