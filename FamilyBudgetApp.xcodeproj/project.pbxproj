@@ -14,6 +14,7 @@
 		044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71401E81889A00613ECA /* TimelineViewController.swift */; };
 		044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71421E8188D600613ECA /* TimelineTableViewCell.swift */; };
 		046DCDAC1E8AA1DF00A3BC15 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		0477D0F61EDA228700E8D358 /* BudgetDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477D0F51EDA228700E8D358 /* BudgetDetailsViewController.swift */; };
 		0477E8AC1EBE4B7C00EB9C00 /* BudgetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477E8AB1EBE4B7C00EB9C00 /* BudgetViewController.swift */; };
 		0477E8AE1EBE4C1200EB9C00 /* BudgetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477E8AD1EBE4C1200EB9C00 /* BudgetTableViewCell.swift */; };
 		04845D271E93C77000BDA0FC /* TasksListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04845D261E93C77000BDA0FC /* TasksListViewController.swift */; };
@@ -87,6 +88,7 @@
 		044B713E1E81764200613ECA /* WalletsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsCollectionViewCell.swift; sourceTree = "<group>"; };
 		044B71401E81889A00613ECA /* TimelineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
 		044B71421E8188D600613ECA /* TimelineTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineTableViewCell.swift; sourceTree = "<group>"; };
+		0477D0F51EDA228700E8D358 /* BudgetDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetDetailsViewController.swift; sourceTree = "<group>"; };
 		0477E8AB1EBE4B7C00EB9C00 /* BudgetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetViewController.swift; sourceTree = "<group>"; };
 		0477E8AD1EBE4C1200EB9C00 /* BudgetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetTableViewCell.swift; sourceTree = "<group>"; };
 		04845D261E93C77000BDA0FC /* TasksListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksListViewController.swift; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 			children = (
 				0477E8AB1EBE4B7C00EB9C00 /* BudgetViewController.swift */,
 				04D3C32F1EBF03C600EB1488 /* AddBudgetViewController.swift */,
+				0477D0F51EDA228700E8D358 /* BudgetDetailsViewController.swift */,
 			);
 			name = Budget;
 			sourceTree = "<group>";
@@ -529,6 +532,7 @@
 				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
 				775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */,
 				04C2BD611E9247BF0064AADB /* (null) in Sources */,
+				0477D0F61EDA228700E8D358 /* BudgetDetailsViewController.swift in Sources */,
 				7765A5861ED7717A00EA42BB /* ChatManager.swift in Sources */,
 				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
 				04C2BD631E9247BF0064AADB /* (null) in Sources */,

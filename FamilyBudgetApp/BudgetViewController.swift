@@ -12,8 +12,10 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     @IBOutlet weak var segmentBtn: UISegmentedControl!
     @IBOutlet weak var tableview: UITableView!
-    var add = UIBarButtonItem()
+    
     var allWalletsBtn = UIBarButtonItem()
+    
+    var curr = NSAttributedString()
     
     var budgets = [Budget]()
     var filterBudget = [Budget]()
@@ -23,13 +25,14 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var selectedrow = Int()
     var isDataAvailable = false
     var dateformat = DateFormatter()
+    @IBOutlet weak var AddBudgetBtn: UIButton!
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        add = self.navigationItem.rightBarButtonItem!
+        
         dateformat.dateFormat = "dd-MMM-yyyy"
         
         tableview.dataSource = self
@@ -50,9 +53,18 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
+                self.tabBarController!.tabBar.backgroundColor!.withAlphaComponent(0.5)
+                self.tabBarController!.tabBar.backgroundColor = bluethemecolor
+                self.tabBarController!.tabBar.unselectedItemTintColor = .gray
+                self.tabBarController!.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
-                self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
-                self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
+                
+                if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
+                    self.AddBudgetBtn.isHidden = false
+                }
+                else {
+                    self.AddBudgetBtn.isHidden = true                }
+                
                 self.isDataAvailable = true
                 self.ExtractBudget()
                 self.ExtractTransactions()
@@ -114,10 +126,21 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
         if isDataAvailable {
+            curr = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 11)!])
+            
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
             self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
+            
+            if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
+                self.AddBudgetBtn.isHidden = false
+            }
+            else {
+                self.navigationItem.rightBarButtonItem = nil
+            }
+            
             ExtractBudget()
             ExtractTransactions()
             tableview.reloadData()
@@ -148,9 +171,10 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.tableview.reloadData()
     }
     
-    @IBAction func AddBtnPressed(_ sender: Any) {
+    @IBAction func AddBudgetBtnPressed(_ sender: Any) {
         performSegue(withIdentifier: "NewBudget", sender: nil)
     }
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "NewBudget" {
@@ -158,10 +182,9 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             destination.isNew = true
         }
         else if segue.identifier == "BudgetDescription" {
-            let destination = segue.destination as! AddBudgetViewController
+            let destination = segue.destination as! BudgetDetailsViewController
             destination.budget = filterBudget[selectedrow]
             destination.transactions = budgetAndRelatedTransactions[filterBudget[selectedrow].id]!
-            destination.isNew = false
         }
     }
     
@@ -186,16 +209,36 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let budget = filterBudget[indexPath.row]
         cell.AssignMembersCollectionView.tag = indexPath.row
         
+        var amount = NSAttributedString(string: " \(budget.allocAmount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 11)])
+        
+        var str = NSMutableAttributedString()
+        str.append(curr)
+        str.append(amount)
+        
         cell.BudgetTitle.text = budget.title
-        cell.Icon.text = budget.categories[0].icon
-        cell.TotalAmount.text = "\(budget.allocAmount)"
-        cell.usedAmount.text = "\(abc(filterBudget[indexPath.row]))"
+        cell.Icon.text = budget.categories.first?.icon ?? ""
+        cell.TotalAmount.attributedText = str
+        
+        amount = NSAttributedString(string: "\(abc(filterBudget[indexPath.row]))", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 11)])
+        
+        str.setAttributedString(curr)
+        str.append(amount)
+        
+        cell.usedAmount.attributedText = str
         cell.StartDate.text = dateformat.string(from: budget.startDate)
         cell.EndDate.text = dateformat.string(from: budget.startDate)
-        
+        cell.Icon.layer.cornerRadius = cell.Icon.frame.width / 2
         cell.Icon.layer.borderWidth = 1
-        cell.Icon.layer.borderColor = budget.categories[0].color.cgColor
-        cell.Icon.textColor = budget.categories[0].color
+        cell.Icon.layer.borderColor = budget.categories.first?.color.cgColor
+        cell.Icon.textColor = budget.categories.first?.color
+        
+        amount = NSAttributedString(string: "\(budget.allocAmount - abc(filterBudget[indexPath.row]))", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 17)])
+        
+        str.setAttributedString(curr)
+        str.append(amount)
+        
+        cell.BalanceAmount.attributedText = str
+        
         
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell
@@ -227,10 +270,11 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func walletUpdated(_ wallet: UserWallet) {
         if wallet.id == Resource.sharedInstance().currentWalletID {
             if wallet.isOpen {
-                self.navigationItem.rightBarButtonItem = self.add
+                self.AddBudgetBtn.isHidden = false
+                
             }
             else if !wallet.isOpen {
-                self.navigationItem.rightBarButtonItem = nil
+                self.AddBudgetBtn.isHidden = true
             }
         }
     }
@@ -301,17 +345,23 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     //BudgetMemberDelegate
     func memberLeft(_ member: User, budget: Budget) {
-        
+        if budget.walletID == Resource.sharedInstance().currentWalletID {
+            self.ExtractBudget()
+            tableview.reloadData()
+        }
     }
     func memberAdded(_ member: User, budget: Budget) {
-        
+        if budget.walletID == Resource.sharedInstance().currentWalletID {
+            self.ExtractBudget()
+            tableview.reloadData()
+        }
     }
     
     //BudgetCategory
     func categoryAdded(_ category: Category, budget: Budget) {
         if isDataAvailable {
             if budget.walletID == Resource.sharedInstance().currentWalletID {
-                
+                tableview.reloadData()
             }
         }
     }

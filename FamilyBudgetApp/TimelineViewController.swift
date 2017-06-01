@@ -16,7 +16,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var BalanceAmount: UILabel!
     @IBOutlet weak var ExpenseAmount: UILabel!
     @IBOutlet weak var Segmentbtn: UISegmentedControl!
-    @IBOutlet weak var AddBtn: UIBarButtonItem!
     
     var dateformat = DateFormatter()
     
@@ -29,6 +28,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     var filteredTransactions = [String:[Transaction]]()
     
     
+    @IBOutlet weak var AddTransactionBtn: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,8 +65,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 
                 self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
                 if !(Resource.sharedInstance().currentWallet?.isOpen)! {
-                    self.AddBtn.isEnabled = false
-                    self.AddBtn.tintColor = .clear
+                    self.AddTransactionBtn.isHidden = true
                 }
 
                 self.SegmentbtnAction(self.Segmentbtn)
@@ -138,6 +137,12 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    @IBAction func AddTransactionBtnPressed(_ sender: Any) {
+        self.performSegue(withIdentifier: "addTrans", sender: nil)
+    }
+    
+    
     
     func numberOfSections(in tableView: UITableView) -> Int {
         var label = UILabel()
@@ -451,12 +456,10 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
             ExpenseAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalExpense)" : "0"
             BalanceAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.balance)" : "0"
             if !wallet.isOpen {
-                AddBtn.isEnabled = false
-                AddBtn.tintColor = .clear
+                self.AddTransactionBtn.isHidden = true
             }
             else if wallet.isOpen {
-                AddBtn.isEnabled = true
-                AddBtn.tintColor = self.navigationItem.leftBarButtonItem?.tintColor
+                self.AddTransactionBtn.isHidden = false
             }
         }
     }

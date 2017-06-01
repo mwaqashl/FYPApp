@@ -71,6 +71,7 @@ class ChatObserver {
                 return
             }
             messages.append(message)
+            Resource.sharedInstance().walletChat[wallet.id] = messages
             
             let dels = Delegate.sharedInstance().getChatDelegates()
             

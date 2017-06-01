@@ -190,6 +190,7 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
     
     func EditTask() {
         if isEdit {
+            self.view.endEditing(true)            
             var error = ""
             var errorDis = ""
             

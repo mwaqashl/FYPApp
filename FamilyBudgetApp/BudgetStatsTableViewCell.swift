@@ -7,10 +7,13 @@
 //
 
 import UIKit
+import Charts
 
 class BudgetStatsTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var title: UILabel!
+
+    
+    @IBOutlet weak var PieChartView: PieChartView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

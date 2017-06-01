@@ -54,7 +54,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="JqF-40-Pdy">
-                                <rect key="frame" x="70.666666666666686" y="85" width="273" height="29"/>
+                                <rect key="frame" x="70.666666666666686" y="84" width="273" height="29"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="273" id="QKc-cf-TcM"/>
@@ -69,7 +69,7 @@
                                 </connections>
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="70" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="oJf-ch-y4V">
-                                <rect key="frame" x="0.0" y="121" width="414" height="566"/>
+                                <rect key="frame" x="0.0" y="122" width="414" height="565"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="tasks" rowHeight="70" id="Xpi-0f-D87" customClass="TaskTableViewCell" customModule="FamilyBudgetApp" customModuleProvider="target">
@@ -137,7 +137,7 @@
                                                                         </userDefinedRuntimeAttributes>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="mK7-Gl-5DK">
-                                                                        <rect key="frame" x="16" y="0.0" width="31" height="16"/>
+                                                                        <rect key="frame" x="16" y="0.0" width="31" height="14.333333333333334"/>
                                                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
                                                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                                         <nil key="highlightedColor"/>
@@ -155,9 +155,8 @@
                                                             <color key="backgroundColor" red="0.1019607843" green="0.20392156859999999" blue="0.42745098040000001" alpha="1" colorSpace="calibratedRGB"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="bottom" secondItem="TmO-7R-T8D" secondAttribute="bottom" constant="2" id="0vL-Sv-bTn"/>
-                                                                <constraint firstAttribute="bottom" secondItem="mK7-Gl-5DK" secondAttribute="bottom" id="5Md-rI-uCd"/>
                                                                 <constraint firstItem="TmO-7R-T8D" firstAttribute="top" secondItem="117-Kw-V6M" secondAttribute="top" constant="2" id="UFX-n9-GVQ"/>
-                                                                <constraint firstItem="mK7-Gl-5DK" firstAttribute="top" secondItem="117-Kw-V6M" secondAttribute="top" id="bfD-cL-w3J"/>
+                                                                <constraint firstItem="mK7-Gl-5DK" firstAttribute="centerY" secondItem="117-Kw-V6M" secondAttribute="centerY" id="UQq-3R-ERi"/>
                                                                 <constraint firstItem="TmO-7R-T8D" firstAttribute="leading" secondItem="117-Kw-V6M" secondAttribute="leading" constant="2" id="mBI-Br-yIK"/>
                                                                 <constraint firstItem="mK7-Gl-5DK" firstAttribute="leading" secondItem="TmO-7R-T8D" secondAttribute="trailing" constant="2" id="wni-PG-efQ"/>
                                                             </constraints>
@@ -201,28 +200,43 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z1b-rW-CxW">
+                                <rect key="frame" x="344" y="617" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.1019607843" green="0.20392156859999999" blue="0.42745098040000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="MKy-na-9Lb"/>
+                                    <constraint firstAttribute="height" constant="50" id="bSS-Km-bZM"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="30"/>
+                                <state key="normal" title="+">
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="25"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="AddTaskBtnPressed:" destination="anW-fc-kUU" eventType="touchUpInside" id="7xB-1F-ITr"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="oJf-ch-y4V" firstAttribute="top" secondItem="JqF-40-Pdy" secondAttribute="bottom" constant="8" id="Kvc-mZ-zIz"/>
+                            <constraint firstItem="aVH-VK-Aiy" firstAttribute="top" secondItem="z1b-rW-CxW" secondAttribute="bottom" constant="20" id="3mP-6M-9RZ"/>
+                            <constraint firstAttribute="trailing" secondItem="z1b-rW-CxW" secondAttribute="trailing" constant="20" id="DIM-bR-0wA"/>
+                            <constraint firstItem="oJf-ch-y4V" firstAttribute="top" secondItem="JqF-40-Pdy" secondAttribute="bottom" constant="10" id="Kvc-mZ-zIz"/>
                             <constraint firstItem="oJf-ch-y4V" firstAttribute="leading" secondItem="0VR-rW-Qvd" secondAttribute="leading" id="PrC-Gh-jVE"/>
                             <constraint firstItem="JqF-40-Pdy" firstAttribute="centerX" secondItem="0VR-rW-Qvd" secondAttribute="centerX" id="bNe-PZ-AZa"/>
-                            <constraint firstItem="JqF-40-Pdy" firstAttribute="top" secondItem="lNV-8g-wuE" secondAttribute="bottom" constant="21" id="fKT-m1-SxK"/>
+                            <constraint firstItem="JqF-40-Pdy" firstAttribute="top" secondItem="lNV-8g-wuE" secondAttribute="bottom" constant="20" id="fKT-m1-SxK"/>
                             <constraint firstAttribute="trailing" secondItem="oJf-ch-y4V" secondAttribute="trailing" id="nNs-bR-PE9"/>
                             <constraint firstItem="aVH-VK-Aiy" firstAttribute="top" secondItem="oJf-ch-y4V" secondAttribute="bottom" id="z74-LD-0LO"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="cLD-bb-ImC">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="add" id="rW0-di-ncR">
-                            <color key="tintColor" red="0.1019607843" green="0.20392156859999999" blue="0.42745098040000001" alpha="1" colorSpace="calibratedRGB"/>
-                            <connections>
-                                <action selector="AddNewTask:" destination="anW-fc-kUU" id="aOu-Y0-aQB"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="cLD-bb-ImC"/>
                     <connections>
+                        <outlet property="AddTaskBtn" destination="z1b-rW-CxW" id="Itd-iW-1jl"/>
                         <outlet property="SegmentBtn" destination="JqF-40-Pdy" id="88u-xu-9lm"/>
-                        <outlet property="addBtn" destination="rW0-di-ncR" id="Ym1-cg-8P6"/>
                         <outlet property="tableview" destination="oJf-ch-y4V" id="lY5-4T-0ad"/>
                         <segue destination="DJe-sX-a0G" kind="show" identifier="addTask" id="99j-Kg-g2j"/>
                         <segue destination="DJe-sX-a0G" kind="show" identifier="Description" id="Klo-GZ-arA"/>
@@ -230,7 +244,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="azR-OE-T64" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3463" y="811"/>
+            <point key="canvasLocation" x="3462.3188405797105" y="809.51086956521749"/>
         </scene>
         <!--Add Task View Controller-->
         <scene sceneID="6Yr-SC-195">
@@ -589,7 +603,7 @@
                                                                         </userDefinedRuntimeAttributes>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="Ry2-rw-YMc">
-                                                                        <rect key="frame" x="15" y="0.0" width="32" height="16"/>
+                                                                        <rect key="frame" x="16" y="0.0" width="32" height="14.333333333333334"/>
                                                                         <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -608,11 +622,10 @@
                                                             <color key="backgroundColor" red="0.1019607843" green="0.20392156859999999" blue="0.42745098040000001" alpha="1" colorSpace="calibratedRGB"/>
                                                             <constraints>
                                                                 <constraint firstItem="Csv-ef-YXs" firstAttribute="top" secondItem="vfh-qV-K5U" secondAttribute="top" constant="2" id="1R2-NF-uxe"/>
-                                                                <constraint firstItem="Ry2-rw-YMc" firstAttribute="top" secondItem="vfh-qV-K5U" secondAttribute="top" id="3Oe-f4-D2F"/>
                                                                 <constraint firstAttribute="bottom" secondItem="Csv-ef-YXs" secondAttribute="bottom" constant="2" id="YGo-l4-ouW"/>
                                                                 <constraint firstItem="Csv-ef-YXs" firstAttribute="leading" secondItem="vfh-qV-K5U" secondAttribute="leading" constant="2" id="Ync-TX-5fK"/>
-                                                                <constraint firstAttribute="bottom" secondItem="Ry2-rw-YMc" secondAttribute="bottom" id="cSq-PK-mwl"/>
-                                                                <constraint firstItem="Ry2-rw-YMc" firstAttribute="leading" secondItem="Csv-ef-YXs" secondAttribute="trailing" constant="1" id="eqq-PU-cmz"/>
+                                                                <constraint firstItem="Ry2-rw-YMc" firstAttribute="leading" secondItem="Csv-ef-YXs" secondAttribute="trailing" constant="2" id="eqq-PU-cmz"/>
+                                                                <constraint firstItem="Ry2-rw-YMc" firstAttribute="centerY" secondItem="vfh-qV-K5U" secondAttribute="centerY" id="fH8-Ac-kIv"/>
                                                             </constraints>
                                                             <userDefinedRuntimeAttributes>
                                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
