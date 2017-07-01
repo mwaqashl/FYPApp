@@ -90,22 +90,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     
-    override func viewDidAppear(_ animated: Bool) {
-        
-        if defaultSettings.value(forKey: "timelineTutorials") == nil {
-            
-            let cont = UIStoryboard(name: "Tutorials", bundle: nil).instantiateInitialViewController() as! TutorialViewController
-            
-            cont.tutorialType = TutorialType.timeline
-            defaultSettings.setValue(true, forKey: "timelineTutorials")
-            self.present(cont, animated: true, completion: nil)
-            
-        }
-        
-        viewDidLoad()
-        
-    }
-    
     func sortDates() {
         
         var Dates = [Date]()

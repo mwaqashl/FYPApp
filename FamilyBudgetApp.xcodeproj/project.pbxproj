@@ -79,6 +79,9 @@
 		7765A5861ED7717A00EA42BB /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5851ED7717A00EA42BB /* ChatManager.swift */; };
 		7765A5881ED7738C00EA42BB /* ChatObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5871ED7738C00EA42BB /* ChatObserver.swift */; };
 		777D02991E8A860000C682F2 /* WalletTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777D02981E8A860000C682F2 /* WalletTableViewCell.swift */; };
+		77AE2F431F06EA5F00814AF4 /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 77AE2F401F06EA5F00814AF4 /* Roboto-Light.ttf */; };
+		77AE2F441F06EA5F00814AF4 /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 77AE2F411F06EA5F00814AF4 /* Roboto-Medium.ttf */; };
+		77AE2F451F06EA5F00814AF4 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 77AE2F421F06EA5F00814AF4 /* Roboto-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -153,6 +156,9 @@
 		7765A5851ED7717A00EA42BB /* ChatManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = SOURCE_ROOT; };
 		7765A5871ED7738C00EA42BB /* ChatObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatObserver.swift; sourceTree = SOURCE_ROOT; };
 		777D02981E8A860000C682F2 /* WalletTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletTableViewCell.swift; sourceTree = "<group>"; };
+		77AE2F401F06EA5F00814AF4 /* Roboto-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Light.ttf"; sourceTree = "<group>"; };
+		77AE2F411F06EA5F00814AF4 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Medium.ttf"; sourceTree = "<group>"; };
+		77AE2F421F06EA5F00814AF4 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		8A8B1FA4EAEBCFC2910F799F /* Pods-FamilyBudgetApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.release.xcconfig"; sourceTree = "<group>"; };
 		9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FamilyBudgetApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -298,6 +304,9 @@
 				773859511E90672A004BFBF2 /* StoryBoards */,
 				7706A6C51E8717D80074CD60 /* iconFont.ttf */,
 				7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */,
+				77AE2F401F06EA5F00814AF4 /* Roboto-Light.ttf */,
+				77AE2F411F06EA5F00814AF4 /* Roboto-Medium.ttf */,
+				77AE2F421F06EA5F00814AF4 /* Roboto-Regular.ttf */,
 				7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */,
 				774B0FE21E8D30E800417457 /* Tutorials */,
 				7742C7BC1E57231C006A25AF /* Assets.xcassets */,
@@ -451,11 +460,14 @@
 			files = (
 				7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */,
 				7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */,
+				77AE2F431F06EA5F00814AF4 /* Roboto-Light.ttf in Resources */,
 				774B0FDF1E8D2EBE00417457 /* Tutorials.storyboard in Resources */,
 				770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */,
 				7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */,
+				77AE2F451F06EA5F00814AF4 /* Roboto-Regular.ttf in Resources */,
 				7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */,
 				7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */,
+				77AE2F441F06EA5F00814AF4 /* Roboto-Medium.ttf in Resources */,
 				049908FC1E7FE610008238F4 /* HuzaifaStroyboard.storyboard in Resources */,
 				7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */,
 			);
@@ -699,11 +711,13 @@
 			baseConfigurationReference = 2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = M9MSRMULXS;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -713,11 +727,13 @@
 			baseConfigurationReference = 8A8B1FA4EAEBCFC2910F799F /* Pods-FamilyBudgetApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = M9MSRMULXS;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

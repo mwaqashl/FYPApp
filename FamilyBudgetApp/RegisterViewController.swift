@@ -24,15 +24,18 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     @IBOutlet weak var gender: UITextField!
     @IBOutlet weak var dateofbirth: UITextField!
     @IBOutlet weak var registerBtn: UIButton!
-    @IBOutlet weak var nextBtn: UIButton!
+    @IBOutlet weak var cameraBtn: UIButton!
+    @IBOutlet weak var deleteImageBtn: UIButton!
 
+    @IBOutlet var viewsForShadow: [UIView]!
+    
     var datepicker = UIDatePicker()
     var genderpicker = UIPickerView()
     let dateformat = DateFormatter()
     let imagePicker = UIImagePickerController()
     var selectedImage : UIImage?
     
-    
+    var isKeyboardOpen = false
     
     
     override func viewDidLoad() {
@@ -41,7 +44,6 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         genderpicker.delegate = self
         genderpicker.dataSource = self
         imagePicker.delegate = self
-        userImage.layer.cornerRadius = userImage.frame.width/2
         
         gender.inputView = genderpicker
         dateofbirth.inputView = datepicker
@@ -51,9 +53,17 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
 //        
         genderpicker.backgroundColor = .white
         datepicker.backgroundColor = .white
+                
         
-        registerBtn.layer.borderColor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1).cgColor
-        registerBtn.layer.borderWidth = 1
+        for view in viewsForShadow {
+            view.layer.shadowOffset = CGSize.zero
+            view.layer.shadowOpacity = 0.6
+            view.layer.shadowRadius = 2
+            view.layer.shadowColor = themeColorDark.cgColor
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         
         let toolbar = UIToolbar()
@@ -70,15 +80,19 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
         self.view.addGestureRecognizer(tap)
+        
+        
         // Do any additional setup after loading the view.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewDidLayoutSubviews() {
         
+        userImage.layer.cornerRadius = userImage.frame.width/2
+        cameraBtn.layer.cornerRadius = cameraBtn.frame.width/2
+        deleteImageBtn.layer.cornerRadius = deleteImageBtn.frame.width/2
     }
     
     func viewTapped() {
-        
         self.view.endEditing(true)
     }
     
@@ -134,7 +148,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     @IBAction func registerAction(_ sender: Any) {
-        
+        self.view.endEditing(true)
         var error = ""
         var errorDis = ""
         
@@ -199,16 +213,27 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     func keyboardWillShow(notification: NSNotification) {
         
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            self.view.frame.origin.y -= keyboardSize.height
+        
+        if !isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                self.view.frame.origin.y -= keyboardSize.height
+                isKeyboardOpen = true
+            }
         }
         
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            self.view.frame.origin.y += keyboardSize.height
+        
+        if isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                self.view.frame.origin.y += keyboardSize.height
+                isKeyboardOpen = false
+            }
         }
+        
     }
     
     @IBAction func imageTapped(_ sender: UITapGestureRecognizer) {
