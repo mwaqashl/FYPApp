@@ -11,7 +11,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func SendMessage(_ sender: Any) {
         if MessageTextField.text != ""{
-        ChatManager.sharedInstance().addNewMessage(msg: Message.init(id: "", message: MessageTextField.text!, date: Date().timeIntervalSince1970, senderID: senderID, walletID: walletID))
+        ChatManager.sharedInstance().addNewMessage(msg: Message.init(id: "", message: MessageTextField.text!, date: Date().timeIntervalSince1970, senderID: Resource.sharedInstance().currentUserId! , walletID: walletID))
             MessageTextField.text = ""
         }
         
@@ -62,7 +62,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if flag{
                 self.isDataAvailable = true
                 ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
-                //self.getDates()
+                self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
                 self.senderID = Resource.sharedInstance().currentUserId
                 self.senderName = Resource.sharedInstance().currentUser?.userName
                 self.walletID = Resource.sharedInstance().currentWalletID
@@ -81,6 +81,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         if isDataAvailable {
             ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
+            self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
             extractMessage()
         }
         tableView.reloadData()
@@ -130,8 +131,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         dates = []
         sortedMessages = [:]
+        messages = []
         
-        print("wallet id",walletID)
+        print("wallet id",Resource.sharedInstance().currentWalletID!)
         for key in Resource.sharedInstance().walletChat.keys{
             if key == Resource.sharedInstance().currentWalletID{
                 print(key)
@@ -176,9 +178,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
             ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
+            self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
             extractMessage()
         }
-        extractMessage()
         tableView.reloadData()
 
     }
@@ -287,7 +289,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             cell2.SendTime.textColor = UIColor.lightGray
             cell2.SenderName.textColor = UIColor.lightGray
             cell2.SendTime.text = sortTime
-            cell2.SenderName.text = senderName
+            cell2.SenderName.text = Resource.sharedInstance().currentUser?.userName
             cell2.SenderName.sizeToFit()
             cell2.SenderDP.image = Resource.sharedInstance().currentUser?.image ?? #imageLiteral(resourceName: "dp-male")
             return cell2
