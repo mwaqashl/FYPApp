@@ -22,6 +22,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     var isDataAvailable = false
     
+    var SettingsBtn = UIBarButtonItem()
     var allWalletsBtn = UIBarButtonItem()
     @IBOutlet weak var AddTaskBtn: UIButton!
     
@@ -39,7 +40,12 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         Delegate.sharedInstance().addWalletDelegate(self)
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
-        allWalletsBtn.tintColor = bluethemecolor
+        allWalletsBtn.tintColor = darkGreenThemeColor
+        
+        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
+        SettingsBtn.tintColor = darkGreenThemeColor
+        
+        self.navigationItem.rightBarButtonItem = SettingsBtn
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         self.tabBarController?.tabBar.barTintColor = .white
         
@@ -47,9 +53,9 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
             
             if flag {
                 self.tabBarController!.tabBar.backgroundColor!.withAlphaComponent(0.5)
-                self.tabBarController!.tabBar.backgroundColor = bluethemecolor
+                self.tabBarController!.tabBar.backgroundColor = darkGreenThemeColor
                 self.tabBarController!.tabBar.unselectedItemTintColor = .gray
-                self.tabBarController!.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
+                self.tabBarController!.tabBar.selectedImageTintColor = darkGreenThemeColor
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 self.isDataAvailable = true
                 self.TaskExtraction()
@@ -95,6 +101,11 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
                 }
             }
         }
+    }
+    
+    func SettingsBtnTapped() {
+        let cont = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
+        self.present(cont, animated: true, completion: nil)
     }
     
     func allWalletsBtnTapped() {

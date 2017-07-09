@@ -1,22 +1,16 @@
 //
-//  UserSearchResultTableViewCell.swift
+//  SettingMembersTableViewCell.swift
 //  FamilyBudgetApp
 //
-//  Created by Waqas Hussain on 03/04/2017.
+//  Created by mac on 6/12/17.
 //  Copyright © 2017 Technollage. All rights reserved.
 //
 
 import UIKit
 
-class UserSearchResultTableViewCell: UITableViewCell {
+class SettingMembersTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var userImage: UIImageView!
-    @IBOutlet weak var userName: UILabel!
-    @IBOutlet weak var userEmail: UILabel!
-    @IBOutlet weak var memberTypeBtn: UIButton!
-    @IBOutlet weak var RemoveMemberBtn: UIButton!
-    
-    
+    @IBOutlet weak var membersCollectionView: UICollectionView!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

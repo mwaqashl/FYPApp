@@ -1,21 +1,20 @@
 //
-//  UserSearchResultTableViewCell.swift
+//  SettingsTableViewCell.swift
 //  FamilyBudgetApp
 //
-//  Created by Waqas Hussain on 03/04/2017.
+//  Created by mac on 6/12/17.
 //  Copyright © 2017 Technollage. All rights reserved.
 //
 
 import UIKit
 
-class UserSearchResultTableViewCell: UITableViewCell {
+class SettingsTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var userImage: UIImageView!
-    @IBOutlet weak var userName: UILabel!
-    @IBOutlet weak var userEmail: UILabel!
-    @IBOutlet weak var memberTypeBtn: UIButton!
-    @IBOutlet weak var RemoveMemberBtn: UIButton!
+    @IBOutlet weak var icon: UILabel!
+    @IBOutlet weak var settingName: UILabel!
+    @IBOutlet weak var borderLine: UIView!
     
+    @IBOutlet weak var switchBtn: UISwitch!
     
     override func awakeFromNib() {
         super.awakeFromNib()

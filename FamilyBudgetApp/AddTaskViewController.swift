@@ -90,11 +90,11 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
         
         Add = UIBarButtonItem.init(title: "\u{A009}", style: .plain, target: self, action: #selector(self.AddTask))
         Add.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        Add.tintColor = bluethemecolor
+        Add.tintColor = darkGreenThemeColor
         
         Edit = UIBarButtonItem.init(title: "\u{A013}", style: .plain, target: self, action: #selector(self.EditTask))
         Edit.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        Edit.tintColor = bluethemecolor
+        Edit.tintColor = darkGreenThemeColor
         
         Delegate.sharedInstance().addWalletMemberDelegate(self)
         Delegate.sharedInstance().addTaskDelegate(self)

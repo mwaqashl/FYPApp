@@ -14,6 +14,9 @@
 		044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71401E81889A00613ECA /* TimelineViewController.swift */; };
 		044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71421E8188D600613ECA /* TimelineTableViewCell.swift */; };
 		046DCDAC1E8AA1DF00A3BC15 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		047710AC1F10E639004F1DAF /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047710AB1F10E639004F1DAF /* SettingsViewController.swift */; };
+		047710AF1F10F591004F1DAF /* SettingMembersTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047710AD1F10F591004F1DAF /* SettingMembersTableViewCell.swift */; };
+		047710B01F10F591004F1DAF /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047710AE1F10F591004F1DAF /* SettingsTableViewCell.swift */; };
 		0477D0F61EDA228700E8D358 /* BudgetDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477D0F51EDA228700E8D358 /* BudgetDetailsViewController.swift */; };
 		0477E8AC1EBE4B7C00EB9C00 /* BudgetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477E8AB1EBE4B7C00EB9C00 /* BudgetViewController.swift */; };
 		0477E8AE1EBE4C1200EB9C00 /* BudgetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477E8AD1EBE4C1200EB9C00 /* BudgetTableViewCell.swift */; };
@@ -91,6 +94,9 @@
 		044B713E1E81764200613ECA /* WalletsCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletsCollectionViewCell.swift; sourceTree = "<group>"; };
 		044B71401E81889A00613ECA /* TimelineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
 		044B71421E8188D600613ECA /* TimelineTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineTableViewCell.swift; sourceTree = "<group>"; };
+		047710AB1F10E639004F1DAF /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		047710AD1F10F591004F1DAF /* SettingMembersTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingMembersTableViewCell.swift; sourceTree = "<group>"; };
+		047710AE1F10F591004F1DAF /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		0477D0F51EDA228700E8D358 /* BudgetDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetDetailsViewController.swift; sourceTree = "<group>"; };
 		0477E8AB1EBE4B7C00EB9C00 /* BudgetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetViewController.swift; sourceTree = "<group>"; };
 		0477E8AD1EBE4C1200EB9C00 /* BudgetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetTableViewCell.swift; sourceTree = "<group>"; };
@@ -184,6 +190,16 @@
 			name = Task;
 			sourceTree = "<group>";
 		};
+		047710AA1F10E5AD004F1DAF /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				047710AD1F10F591004F1DAF /* SettingMembersTableViewCell.swift */,
+				047710AE1F10F591004F1DAF /* SettingsTableViewCell.swift */,
+				047710AB1F10E639004F1DAF /* SettingsViewController.swift */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
 		0477E8AA1EBE4B3400EB9C00 /* Budget */ = {
 			isa = PBXGroup;
 			children = (
@@ -223,6 +239,7 @@
 		773859521E90673D004BFBF2 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				047710AA1F10E5AD004F1DAF /* Settings */,
 				04FFF4561ED60C3D005E95E1 /* Stats */,
 				0477E8AA1EBE4B3400EB9C00 /* Budget */,
 				045B3ABB1E98DAF30017C115 /* Task */,
@@ -546,6 +563,7 @@
 				04C2BD611E9247BF0064AADB /* (null) in Sources */,
 				0477D0F61EDA228700E8D358 /* BudgetDetailsViewController.swift in Sources */,
 				7765A5861ED7717A00EA42BB /* ChatManager.swift in Sources */,
+				047710B01F10F591004F1DAF /* SettingsTableViewCell.swift in Sources */,
 				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
 				04C2BD631E9247BF0064AADB /* (null) in Sources */,
 				775C2A1C1E5B11AD00E409B6 /* Transaction.swift in Sources */,
@@ -572,6 +590,7 @@
 				04845D291E93C79C00BDA0FC /* TaskTableViewCell.swift in Sources */,
 				044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */,
 				04D3C3321EBF096600EB1488 /* BudgetStatsTableViewCell.swift in Sources */,
+				047710AC1F10E639004F1DAF /* SettingsViewController.swift in Sources */,
 				044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */,
 				7765A5841ED76F6C00EA42BB /* ChatMessage.swift in Sources */,
 				774B0FE11E8D30E000417457 /* TutorialViewController.swift in Sources */,
@@ -583,6 +602,7 @@
 				7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */,
 				775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */,
 				775C2A151E5B11AD00E409B6 /* Notification.swift in Sources */,
+				047710AF1F10F591004F1DAF /* SettingMembersTableViewCell.swift in Sources */,
 				04C2BD5B1E9247BF0064AADB /* AddTaskViewController.swift in Sources */,
 				04343C031E5EBDB500417C91 /* RegisterViewController.swift in Sources */,
 				775C2A1B1E5B11AD00E409B6 /* TaskObserver.swift in Sources */,
