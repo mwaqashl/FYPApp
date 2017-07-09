@@ -24,7 +24,6 @@ class ChatManager {
         let msgRef = ref.child("Chat").child(msg.walletID).childByAutoId()
         
         let data : [String:Any] = ["message":msg.message, "sender": msg.sender, "timestamp":msg.timestamp.timeIntervalSince1970]
-        
         msgRef.setValue(data)
         
     }

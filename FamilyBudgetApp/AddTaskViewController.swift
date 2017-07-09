@@ -90,11 +90,11 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
         
         Add = UIBarButtonItem.init(title: "\u{A009}", style: .plain, target: self, action: #selector(self.AddTask))
         Add.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        Add.tintColor = darkGreenThemeColor
+        Add.tintColor = bluethemecolor
         
         Edit = UIBarButtonItem.init(title: "\u{A013}", style: .plain, target: self, action: #selector(self.EditTask))
         Edit.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        Edit.tintColor = darkGreenThemeColor
+        Edit.tintColor = bluethemecolor
         
         Delegate.sharedInstance().addWalletMemberDelegate(self)
         Delegate.sharedInstance().addTaskDelegate(self)
@@ -190,7 +190,6 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
     
     func EditTask() {
         if isEdit {
-            self.view.endEditing(true)            
             var error = ""
             var errorDis = ""
             

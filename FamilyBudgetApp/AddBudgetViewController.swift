@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UITextViewDelegate,UIPickerViewDelegate, UIPickerViewDataSource , UIGestureRecognizerDelegate {
+class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UITextViewDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
 
     
     @IBOutlet weak var CategoryAndMembercollectionview: UICollectionView!
@@ -17,24 +17,19 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var pageHeader: UILabel!
     
-    @IBOutlet weak var DatePicker: UIDatePicker!
-    @IBOutlet weak var DaysPicker: UIPickerView!
-    @IBOutlet weak var DateAndDaysView: UIView!
-    
     var budget : Budget?
-    
-    var curr = NSAttributedString()
-    
-    var newView = UIView()
-    
+    var transactions = [Transaction]()
     var walletmembers = [User]()
     var categoriesKeys = [String]()
     
     var Add = UIBarButtonItem()
+    var Edit = UIBarButtonItem()
     
+    var NoOfDays = UIPickerView()
+    var datepicker = UIDatePicker()
     var dateformat = DateFormatter()
-    
-    var isDatePicker = true
+    let toolbar = UIToolbar()
+    var date = Double()
     
     var isNew = false
     var isEdit = false
@@ -46,27 +41,16 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     var selectedMembers = [String]()
     var pselectedMembers = [String]()
     
-    var selectedIndex : Int = 0
-    
     var cells = ["Title","Amount","Category","AssignTo","Date","NoOfDays","Comments"]
     var Days = [7,15,30]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        newView = UIView(frame: self.view.frame)
-        newView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
-        tap.delegate = self
-        tap.numberOfTapsRequired = 1
-        newView.addGestureRecognizer(tap)
-        newView.backgroundColor = .lightGray
-        newView.alpha = 0.5
-        newView.isUserInteractionEnabled = true
-        
         dateformat.dateFormat = "dd-MMM-yyyy"
+        datepicker.datePickerMode = .date
+        datepicker.backgroundColor = .white
         
-        DateAndDaysView.isHidden = true
         SelectionView.isHidden = true
         
         categoriesKeys = Array(Resource.sharedInstance().categories.keys)
@@ -74,32 +58,27 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         Add = UIBarButtonItem.init(title: "\u{A009}", style: .plain, target: self, action: #selector(self.AddBudget))
         Add.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
         
+        Edit = UIBarButtonItem.init(title: "\u{A013}", style: .plain, target: self, action: #selector(self.EditBudget))
+        Edit.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
+        
         self.tableview.dataSource = self
         self.tableview.delegate = self
         
-        self.DaysPicker.dataSource = self
-        self.DaysPicker.delegate = self
-        self.DaysPicker.backgroundColor = .white
+        self.NoOfDays.dataSource = self
+        self.NoOfDays.delegate = self
+        self.NoOfDays.backgroundColor = .white
         
         CategoryAndMembercollectionview.dataSource = self
         CategoryAndMembercollectionview.delegate = self
         
-        self.navigationItem.rightBarButtonItem = self.Add
-        
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
-                
-                self.curr = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 24)!])
-                
-                self.selectedMembers = []
-                self.selectedCategories = []
-                self.pselectedMembers = []
-                self.pselectedCategories = []
                 
                 self.walletmembers = Resource.sharedInstance().currentWallet!.members
                 
                 if self.isNew {
                     self.isEdit = true
+                    self.navigationItem.rightBarButtonItem = self.Add
                     self.budget = Budget.init(budgetId: "", allocAmount: 0.0, title: "", period: 7, startDate: Date().timeIntervalSince1970, comments: nil, isOpen: true, categoryIDs: [], memberIDs: [], walletID: Resource.sharedInstance().currentWalletID!)
                     
                 }
@@ -108,13 +87,10 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.pselectedMembers = self.selectedMembers
                     self.selectedCategories = self.budget!.getCategoryIDs()
                     self.pselectedCategories = self.selectedCategories
+                    self.UpdateCells()
                 }
             }
         }
-    }
-    
-    func ViewTap() {
-        removeView()
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -129,14 +105,24 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         return "\(Days[row])"
     }
     
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedIndex = row
+    func UpdateCells() {
+        self.navigationItem.rightBarButtonItem = nil
+        self.cells = ["Title","Amount","Category","AssignTo","Date","NoOfDays"]
+        if budget?.comments != nil {
+            cells.append("Comments")
+        }
+        if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && budget!.wallet.isOpen {
+            
+            self.cells.append("Delete")
+            if self.budget!.isOpen {
+                self.navigationItem.rightBarButtonItem = self.Edit
+            }
+        }
+        cells.append("Graph")
     }
     
     // Bar Button Actions
     func AddBudget() {
-        
-        self.view.endEditing(true)
         
         var error = ""
         var errorDis = ""
@@ -159,12 +145,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         if error == "" {
-            if isNew {
-                BudgetManager.sharedInstance().addNewBudget(budget!)
-            }
-            else {
-                BudgetManager.sharedInstance().updateBudgetInWallet(budget!)
-            }
+            BudgetManager.sharedInstance().addNewBudget(budget!)
             self.navigationController!.popViewController(animated: true)
         }
         else {
@@ -176,76 +157,110 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    func EditBudget() {
+        if isEdit {
+            var error = ""
+            var errorDis = ""
+            
+            if budget!.title == "" {
+                error = "Error"
+                errorDis = "Task Title cannot be empty"
+            }
+            else if budget!.allocAmount == 0 || budget!.allocAmount == 0.0 {
+                error = "Error"
+                errorDis = "Amount cannot be empty"
+            }
+            else if budget!.getCategoryIDs() == [] {
+                error = "Error"
+                errorDis = "Category cannot be empty"
+            }
+            else if budget!.members.count == 0 {
+                error = "Error"
+                errorDis = "Select any member to assign this task"
+            }
+            
+            if error == "" {
+                BudgetManager.sharedInstance().updateBudgetInWallet(budget!)
+                self.navigationController!.popViewController(animated: true)
+            }
+            else {
+                let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+        }
+            
+            //     title,Amount, category, assign to / inprogess by / completed by, assign by, date, comments
+        else {
+            isEdit = true
+            Edit.title = "\u{A009}"
+            self.pageHeader.text = "EDITING BUDGET"
+            cells.remove(at: 4)
+            if cells[cells.count-1] == "Delete" {
+                cells.remove(at: cells.count-1)
+            }
+            if !(cells.contains("Comments")) {
+                cells.insert("Comments", at: cells.count)
+            }
+            self.tableview.reloadSections([0], with: .automatic)
+        }
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // date button actions
+    func donepressed(){
+        let cell = tableview.cellForRow(at: IndexPath(row: 4, section: 0)) as! DefaultTableViewCell
+        cell.textview.text = dateformat.string(from: datepicker.date)
+        date = datepicker.date.timeIntervalSince1970
+        budget!.startDate = datepicker.date
+        self.view.endEditing(true)
+    }
+    
+    func cancelpressed(){
+        self.view.endEditing(true)
+    }
 
     
-    @IBAction func DoneBtnPressed(_ sender: UIButton) {
-        // Tag 0 for Category and members
-        if sender.tag == 0 {
-            if isCategoryView {
-                pselectedCategories = selectedCategories
-                for i in 0..<selectedCategories.count {
-                    budget!.addCategory(selectedCategories[i])
-                }
+    @IBAction func DoneBtnPressed(_ sender: Any) {
+        if isCategoryView {
+            pselectedCategories = selectedCategories
+            for i in 0..<selectedCategories.count {
+                budget!.addCategory(selectedCategories[i])
             }
-            else {
-                pselectedMembers = selectedMembers
-                for i in 0..<selectedMembers.count {
-                    budget!.addMember(selectedMembers[i])
-                }
-            }
-            removeView()
         }
-            
         else {
-            if isDatePicker {
-                let cell = tableview.cellForRow(at: IndexPath(row: 4, section: 0)) as! DefaultTableViewCell
-                cell.textview.text = dateformat.string(from: DatePicker.date)
-                budget!.startDate = DatePicker.date
+            pselectedMembers = selectedMembers
+            for i in 0..<selectedMembers.count {
+                budget!.addMember(selectedMembers[i])
             }
-            else {
-                let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "NoOfDays")!, section: 0)) as! DefaultTableViewCell
-                cell.textview.text = "\(Days[selectedIndex])"
-            }
-            removeView()
         }
+        SelectionView.isHidden = true
         tableview.reloadData()
     }
 
-    @IBAction func CancelBtnPressed(_ sender: UIButton) {
-        
-        if sender.tag == 1 {
-            if isCategoryView {
-                selectedCategories = pselectedCategories
-            }
-            else {
-                selectedMembers = pselectedMembers
-            }
-            removeView()
+    @IBAction func CancelBtnPressed(_ sender: Any) {
+        if isCategoryView {
+            selectedCategories = pselectedCategories
         }
         else {
-            if isDatePicker {
-                let cell = tableview.cellForRow(at: IndexPath(row: 4, section: 0)) as! DefaultTableViewCell
-                cell.textview.text = dateformat.string(from: budget!.startDate)
-            }
-            else {
-                let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "NoOfDays")!, section: 0)) as! DefaultTableViewCell
-                cell.textview.text = "\(budget!.period)"
-            }
-            removeView()
+            selectedMembers = pselectedMembers
         }
+        SelectionView.isHidden = true
         tableview.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cells.count
+        return cells.count + transactions.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+        if indexPath.row < cells.count {
             switch cells[indexPath.row] {
             
             case "Title":
@@ -314,16 +329,24 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.membersCollection.dataSource = self
                 cell.membersCollection.dataSource = self
                 cell.membersCollection.reloadData()
+                cell.addmemberBtn.isHidden = isEdit ? false : true
                 cell.selectionStyle = UITableViewCellSelectionStyle.none
             
                 return cell
             
-//            case "Delete":
-//            
-//                let cell = tableview.dequeueReusableCell(withIdentifier: "deleteCell") as! DeleteTableViewCell
-//                cell.DeleteBtn.addTarget(nil, action: #selector(self.DeleteTask) , for: .touchUpInside)
-//            
-//                return cell
+            case "Delete":
+            
+                let cell = tableview.dequeueReusableCell(withIdentifier: "deleteCell") as! DeleteTableViewCell
+                cell.DeleteBtn.addTarget(nil, action: #selector(self.DeleteTask) , for: .touchUpInside)
+            
+                return cell
+            
+            case "Graph":
+                let cell = tableView.dequeueReusableCell(withIdentifier: "statsCell") as! BudgetStatsTableViewCell
+                
+                cell.title.text = "Pie Chart"
+                
+                return cell
             
             default:
             
@@ -332,54 +355,69 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.title.text = cells[indexPath.row]
             
                 if cell.title.text == "Amount" {
-                    
-                    let amount = NSAttributedString(string: " \(budget!.allocAmount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 24)])
-                    
-                    let str = NSMutableAttributedString()
-                    str.append(curr)
-                    str.append(amount)
-                    cell.textview.isEditable = budget!.isOpen
-                    cell.textview.isUserInteractionEnabled = budget!.isOpen
-                    
-                    cell.textview.attributedText = str
-                    cell.textview.textAlignment = .right
+                    cell.textview.text = budget!.allocAmount != 0.0 ? "\(budget?.allocAmount ?? 0)" : "0"
                     cell.textview.tag = 2                   // amount tag 2
                 }
             
                 else if cell.title.text == "NoOfDays" {
+                    cell.textview.inputView = NoOfDays
                     cell.textview.text = "\(budget!.daysInbudget())"
-                    cell.textview.isUserInteractionEnabled = false
-                    cell.textview.isEditable = false
+                    let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
+                    let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
+                    let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+                    self.toolbar.setItems([cancel,spaceButton,done], animated: false)
+                    cell.textview.inputAccessoryView = self.toolbar
+                    self.toolbar.backgroundColor = .lightGray
+                    cell.textview.isUserInteractionEnabled = true
+                    cell.textview.tag = 4
                 }
                 
                 else if cell.title.text == "Date" {
-                    cell.textview.text = dateformat.string(from: budget!.startDate)
-                    cell.textview.isUserInteractionEnabled = false
-                    cell.textview.isEditable = false// Date tag 3
-                }
                 
+                    cell.textview.inputView = datepicker
+                    cell.textview.text = dateformat.string(from: budget!.startDate)
+                    let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
+                    let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
+                    let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+                    self.toolbar.setItems([cancel,spaceButton,done], animated: false)
+                    cell.textview.inputAccessoryView = self.toolbar
+                    self.toolbar.backgroundColor = .lightGray
+                    cell.textview.isUserInteractionEnabled = true
+                    cell.textview.tag = 3                   // Date tag 3
+                }
+                cell.textview.isEditable = budget!.isOpen
+                cell.textview.isUserInteractionEnabled = budget!.isOpen
                 cell.textview.delegate = self
                 cell.selectionStyle = UITableViewCellSelectionStyle.none
                 return cell
             }//Switch End
+        }
+        else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell") as! TimelineTableViewCell
+            let transaction = self.transactions[indexPath.row - cells.count]
+            
+            cell.categoryIcon.text = transaction.category.icon
+            cell.category.text = transaction.category.name
+            cell.amount.text = "\(transaction.amount)"
+//            cell.imageView?.image = transaction.transactionBy.image != nil ? transaction.transactionBy.image : #imageLiteral(resourceName: "dp-male")
+            
+            cell.categoryIcon.textColor = transaction.category.color
+            cell.categoryIcon.layer.borderColor = cell.categoryIcon.textColor.cgColor
+            cell.categoryIcon.layer.borderWidth = 1
+            cell.categoryIcon.layer.cornerRadius = cell.categoryIcon.frame.width/2
+            return cell
+        }
+        
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if isEdit {
             if indexPath.row == 2 {
+                SelectionView.isHidden = false
                 isCategoryView = true
                 CollectionViewHeader.text = "SELECT CATEGORY"
-                addView(SelectionView)
                 CategoryAndMembercollectionview.reloadData()
-            }
-            else if cells[indexPath.row] == "Date" {
-                isDatePicker = true
-                self.addView(DateAndDaysView)
-            }
-            else if cells[indexPath.row] == "NoOfDays" {
-                isDatePicker = false
-                self.addView(DateAndDaysView)
             }
         }
         else {
@@ -448,11 +486,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             cell.name.text = user!.userName
             cell.image.image = #imageLiteral(resourceName: "dp-male")
-            cell.selectedmember.layer.borderWidth = 1
-            cell.selectedmember.layer.borderColor = bluethemecolor.cgColor
-            cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
             if budget!.getMemberIDs().contains(walletmembers[indexPath.item].getUserID()) && collectionView == self.CategoryAndMembercollectionview {
                 cell.selectedmember.isHidden = false
+                cell.selectedmember.layer.borderWidth = 1
             }
             else {
                 cell.selectedmember.isHidden = true
@@ -475,9 +511,6 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         else {
             let cell = collectionView.cellForItem(at: indexPath) as! TaskMembersCollectionViewCell
-            cell.selectedmember.layer.borderWidth = 1
-            cell.selectedmember.layer.borderColor = bluethemecolor.cgColor
-            cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
             if selectedMembers.contains(walletmembers[indexPath.item].getUserID()) {
                 selectedMembers.remove(at: selectedMembers.index(of: walletmembers[indexPath.item].getUserID())!)
                 cell.selectedmember.isHidden = true
@@ -504,7 +537,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 textView.text = budget!.comments
             }
         }
-        else if textView.tag == 1 {
+        if textView.tag == 1 {
             if textView.text == "Enter Budget Title" {
                 textView.text = ""
             }
@@ -512,7 +545,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 textView.text = budget!.title
             }
         }
-        else if textView.tag == 2 {
+        if textView.tag == 2 {
             textView.text = textView.text == "0" || textView.text == "0.0" ? "" : "\(budget!.allocAmount)"
         }
     }
@@ -527,6 +560,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             budget!.allocAmount = Double(textView.text) ?? 0.0
             textView.text = budget!.allocAmount == 0.0 ? "0" : "\(budget!.allocAmount)"
         }
+        else if textView.tag == 4 {
+            budget!.period = Int(textView.text)! ?? 0
+        }
         else if textView.tag == 5 {
             budget!.comments = textView.text
             textView.text = budget?.comments != nil ? budget!.comments : "Write Here"
@@ -534,55 +570,30 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @IBAction func assignToaddBtnPressed(_ sender: Any) {
+        SelectionView.isHidden = false
         CollectionViewHeader.text = "SELECT MEMBERS"
         isCategoryView = false
-        addView(SelectionView)
         CategoryAndMembercollectionview.reloadData()
     }
     
     // Delete Task
-//    func DeleteTask() {
-//        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this Budget", preferredStyle: .actionSheet)
-//        let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
-//        let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
-//        alert.addAction(action)
-//        alert.addAction(noAction)
-//        self.present(alert, animated: true, completion: nil)
-//    }
-//    
-//    func YesPressed(action : UIAlertAction) {
-//        //        print("Kar de Delete")
-//        BudgetManager.sharedInstance().removeBudgetFromWallet(budget!)
-//        self.navigationController!.popViewController(animated: true)
-//    }
-//    
-//    func NoPressed(action : UIAlertAction) {
-//        //        print("Nhn Kr Delete")
-//    }
-    
-    func addView(_ showView : UIView) {
-        self.CategoryAndMembercollectionview.reloadData()
-        view.addSubview(newView)
-        DaysPicker.isHidden = isDatePicker
-        showView.isHidden = false
-        showView.alpha = 0
-        showView.isHidden = false
-        self.view.bringSubview(toFront: showView)
-        UIView.animate(withDuration: 0.3, animations: {
-            showView.alpha = 1.0
-        })
+    func DeleteTask() {
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this Budget", preferredStyle: .actionSheet)
+        let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
+        let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
+        alert.addAction(action)
+        alert.addAction(noAction)
+        self.present(alert, animated: true, completion: nil)
     }
     
-    func removeView() {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.SelectionView.alpha = 0
-            self.DateAndDaysView.alpha = 0
-            
-        }) { (Success) in
-            self.DateAndDaysView.isHidden = true
-            self.SelectionView.isHidden = true
-            self.newView.removeFromSuperview()
-        }
+    func YesPressed(action : UIAlertAction) {
+        //        print("Kar de Delete")
+        BudgetManager.sharedInstance().removeBudgetFromWallet(budget!)
+        self.navigationController!.popViewController(animated: true)
+    }
+    
+    func NoPressed(action : UIAlertAction) {
+        //        print("Nhn Kr Delete")
     }
 
     

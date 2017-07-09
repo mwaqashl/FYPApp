@@ -14,7 +14,6 @@ class UserSearchResultTableViewCell: UITableViewCell {
     @IBOutlet weak var userName: UILabel!
     @IBOutlet weak var userEmail: UILabel!
     @IBOutlet weak var memberTypeBtn: UIButton!
-    @IBOutlet weak var RemoveMemberBtn: UIButton!
     
     
     override func awakeFromNib() {

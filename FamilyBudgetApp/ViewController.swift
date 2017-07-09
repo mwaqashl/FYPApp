@@ -17,7 +17,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var signInBtn: UIButton!
     
-    @IBOutlet var viewsForShadow: [UIView]!
     
     var isKeyboardOpen = false
     var tap = UITapGestureRecognizer()
@@ -26,23 +25,21 @@ class ViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         
         password.isSecureTextEntry = true
+        emailView.layer.borderWidth = 1
+        emailView.layer.borderColor = UIColor.white.cgColor
         emailAddress.autocorrectionType = .no
+        passwordView.layer.borderWidth = 1
+        passwordView.layer.borderColor = UIColor.white.cgColor
         emailAddress.delegate = self
         password.delegate = self
+        signInBtn.layer.borderWidth = 1
+        signInBtn.layer.borderColor = UIColor.white.cgColor
         backBtn.layer.borderWidth = 1
         backBtn.layer.borderColor = UIColor.white.cgColor
         tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
         self.view.addGestureRecognizer(tap)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        
-        
-        for view in viewsForShadow {
-            view.layer.shadowOffset = CGSize.zero
-            view.layer.shadowOpacity = 0.6
-            view.layer.shadowRadius = 2
-            view.layer.shadowColor = themeColorDark.cgColor
-        }
         
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -68,7 +65,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func signInBtnAction(_ sender: Any) {
-        self.view.endEditing(true)
+        
         let activity = UIActivityIndicatorView(frame: self.view.frame)
         activity.hidesWhenStopped = true
         activity.startAnimating()

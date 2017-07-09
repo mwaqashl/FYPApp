@@ -15,28 +15,28 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     //For Wallet Setup
+    @IBOutlet weak var walletIcon: UILabel!
     @IBOutlet weak var walletIconHeader: UILabel!
     @IBOutlet weak var walletname: UITextField!
     @IBOutlet weak var initialamount: UITextField!
     @IBOutlet weak var currencyName: UITextField!
     @IBOutlet weak var currencyCode: UITextField!
+    @IBOutlet weak var currencyIcon: UILabel!
     @IBOutlet weak var popoverView: UIView!
     @IBOutlet weak var iconsCollectionView: UICollectionView!
     @IBOutlet weak var colorsCollectionView: UICollectionView!
+    
     @IBOutlet weak var finishBtn: UIButton!
     
-    @IBOutlet var viewsForShadow: [UIView]!
     
-    
-    var isKeyboardOpen = false
     var currencypicker = UIPickerView()
     var wallet : UserWallet?
     var backView = UIView()
     var selectedIcon = ""
-    var selectedColor : UIColor = themeColorDark
+    var selectedColor : UIColor = .blue
     var pSelectedIcon = ""
-    var pSelectedColor : UIColor = themeColorDark
-    var colors : [UIColor] = [themeColorDark,  .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
+    var pSelectedColor : UIColor = .blue
+    var colors : [UIColor] = [.blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,26 +46,26 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         currencypicker.delegate = self
         currencyName.inputView = currencypicker
         currencyCode.inputView = currencypicker
+        
         currencypicker.backgroundColor = .white
         backView = UIView(frame: self.view.frame)
         backView.backgroundColor = UIColor.init(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.2)
         
         popoverView.isHidden = true
+        popoverView.layer.cornerRadius = 10
+        popoverView.layer.shadowColor = UIColor.gray.cgColor
+        popoverView.layer.shadowRadius = 2
         
-        
+        finishBtn.layer.borderColor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1).cgColor
+        finishBtn.layer.borderWidth = 1
         finishBtn.layer.cornerRadius = finishBtn.layer.frame.height/2
         
         selectedIcon = "\u{A037}"
+        walletIcon.textColor = selectedColor
         walletIconHeader.textColor = selectedColor
+        walletIcon.text = selectedIcon
         walletIconHeader.text = selectedIcon
         
-        
-        for view in viewsForShadow {
-            view.layer.shadowOffset = CGSize.zero
-            view.layer.shadowOpacity = 0.6
-            view.layer.shadowRadius = 2
-            view.layer.shadowColor = themeColorDark.cgColor
-        }
         
         wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [:], isOpen: true, color: UIColor.blue.stringRepresentation)
         
@@ -80,23 +80,10 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         currencyName.inputAccessoryView = toolbar
         currencyCode.inputAccessoryView = toolbar
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
-        self.view.addGestureRecognizer(tap)
+
         // Do any additional setup after loading the view.
     }
     
-    override func viewDidLayoutSubviews() {
-        walletIconHeader.layer.cornerRadius = walletIconHeader.frame.height/2
-    }
-    
-    func viewTapped() {
-        self.view.endEditing(true)
-    }
     func showPopUp() {
         
         self.view.addSubview(backView)
@@ -132,6 +119,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         let this = all[selectedindex]
         
         wallet?.currencyID = this
+        currencyIcon.text = wallet!.currency.icon
         currencyCode.text = wallet!.currency.code
         currencyName.text = wallet!.currency.name
         self.view.endEditing(true)
@@ -139,6 +127,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     func cancelpressed(){
         if wallet!.currencyID != "" {
+            currencyIcon.text = wallet!.currency.icon
             currencyCode.text = wallet!.currency.code
             currencyName.text = wallet!.currency.name
         }
@@ -253,14 +242,21 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         hidePopUp()
         
+        walletIcon.textColor = selectedColor
         walletIconHeader.textColor = selectedColor
+        walletIcon.text = selectedIcon
         walletIconHeader.text = selectedIcon
     }
     
     @IBAction func cancelBtnAction(_ sender: Any) {
         
+        
         hidePopUp()
+        print(selectedIcon)
+        print(pSelectedIcon)
+        walletIcon.textColor = pSelectedColor
         walletIconHeader.textColor = pSelectedColor
+        walletIcon.text = pSelectedIcon
         walletIconHeader.text = pSelectedIcon
     }
     
@@ -285,7 +281,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
             
             let prev = collectionView.cellForItem(at: IndexPath.init(item: Int(index), section: 0)) as! DefaultCollectionViewCell
             
-            prev.layer.borderColor = UIColor.clear.cgColor
+            prev.layer.borderColor = UIColor.lightGray.cgColor
             prev.icon.textColor = UIColor.lightGray
             
             let cell = collectionView.cellForItem(at: indexPath) as! DefaultCollectionViewCell
@@ -340,7 +336,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 cell.icon.textColor = selectedColor
             }
             else {
-                cell.layer.borderColor = UIColor.clear.cgColor
+                cell.layer.borderColor = UIColor.lightGray.cgColor
                 cell.icon.textColor = UIColor.lightGray
             }
             
@@ -374,37 +370,8 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return collectionView.tag == 1 ? CGSize(width: 40, height: 40) : CGSize(width: 20, height: 20)
+        return collectionView.tag == 1 ? CGSize(width: 50, height: 50) : CGSize(width: 24, height: 24)
     }
-    
-    
-    
-    func keyboardWillShow(notification: NSNotification) {
-        
-        
-        if !isKeyboardOpen {
-            
-            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y -= keyboardSize.height
-                isKeyboardOpen = true
-            }
-        }
-        
-    }
-    
-    func keyboardWillHide(notification: NSNotification) {
-        
-        if isKeyboardOpen {
-            
-            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y += keyboardSize.height
-                isKeyboardOpen = false
-            }
-        }
-        
-    }
-    
-    
 
     /*
     // MARK: - Navigation

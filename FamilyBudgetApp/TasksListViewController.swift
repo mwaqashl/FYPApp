@@ -22,9 +22,8 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     var isDataAvailable = false
     
-    var SettingsBtn = UIBarButtonItem()
     var allWalletsBtn = UIBarButtonItem()
-    @IBOutlet weak var AddTaskBtn: UIButton!
+    var add = UIBarButtonItem()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,23 +39,20 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         Delegate.sharedInstance().addWalletDelegate(self)
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
-        allWalletsBtn.tintColor = darkGreenThemeColor
-        
-        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
-        SettingsBtn.tintColor = darkGreenThemeColor
-        
-        self.navigationItem.rightBarButtonItem = SettingsBtn
+        allWalletsBtn.tintColor = bluethemecolor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         self.tabBarController?.tabBar.barTintColor = .white
+        
+        add = self.navigationItem.rightBarButtonItem!
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             
             if flag {
-                self.tabBarController!.tabBar.backgroundColor!.withAlphaComponent(0.5)
-                self.tabBarController!.tabBar.backgroundColor = darkGreenThemeColor
-                self.tabBarController!.tabBar.unselectedItemTintColor = .gray
-                self.tabBarController!.tabBar.selectedImageTintColor = darkGreenThemeColor
-                self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
+                self.tabBarController?.tabBar.backgroundColor?.withAlphaComponent(0.5)
+                self.tabBarController?.tabBar.backgroundColor = Resource.sharedInstance().currentWallet!.color
+                self.tabBarController?.tabBar.unselectedItemTintColor = .gray
+                self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
+                self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
                 self.isDataAvailable = true
                 self.TaskExtraction()
             }
@@ -68,16 +64,13 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
+            self.tabBarController?.tabBar.backgroundColor?.withAlphaComponent(0.5)
+            self.tabBarController?.tabBar.backgroundColor = Resource.sharedInstance().currentWallet!.color
+            self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
+            self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet?.color
+            self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             TaskExtraction()
             tableview.reloadData()
-            
-            for key in Resource.sharedInstance().tasks.keys {
-                let task = Resource.sharedInstance().tasks[key]
-                if task!.walletID == Resource.sharedInstance().currentWalletID {
-                    print(task!.id)
-                    print(task!.amount)
-                }
-            }
         }
     }
     
@@ -87,7 +80,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         filterTask = []
         for key in Resource.sharedInstance().tasks.keys {
             let task = Resource.sharedInstance().tasks[key]
-            if task!.walletID == Resource.sharedInstance().currentWalletID {
+            if task?.walletID == Resource.sharedInstance().currentWalletID {
                 self.Tasks.append(task!)
                 if self.SegmentBtn.selectedSegmentIndex == 0 {
                     if task!.status == .open {
@@ -101,11 +94,6 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
                 }
             }
         }
-    }
-    
-    func SettingsBtnTapped() {
-        let cont = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
-        self.present(cont, animated: true, completion: nil)
     }
     
     func allWalletsBtnTapped() {
@@ -139,11 +127,6 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         }
         tableview.reloadData()
     }
-    
-    @IBAction func AddTaskBtnPressed(_ sender: Any) {
-        performSegue(withIdentifier: "addTask", sender: nil)
-    }
-    
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -244,6 +227,10 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         
         return cell
     }
+    
+    @IBAction func AddNewTask(_ sender: Any) {
+        performSegue(withIdentifier: "addTask", sender: nil)
+    }
 
     func taskAdded(_ task: Task) {
         if Resource.sharedInstance().currentWalletID == task.walletID && isDataAvailable {
@@ -337,10 +324,10 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     func walletUpdated(_ wallet: UserWallet) {
         if wallet.id == Resource.sharedInstance().currentWalletID {
             if wallet.isOpen {
-                AddTaskBtn.isHidden = false
+                navigationItem.rightBarButtonItem = add
             }
             else if !wallet.isOpen {
-                AddTaskBtn.isHidden = true
+                navigationItem.rightBarButtonItem = nil
             }
         }
     }

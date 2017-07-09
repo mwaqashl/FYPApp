@@ -43,8 +43,6 @@ class StatisticsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
-            curr = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
-            
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
             self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color

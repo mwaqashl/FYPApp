@@ -65,15 +65,19 @@ class ChatObserver {
             }
             print(data)
             let message = Message(id: snap.key, message: data["message"] as! String, date: data["timestamp"] as! Double , senderID: data["sender"] as! String, walletID: wallet.id)
-            
+            let dels = Delegate.sharedInstance().getChatDelegates()
             guard var messages = Resource.sharedInstance().walletChat[wallet.id] else {
                 Resource.sharedInstance().walletChat[wallet.id] = [message]
+                
+                for del in dels {
+                    del.newMessageArrived(message: message)
+                }
                 return
             }
             messages.append(message)
             Resource.sharedInstance().walletChat[wallet.id] = messages
             
-            let dels = Delegate.sharedInstance().getChatDelegates()
+           // let dels = Delegate.sharedInstance().getChatDelegates()
             
             for del in dels {
                 del.newMessageArrived(message: message)

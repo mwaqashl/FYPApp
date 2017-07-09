@@ -606,6 +606,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             }))
             
         }
+        var indexes = [IndexPath]()
         print("search results = ", results.count)
         for i in 0..<results.count {
             searchedUsers.append(results[i].value)

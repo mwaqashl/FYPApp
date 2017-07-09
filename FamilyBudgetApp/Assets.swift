@@ -19,4 +19,3 @@ var redColor = UIColor.red
 var yellowColor = UIColor.yellow
 var menuBorderColor = UIColor(red: 61/255, green: 206/255, blue: 216/255, alpha: 1)
 var bluethemecolor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1)
-var darkGreenThemeColor = UIColor(red: 98/255, green: 141/255, blue: 84/255, alpha: 1)

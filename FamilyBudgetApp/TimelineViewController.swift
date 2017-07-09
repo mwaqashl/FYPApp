@@ -16,6 +16,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var BalanceAmount: UILabel!
     @IBOutlet weak var ExpenseAmount: UILabel!
     @IBOutlet weak var Segmentbtn: UISegmentedControl!
+    @IBOutlet weak var AddBtn: UIBarButtonItem!
     
     var dateformat = DateFormatter()
     
@@ -31,7 +32,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     var isDataAvailable = false
     
-    @IBOutlet weak var AddTransactionBtn: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,7 +62,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 
                 self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
                 if !(Resource.sharedInstance().currentWallet?.isOpen)! {
-                    self.AddTransactionBtn.isHidden = true
+                    self.AddBtn.isEnabled = false
+                    self.AddBtn.tintColor = .clear
                 }
                 self.TransactionFiltering()
                 self.SegmentbtnAction(self.Segmentbtn)
@@ -145,6 +146,22 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     
+    override func viewDidAppear(_ animated: Bool) {
+        
+        if defaultSettings.value(forKey: "timelineTutorials") == nil {
+            
+            let cont = UIStoryboard(name: "Tutorials", bundle: nil).instantiateInitialViewController() as! TutorialViewController
+            
+            cont.tutorialType = TutorialType.timeline
+            defaultSettings.setValue(true, forKey: "timelineTutorials")
+            self.present(cont, animated: true, completion: nil)
+            
+        }
+        
+        viewDidLoad()
+        
+    }
+    
     func sortDates() {
         
         var Dates = [Date]()
@@ -176,12 +193,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    @IBAction func AddTransactionBtnPressed(_ sender: Any) {
-        self.performSegue(withIdentifier: "addTrans", sender: nil)
-    }
-    
-    
     
     func numberOfSections(in tableView: UITableView) -> Int {
         var label = UILabel()
@@ -451,10 +462,12 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
             self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
             self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
             if !wallet.isOpen {
-                self.AddTransactionBtn.isHidden = true
+                AddBtn.isEnabled = false
+                AddBtn.tintColor = .clear
             }
             else if wallet.isOpen {
-                self.AddTransactionBtn.isHidden = false
+                AddBtn.isEnabled = true
+                AddBtn.tintColor = self.navigationItem.leftBarButtonItem?.tintColor
             }
         }
         }
