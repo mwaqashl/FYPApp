@@ -426,7 +426,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.tag == 4 {
             textView.text = textView.text == "Write here" ? "" : textView.text
-            self.view.frame.origin.y -= SizeOfKeyboard/2
+            self.view.frame.origin.y -= SizeOfKeyboard
         }
         if textView.tag == 1 {
             textView.text = textView.text == "0" ? "" : "\(transaction!.amount)"
@@ -449,7 +449,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         else if textView.tag == 4 {
             textView.text = textView.text == "" ? "Write here" : textView.text
             transaction?.comments = textView.text
-            self.view.frame.origin.y += SizeOfKeyboard/2
+            self.view.frame.origin.y += SizeOfKeyboard
         }
     }
     
