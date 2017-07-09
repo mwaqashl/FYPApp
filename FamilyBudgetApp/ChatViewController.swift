@@ -92,8 +92,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func keyboardWillShow(notification: NSNotification) {
-        
-        
+
         if !isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
