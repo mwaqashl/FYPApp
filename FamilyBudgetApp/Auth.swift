@@ -27,6 +27,7 @@ import Firebase
             return singleTonInstance!
         }
         return instance
+        
     }
     
     
