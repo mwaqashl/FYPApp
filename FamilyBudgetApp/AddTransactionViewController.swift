@@ -10,7 +10,7 @@ import UIKit
 
 
 
-class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate, UICollectionViewDelegateFlowLayout {
+class AddTransactionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate, UICollectionViewDelegateFlowLayout {
     
     var backView : UIView?
     
@@ -51,8 +51,6 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         backView = UIView(frame: self.view.frame)
         backView!.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
-        tap.delegate = self
-        tap.numberOfTapsRequired = 1
         backView!.addGestureRecognizer(tap)
         
         backView = UIView(frame: self.view.frame)
@@ -90,7 +88,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             if flag {
                 // currency not available right now
                 if self.isNew {
-                    self.transaction = Transaction(transactionId: "", amount: 0, categoryId: "", comments: nil, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: Resource.sharedInstance().currentWallet!.currencyID, isExpense: true, walletID: Resource.sharedInstance().currentWalletID!)
+                    self.transaction = Transaction(transactionId: "", amount: 0.0, categoryId: "", comments: nil, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: Resource.sharedInstance().currentWallet!.currencyID, isExpense: true, walletID: Resource.sharedInstance().currentWalletID!)
                     self.cells.append("Comments")
                     
                     self.navigationItem.rightBarButtonItem = self.addBtn
@@ -329,13 +327,14 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
                 cell.textview.tag = 1
                 cell.textview.delegate = self
                 cell.textview.isEditable = true
+                cell.textview.isUserInteractionEnabled = isEdit
             }
                 
             else if cell.title.text == "Date" {
                 cell.textview.isEditable = false
                 cell.textview.text = dateformatter.string(from: transaction!.date)
+                cell.textview.isUserInteractionEnabled = false
             }
-            cell.textview.isUserInteractionEnabled = isEdit
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
         }
@@ -391,13 +390,12 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         if textView.text == "Write here" {
             textView.text = ""
         }
-        if textView.tag == 0 {
+        if textView.tag == 1 {
             textView.text = textView.text == "0" ? "" : "\(transaction!.amount)"
         }
     }
     
     // Amount tag 0
-    // Date Tag 3
     // Comment tag 4
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -526,7 +524,8 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     
     @IBAction func cancelBtnAction(_ sender: UIButton) {
         if sender.tag == 0 {
-            transaction?.categoryId = pSelectedCategory
+            transaction!.categoryId = pSelectedCategory
+            selectedCategory = pSelectedCategory
             tableView.reloadData()
             removeView()
         }

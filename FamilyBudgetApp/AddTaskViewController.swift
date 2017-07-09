@@ -625,14 +625,14 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
 
         if rejectBtn.titleLabel!.text == "REJECT" {
             task!.removeMember(Resource.sharedInstance().currentUserId!)
+            TaskManager.sharedInstance().removeMemberFromTask(task!.id, member: Resource.sharedInstance().currentUserId!)
         }
         else if rejectBtn.titleLabel!.text == "NOT DOING" {
             task!.memberIDs.remove(at: task!.memberIDs.index(of: Resource.sharedInstance().currentUserId!)!)
             task!.doneByID = nil
             task!.status = .open
+            TaskManager.sharedInstance().taskStatusChanged(task!)
         }
-        TaskManager.sharedInstance().taskStatusChanged(task!)
-        TaskManager.sharedInstance().updateTask(task!)
         updateCells()
         self.navigationController?.popViewController(animated: true)
     }

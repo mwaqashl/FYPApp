@@ -15,8 +15,6 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     var allWalletsBtn = UIBarButtonItem()
     
-    var curr = NSAttributedString()
-    
     var budgets = [Budget]()
     var filterBudget = [Budget]()
     var currentWalletTransactions = [Transaction]()
@@ -46,25 +44,23 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         Delegate.sharedInstance().addTransactionDelegate(self)
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
-        allWalletsBtn.tintColor = bluethemecolor
+        allWalletsBtn.tintColor = darkGreenThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         self.tabBarController?.tabBar.barTintColor = .white
 
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
-                self.tabBarController!.tabBar.backgroundColor!.withAlphaComponent(0.5)
-                self.tabBarController!.tabBar.backgroundColor = bluethemecolor
-                self.tabBarController!.tabBar.unselectedItemTintColor = .gray
-                self.tabBarController!.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
+                self.tabBarController!.tabBar.unselectedItemTintColor = .lightGray
+                self.tabBarController!.tabBar.selectedImageTintColor = darkGreenThemeColor
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 
                 if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
                     self.AddBudgetBtn.isHidden = false
                 }
                 else {
-                    self.AddBudgetBtn.isHidden = true                }
-                
+                    self.AddBudgetBtn.isHidden = true
+                }
                 self.isDataAvailable = true
                 self.ExtractBudget()
                 self.ExtractTransactions()
@@ -72,6 +68,23 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         
+    }
+    
+    func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
+        
+        let font = UIFont(name: "untitled-font-25", size: size)!
+        
+        let wallet = Resource.sharedInstance().currentWallet!.currency.icon
+        
+        
+        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
+        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: size)])
+        
+        let str = NSMutableAttributedString()
+        str.append(CurrIcon)
+        str.append(amount)
+        
+        return str
     }
     
     func allWalletsBtnTapped() {
@@ -107,7 +120,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-    func abc(_ budget: Budget) -> Double {
+    func BudgetRelatedTransaction(_ budget: Budget) -> Double {
         budgetAndRelatedTransactions[budget.id] = []
         var total = 0.0
         let members = budget.getMemberIDs()
@@ -117,7 +130,6 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         for i in 0..<currentWalletTransactions.count {
                 if categories.contains(currentWalletTransactions[i].categoryId) && currentWalletTransactions[i].date >= budget.startDate && members.contains(currentWalletTransactions[i].transactionById) {
-                    print("\(i)")
                     total += currentWalletTransactions[i].amount
                     budgetAndRelatedTransactions[budget.id]!.append(currentWalletTransactions[i])
                 }
@@ -128,17 +140,16 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewWillAppear(_ animated: Bool) {
         
         if isDataAvailable {
-            curr = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 11)!])
             
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
-            self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
+            self.tabBarController?.tabBar.selectedImageTintColor = darkGreenThemeColor
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             
             if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
                 self.AddBudgetBtn.isHidden = false
             }
             else {
-                self.navigationItem.rightBarButtonItem = nil
+                self.AddBudgetBtn.isHidden = true
             }
             
             ExtractBudget()
@@ -209,36 +220,23 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let budget = filterBudget[indexPath.row]
         cell.AssignMembersCollectionView.tag = indexPath.row
         
-        var amount = NSAttributedString(string: " \(budget.allocAmount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 11)])
-        
-        var str = NSMutableAttributedString()
-        str.append(curr)
-        str.append(amount)
         
         cell.BudgetTitle.text = budget.title
         cell.Icon.text = budget.categories.first?.icon ?? ""
-        cell.TotalAmount.attributedText = str
+        cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount, of: cell.TotalAmount.font.pointSize)
         
-        amount = NSAttributedString(string: "\(abc(filterBudget[indexPath.row]))", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 11)])
+        cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget), of: cell.usedAmount.font.pointSize)
         
-        str.setAttributedString(curr)
-        str.append(amount)
-        
-        cell.usedAmount.attributedText = str
         cell.StartDate.text = dateformat.string(from: budget.startDate)
-        cell.EndDate.text = dateformat.string(from: budget.startDate)
+        cell.EndDate.text = dateformat.string(from: budget.startDate.addingTimeInterval(Double(24*60*60*budget.daysInbudget())))
         cell.Icon.layer.cornerRadius = cell.Icon.frame.width / 2
         cell.Icon.layer.borderWidth = 1
         cell.Icon.layer.borderColor = budget.categories.first?.color.cgColor
         cell.Icon.textColor = budget.categories.first?.color
         
-        amount = NSAttributedString(string: "\(budget.allocAmount - abc(filterBudget[indexPath.row]))", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 17)])
+        cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), of: cell.BalanceAmount.font.pointSize)
         
-        str.setAttributedString(curr)
-        str.append(amount)
-        
-        cell.BalanceAmount.attributedText = str
-        
+        cell.Status.frame.size.width = CGFloat(BudgetRelatedTransaction(budget)/budget.allocAmount)*cell.defaultstatusbar.frame.width
         
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell

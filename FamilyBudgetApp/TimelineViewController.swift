@@ -105,7 +105,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func SettingsBtnTapped() {
-        let storyboard = UIStoryboard(name: "Main.storyboard", bundle: nil)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let cont = storyboard.instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
         self.present(cont, animated: true, completion: nil)
     }
