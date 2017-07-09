@@ -12,7 +12,7 @@ import UIKit
 
 class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate, UICollectionViewDelegateFlowLayout {
     
-    var newView : UIView?
+    var backView : UIView?
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var CategoryCollectionView: UICollectionView!
@@ -21,40 +21,44 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     @IBOutlet weak var segmentbtn: UISegmentedControl!
     
     @IBOutlet var CategoryView: UIView!
+    @IBOutlet weak var datepicker: UIDatePicker!
     
+    @IBOutlet weak var DatePickerView: UIView!
     var date : Double?
     
     var cells = ["Amount","Category","Date"]
     var transaction : Transaction?
     
-    var datepicker = UIDatePicker()
-    let toolbar = UIToolbar()
     var isNew : Bool = true
     var isEdit: Bool = true
     var addBtn = UIBarButtonItem()
     var editBtn = UIBarButtonItem()
     let dateformatter = DateFormatter()
+    
     var selectedCategory = ""
     var pSelectedCategory = ""
-    var Income = [String]()
-    var Expense = [String]()
+    
+    var IncomeCategories = [String]()
+    var ExpenseCategories = [String]()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         isEdit = isNew
         CategoryView.isHidden = true
-        newView = UIView(frame: self.view.frame)
-        newView!.isUserInteractionEnabled = true
+        DatePickerView.isHidden = true
+        backView = UIView(frame: self.view.frame)
+        backView!.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
         tap.delegate = self
         tap.numberOfTapsRequired = 1
-        newView!.addGestureRecognizer(tap)
+        backView!.addGestureRecognizer(tap)
         
-        newView = UIView(frame: self.view.frame)
-        newView!.backgroundColor = .lightGray
-        newView!.alpha = 0.5
-        newView!.isUserInteractionEnabled = true
+        backView = UIView(frame: self.view.frame)
+        backView!.backgroundColor = .lightGray
+        backView!.alpha = 0.5
+        backView!.isUserInteractionEnabled = true
         
         addBtn = UIBarButtonItem(title: "\u{A009}", style: .plain, target: self, action: #selector(self.addBtnPressed))
         addBtn.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
@@ -62,24 +66,20 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         
         editBtn = UIBarButtonItem(title: "\u{A013}", style: .plain, target: self, action: #selector(self.editBtnPressed))
         editBtn.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        addBtn.tintColor = bluethemecolor
-        editBtn.tintColor = bluethemecolor
+        addBtn.tintColor = darkGreenThemeColor
+        editBtn.tintColor = darkGreenThemeColor
         
-        self.navigationItem.backBarButtonItem?.tintColor = bluethemecolor
+        self.navigationItem.backBarButtonItem?.tintColor = darkGreenThemeColor
         
-        datepicker.maximumDate = Date()
-        datepicker.datePickerMode = .date
-        datepicker.backgroundColor = .white
-        toolbar.sizeToFit()
         dateformatter.dateFormat = "dd-MMM-yyyy"
         
         for key in Resource.sharedInstance().categories.keys {
             let curr = Resource.sharedInstance().categories[key]
             if curr!.isExpense {
-                Expense.append(key)
+                ExpenseCategories.append(key)
             }
             else {
-                Income.append(key)
+                IncomeCategories.append(key)
             }
         }
         
@@ -104,11 +104,10 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
                     }
                     if (self.transaction!.transactionById == Resource.sharedInstance().currentUserId || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner) && Resource.sharedInstance().currentWallet!.isOpen {
                         self.cells.append("Delete")
+                        self.navigationItem.rightBarButtonItem = self.editBtn
                     }
-                    
-                    self.navigationItem.rightBarButtonItem = self.editBtn
                 }
-                self.selectedCategory = self.transaction?.categoryId ?? ""
+                self.selectedCategory = self.transaction!.categoryId
                 self.pSelectedCategory = self.selectedCategory
                 
                 if self.transaction!.isExpense {
@@ -205,25 +204,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
         tableView.reloadData()
-    }
-    
-    
-    // Do any additional setup after loading the view.
-    
-    
-    func donepressed(){
-        let cell = tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as! DefaultTableViewCell
-        cell.textview.text = dateformatter.string(from: datepicker.date)
-        date = datepicker.date.timeIntervalSince1970
-        transaction!.date = datepicker.date
-        self.view.endEditing(true)
-    }
-    
-    func cancelpressed(){
-        let cell = tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as! DefaultTableViewCell
-        self.view.endEditing(true)
     }
     
     
@@ -231,30 +212,28 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
-    
+
     // TableView Functions Delegate and Datasources
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch cells[indexPath.row] {
             
             case "Comments", "Category", "Transaction By" :
-            return 70
+                return 70
             
-        default:
-            return 50
-            
+            default:
+                return 50
         }
-        
-        
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isEdit {
             if cells[indexPath.row] == "Category" {
-                addView()
+                addView(CategoryView)
+            }
+            else if cells[indexPath.row] == "Date" {
+                addView(DatePickerView)
             }
         }
         
@@ -347,25 +326,14 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             
             if cell.title.text == "Amount" {
                 cell.textview.text = transaction?.amount != 0.0 ? "\(transaction!.amount)" : "0"
-                
-                cell.textview.isUserInteractionEnabled = isEdit
-                
                 cell.textview.tag = 1
                 cell.textview.delegate = self
+                cell.textview.isEditable = true
             }
                 
             else if cell.title.text == "Date" {
-                
-                cell.textview.inputView = datepicker
-                print(dateformatter.string(from: transaction!.date))
+                cell.textview.isEditable = false
                 cell.textview.text = dateformatter.string(from: transaction!.date)
-                let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
-                let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
-                let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-                self.toolbar.setItems([cancel,spaceButton,done], animated: false)
-                cell.textview.inputAccessoryView = self.toolbar
-                cell.textview.isUserInteractionEnabled = true
-                cell.textview.tag = 3
             }
             cell.textview.isUserInteractionEnabled = isEdit
             cell.selectionStyle = UITableViewCellSelectionStyle.none
@@ -376,7 +344,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     // Delete Transaction Method
     func DeleteTransaction() {
         
-        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .alert)
         let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
         let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
         alert.addAction(action)
@@ -472,10 +440,10 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if segmentbtn.selectedSegmentIndex == 0 {
-            return Expense.count
+            return ExpenseCategories.count
         }
         else {
-            return Income.count
+            return IncomeCategories.count
         }
     }
     
@@ -483,10 +451,10 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "categoryCell", for: indexPath) as! CategorySelectionCollectionViewCell
         var category : Category?
         if segmentbtn.selectedSegmentIndex == 0 {
-            category = Resource.sharedInstance().categories[Expense[indexPath.item]]
+            category = Resource.sharedInstance().categories[ExpenseCategories[indexPath.item]]
         }
         else {
-            category = Resource.sharedInstance().categories[Income[indexPath.item]]
+            category = Resource.sharedInstance().categories[IncomeCategories[indexPath.item]]
         }
         cell.name.text = category!.name
         cell.icon.text = category!.icon
@@ -507,14 +475,14 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         if segmentbtn.selectedSegmentIndex == 0 {
             
             if selectedCategory != "" {
-                guard let pCell = collectionView.cellForItem(at: IndexPath(item: Expense.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell else {
+                guard let pCell = collectionView.cellForItem(at: IndexPath(item: ExpenseCategories.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell else {
                     return
                 }
                 
                 pCell.icon.layer.borderWidth = 0
             }
             
-            selectedCategory = Expense[indexPath.item]
+            selectedCategory = ExpenseCategories[indexPath.item]
             
             
             
@@ -523,13 +491,13 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
             
             
             if selectedCategory != "" {
-                guard let pCell = collectionView.cellForItem(at: IndexPath(item: Income.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell else {
+                guard let pCell = collectionView.cellForItem(at: IndexPath(item: IncomeCategories.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell else {
                     return
                 }
                 
                 pCell.icon.layer.borderWidth = 0
             }
-            selectedCategory = Income[indexPath.item]
+            selectedCategory = IncomeCategories[indexPath.item]
         }
         
         
@@ -539,47 +507,62 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
         
     }
     
-    // Adding Category View
     
     
-    @IBAction func doneBtnAction(_ sender: Any) {
-        pSelectedCategory = selectedCategory
-        transaction?.categoryId = selectedCategory
-        tableView.reloadData()
-        removeView()
-        
+    @IBAction func doneBtnAction(_ sender: UIButton) {
+        if sender.tag == 0 {
+            pSelectedCategory = selectedCategory
+            transaction?.categoryId = selectedCategory
+            tableView.reloadData()
+            removeView()
+        }
+        else if sender.tag == 1 {
+            let cell = tableView.cellForRow(at: IndexPath(row: cells.index(of: "Date")!, section: 0)) as! DefaultTableViewCell
+            cell.textview.text = dateformatter.string(from: datepicker.date)
+            transaction!.date = datepicker.date
+            removeView()
+        }
     }
     
-    @IBAction func cancelBtnAction(_ sender: Any) {
-        
-        transaction?.categoryId = pSelectedCategory
-        tableView.reloadData()
-        removeView()
+    @IBAction func cancelBtnAction(_ sender: UIButton) {
+        if sender.tag == 0 {
+            transaction?.categoryId = pSelectedCategory
+            tableView.reloadData()
+            removeView()
+        }
+        else if sender.tag == 1 {
+            let cell = tableView.cellForRow(at: IndexPath(row: cells.index(of: "Date")!, section: 0)) as! DefaultTableViewCell
+            cell.textview.text = dateformatter.string(from: transaction!.date)
+            removeView()
+        }
     }
     
     func ViewTap() {
         removeView()
     }
     
-    func addView() {
+    // Adding Category View
+
+    func addView(_ showView : UIView) {
         CategoryCollectionView.reloadData()
         
-        view.addSubview(newView!)
-        CategoryView.alpha = 0
-        CategoryView.isHidden = false
-        self.view.bringSubview(toFront: CategoryView)
+        self.view.addSubview(backView!)
+        showView.alpha = 0
+        showView.isHidden = false
+        self.view.bringSubview(toFront: showView)
         UIView.animate(withDuration: 0.3, animations: {
-            self.CategoryView.alpha = 1.0
+            showView.alpha = 1.0
         })
     }
     
     func removeView() {
         UIView.animate(withDuration: 0.3, animations: {
             self.CategoryView.alpha = 0
-            
+            self.DatePickerView.alpha = 0
         }) { (Success) in
             self.CategoryView.isHidden = true
-            self.newView!.removeFromSuperview()
+            self.DatePickerView.isHidden = true
+            self.backView!.removeFromSuperview()
 //            self.navigationController?.isNavigationBarHidden = false
         }
     }
@@ -610,8 +593,9 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
                         self.navigationController?.popViewController(animated: true)
                     }
                     else {
-                        if self.cells[self.cells.count-1] == "Delete" {
-                            self.cells.remove(at: self.cells.count-1)
+                        if self.cells.contains("Delete") {
+                            self.cells.remove(at: self.cells.index(of: "Delete")!)
+                            self.navigationItem.rightBarButtonItem = nil
                         }
                         self.tableView.reloadData()
                     }
@@ -623,6 +607,7 @@ class AddTransactionViewController: UIViewController, UIGestureRecognizerDelegat
                 if (transaction!.transactionById == Resource.sharedInstance().currentUserId || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner) && Resource.sharedInstance().currentWallet!.isOpen {
                     if !cells.contains("Delete") {
                         cells.append("Delete")
+                        self.navigationItem.rightBarButtonItem = self.editBtn
                     }
                 }
 //                let range = NSMakeRange(0, self.tableView.numberOfSections)

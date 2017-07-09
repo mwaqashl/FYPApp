@@ -48,8 +48,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        emailAddress.text = "test@fyp.com"
-        password.text = "test123"
+        emailAddress.text = "zee@uit.edu"
+        password.text = "zee123"
     }
 
     override func didReceiveMemoryWarning() {

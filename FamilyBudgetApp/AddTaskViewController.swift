@@ -387,7 +387,8 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
             
             if cell.title.text == "Amount" {
                 cell.textview.text = task!.amount != 0.0 ? "\(task?.amount ?? 0)" : "0"
-                cell.textview.tag = 2                   // amount tag 2
+                cell.textview.tag = 2     // amount tag 2
+                cell.textview.isEditable = task!.status == .completed ? false : isNew! || isEdit
             }
                 
             else if cell.title.text == "Due Date" {
@@ -395,7 +396,6 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
                 cell.textview.isUserInteractionEnabled = true
                 cell.textview.tag = 3                   // Date tag 3
             }
-            cell.textview.isEditable = task!.status == .completed ? false : isNew! || isEdit
             cell.textview.isUserInteractionEnabled = task!.status == .completed ? false : isNew! || isEdit
             cell.textview.delegate = self
             cell.selectionStyle = UITableViewCellSelectionStyle.none

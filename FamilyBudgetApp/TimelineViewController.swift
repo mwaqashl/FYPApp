@@ -20,6 +20,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     var dateformat = DateFormatter()
     
     var allWalletsBtn = UIBarButtonItem()
+    var SettingsBtn = UIBarButtonItem()
+    
     
     var transDates = [String]()
     var transactions = [String:[Transaction]]() // [Date:Transaction]
@@ -27,16 +29,12 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     var filteredDates = [String]()
     var filteredTransactions = [String:[Transaction]]()
     
+    var isDataAvailable = false
     
     @IBOutlet weak var AddTransactionBtn: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        barBtnColor = AddBtn.tintColor!
-        
-        
-        
         
         Segmentbtn.selectedSegmentIndex = 0
         UserObserver.sharedInstance().startObserving()
@@ -50,43 +48,100 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
         dateformat.dateFormat = "dd-MMM-yyyy"
         
-        self.tabBarController?.tabBar.barTintColor = .white
-
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
+                self.isDataAvailable = true
                 
-                self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
-                self.tabBarController?.tabBar.selectedImageTintColor = Resource.sharedInstance().currentWallet!.color
+                self.tabBarController?.tabBar.unselectedItemTintColor = UIColor.lightGray
+                self.tabBarController?.tabBar.selectedImageTintColor = darkGreenThemeColor
                 
-                self.IncomeAmount.text = "\(Resource.sharedInstance().currentWallet!.totalIncome)"
-                self.ExpenseAmount.text = "\(Resource.sharedInstance().currentWallet!.totalExpense)"
-                self.BalanceAmount.text = "\(Resource.sharedInstance().currentWallet!.balance)"
+                self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
+                self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
+                self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
                 
                 self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
                 if !(Resource.sharedInstance().currentWallet?.isOpen)! {
                     self.AddTransactionBtn.isHidden = true
                 }
-
+                self.TransactionFiltering()
                 self.SegmentbtnAction(self.Segmentbtn)
-                
-                self.filteredTransactions = self.transactions
-                self.filteredDates = Array(self.transactions.keys)
                 self.sortDates()
                 self.tableview.reloadData()
                 
-                let CurrIcon = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
+//                let CurrIcon = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
 
             }
         }
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
-        allWalletsBtn.tintColor = bluethemecolor
+        allWalletsBtn.tintColor = darkGreenThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         
+        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
+        SettingsBtn.tintColor = darkGreenThemeColor
+        
+        self.navigationItem.rightBarButtonItem = SettingsBtn
         
         
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if isDataAvailable {
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
+            
+            self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
+            if !(Resource.sharedInstance().currentWallet?.isOpen)! {
+                self.AddTransactionBtn.isHidden = true
+            }
+            self.TransactionFiltering()
+            self.SegmentbtnAction(self.Segmentbtn)
+            self.sortDates()
+            self.tableview.reloadData()
+        }
+    }
+    
+    func SettingsBtnTapped() {
+        let storyboard = UIStoryboard(name: "Main.storyboard", bundle: nil)
+        let cont = storyboard.instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
+        self.present(cont, animated: true, completion: nil)
+    }
+    
+    func TransactionFiltering() {
+        
+        transDates = []
+        transactions = [:]
+        
+        for i in 0..<Resource.sharedInstance().currentWallet!.transactions.count {
+            let date = dateformat.string(from: Resource.sharedInstance().currentWallet!.transactions[i].date)
+            if transactions.keys.contains(date) {
+                transactions[date]!.append(Resource.sharedInstance().currentWallet!.transactions[i])
+            }
+            else {
+                transactions[date] = [Resource.sharedInstance().currentWallet!.transactions[i]]
+            }
+        }
+        transDates = Array(transactions.keys)
+    }
+    
+    func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
+        
+        let font = UIFont(name: "untitled-font-25", size: size)!
+        
+        let wallet = Resource.sharedInstance().currentWallet!.currency.icon
+        
+        
+        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
+        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: size)])
+        
+        let str = NSMutableAttributedString()
+        str.append(CurrIcon)
+        str.append(amount)
+        
+        return str
     }
     
     
@@ -158,7 +213,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         var trans = filteredTransactions[filteredDates[indexPath.section]]
         let category = trans![indexPath.row].category
         
-        cell.amount.text = "\(trans![indexPath.row].amount)"
+        cell.amount.attributedText = getAmountwithCurrency(Amount: trans![indexPath.row].amount, of: cell.amount.font.pointSize)
+//        cell.amount.textColor = trans![indexPath.row].isExpense ? .red : .green
         
         cell.category.text = category.name
         cell.categoryIcon.text = category.icon
@@ -185,31 +241,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         return filteredDates[section] == dateformat.string(from: Date()) ? "Today" : filteredDates[section] == dateformat.string(from: Date(timeIntervalSinceNow : Double(-24*3600))) ? "Yesterday" : filteredDates[section]
     }
     
-//    
-//    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-//        
-//        view.alpha = 0
-//        let transform = CATransform3DTranslate(CATransform3DIdentity, -200, 0, 0)
-//        view.layer.transform = transform
-//        
-//        UIView.animate(withDuration: 0.5) {
-//            view.alpha = 1.0
-//            view.layer.transform = CATransform3DIdentity
-//        }
-//        
-//    }
-//    
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        
-//        cell.alpha = 0
-//        let transform = CATransform3DTranslate(CATransform3DIdentity, -200, 0, 0)
-//        cell.layer.transform = transform
-//
-//        UIView.animate(withDuration: 0.5) {
-//            cell.alpha = 1.0
-//            cell.layer.transform = CATransform3DIdentity
-//        }
-//    }
     
     @IBAction func addTransaction(_ sender: Any) {
         if (Resource.sharedInstance().currentWallet!.isOpen) {
@@ -244,47 +275,21 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
         filteredDates = []
         filteredTransactions = [:]
+        
         if Segmentbtn.selectedSegmentIndex == 0 {
-            self.transactions = [:]
-            self.transDates = []
-            for trans in Resource.sharedInstance().transactions.filter({ (_trans) -> Bool in
-                return _trans.value.walletID == Resource.sharedInstance().currentWalletID!
-            }) {
-                
-                if var _trans = self.transactions[self.dateformat.string(from: trans.value.date)] {
-                    if !_trans.contains(where: { (_tra) -> Bool in
-                        return _tra.id == trans.value.id
-                    }) {
-                        _trans.append(trans.value)
-                        self.transactions[self.dateformat.string(from: trans.value.date)] = _trans
-                        
-                    }
-                }
-                else {
-                    self.transactions[self.dateformat.string(from: trans.value.date)] = [trans.value]
-                }
-                
-            }
-            
             self.filteredTransactions = self.transactions
-            self.filteredDates = Array(self.transactions.keys)
+            self.filteredDates = self.transDates
         }
         else if Segmentbtn.selectedSegmentIndex == 1 {
             for date in transactions.keys {
                 for trans in transactions[date]! {
                     if trans.isExpense {
-                        if filteredTransactions[date] == nil {
-                            filteredTransactions[date] = [trans]
-                            filteredDates.append(date)
+                        if filteredTransactions.keys.contains(date) {
+                            filteredTransactions[date]?.append(trans)
                         }
                         else {
-                            
-                            if !filteredTransactions[date]!.contains(where: { (_trans) -> Bool in
-                                return _trans.id == trans.id
-                            }) {
-                                filteredTransactions[date]!.append(trans)
-                            }
-                            
+                            filteredDates.append(date)
+                            filteredTransactions[date] = [trans]
                         }
                     }
                 }
@@ -295,16 +300,12 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
             for date in transactions.keys {
                 for trans in transactions[date]! {
                     if !trans.isExpense {
-                        if filteredTransactions[date] == nil {
-                            filteredTransactions[date] = [trans]
-                            filteredDates.append(date)
+                        if filteredTransactions.keys.contains(date) {
+                            filteredTransactions[date]?.append(trans)
                         }
                         else {
-                            if !filteredTransactions[date]!.contains(where: { (_trans) -> Bool in
-                                return _trans.id == trans.id
-                            }) {
-                                filteredTransactions[date]!.append(trans)
-                            }
+                            filteredDates.append(date)
+                            filteredTransactions[date] = [trans]
                         }
                     }
                 }
@@ -318,6 +319,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
 //    Transaction Delegates
     func transactionAdded(_ transaction: Transaction) {
+        if isDataAvailable {
         if transaction.walletID == Resource.sharedInstance().currentWalletID {
             
             let date = dateformat.string(from: transaction.date)
@@ -334,30 +336,32 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 transDates.append(date)
                 transactions[date] = [transaction]
             }
-            SegmentbtnAction(Segmentbtn)
-//            
-            IncomeAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalIncome)" : "0"
-            ExpenseAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalExpense)" : "0"
-            BalanceAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.balance)" : "0"
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
             
+            if (transaction.isExpense && Segmentbtn.selectedSegmentIndex == 1) || (!transaction.isExpense && Segmentbtn.selectedSegmentIndex == 2) || Segmentbtn.selectedSegmentIndex == 0 {
+                SegmentbtnAction(Segmentbtn)
+                tableview.reloadData()
+            }
+        }
         }
     }
     
     func transactionDeleted(_ transaction: Transaction) {
+        if isDataAvailable {
         if transaction.walletID == Resource.sharedInstance().currentWalletID {
             
             let date = dateformat.string(from: transaction.date)
             
             if transDates.contains(date){
                 var trans = transactions[date]
-                print(trans!.count)
                 for i in 0..<trans!.count {
                     if transaction.id == trans![i].id {
                         trans!.remove(at: i)
                         break
                     }
                 }
-                print(trans!.count)
                 if trans!.count != 0 {
                     transactions[date] = trans!
                 }
@@ -381,14 +385,16 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                     filteredDates.remove(at: filteredDates.index(of: date)!)
                     filteredTransactions.removeValue(forKey: date)
                 }
-            sortDates()
-            tableview.reloadData()
-                
+            }
+            if (transaction.isExpense && Segmentbtn.selectedSegmentIndex == 1) || (!transaction.isExpense && Segmentbtn.selectedSegmentIndex == 2) || Segmentbtn.selectedSegmentIndex == 0 {
+                sortDates()
+                tableview.reloadData()
             }
             
-            IncomeAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalIncome)" : "0"
-            ExpenseAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalExpense)" : "0"
-            BalanceAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.balance)" : "0"
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
+        }
         }
     }
     
@@ -407,7 +413,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                     }
                 }
             }
-            if filteredDates.contains(date) {
+            if filteredDates.contains(date)  {
                 var trans = filteredTransactions[date]
                 for i in 0..<trans!.count {
                     if transaction.id == trans![i].id {
@@ -417,12 +423,16 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 }
                 sortDates()
                 tableview.reloadData()
-                
             }
             
-            IncomeAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalIncome)" : "0"
-            ExpenseAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalExpense)" : "0"
-            BalanceAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.balance)" : "0"
+            if (transaction.isExpense && Segmentbtn.selectedSegmentIndex == 1) || (!transaction.isExpense && Segmentbtn.selectedSegmentIndex == 2) || Segmentbtn.selectedSegmentIndex == 0 {
+                sortDates()
+                tableview.reloadData()
+            }
+            
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
         }
     }
     
@@ -435,10 +445,11 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     func walletUpdated(_ wallet: UserWallet) {
     
+        if isDataAvailable {
         if Resource.sharedInstance().currentWalletID == wallet.id { //hide add transaction btn if wallet is closed
-            IncomeAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalIncome)" : "0"
-            ExpenseAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.totalExpense)" : "0"
-            BalanceAmount.text = Resource.sharedInstance().currentWallet != nil ? "\(Resource.sharedInstance().currentWallet!.balance)" : "0"
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
             if !wallet.isOpen {
                 self.AddTransactionBtn.isHidden = true
             }
@@ -446,9 +457,11 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 self.AddTransactionBtn.isHidden = false
             }
         }
+        }
     }
     
     func WalletDeleted(_ wallet: UserWallet) {
+        if isDataAvailable {
         if (Resource.sharedInstance().currentWalletID == wallet.id) {
             let alert = UIAlertController(title: "Error", message: "This Wallet has been Deleted", preferredStyle: .alert)
             let action = UIAlertAction(title: "Ok", style: .default, handler: {
@@ -456,32 +469,18 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 action in
                 
                 Resource.sharedInstance().currentWalletID = Resource.sharedInstance().currentUserId
-                
-//                self.navigationController?.popViewController(animated: true)
-                
+                self.TransactionFiltering()
+                self.SegmentbtnAction(self.Segmentbtn)
+                self.sortDates()
+                self.tableview.reloadData()
             })
             alert.addAction(action)
             present(alert, animated: true, completion: nil)
         }
+        }
     }
     
     
-//    func TransactionFiltering() {
-//        
-//        for i in 0..<Resource.sharedInstance().currentWallet!.transactions.count {
-//            let date = dateformat.string(from: Resource.sharedInstance().currentWallet!.transactions[i].date)
-//            if transactions[date] == nil {
-//                transactions[date] = [(Resource.sharedInstance().currentWallet?.transactions[i])!]
-//                transDates.append(date)
-//            }
-//            else {
-//                transactions[date]?.append(Resource.sharedInstance().currentWallet!.transactions[i])
-//            }
-//        }
-//        filteredTransactions = transactions
-//        filteredDates = transDates
-//        tableview.reloadData()
-//    }
     
     func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
         
@@ -490,6 +489,11 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
     }
     func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
+        if isDataAvailable {
+            if wallet.id == Resource.sharedInstance().currentWalletID {
+                self.tableview.reloadData()
+            }
+        }
         
     }
     
@@ -498,7 +502,13 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
     }
     func userUpdated(_ user: User) {
-        
+        if isDataAvailable {
+            if Resource.sharedInstance().currentWallet!.members.contains(where: { (_user) -> Bool in
+                return _user.getUserID() == user.getUserID()
+            }){
+                tableview.reloadData()
+            }
+        }
     }
     func userDetailsAdded(_ user: CurrentUser) {
         

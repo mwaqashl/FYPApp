@@ -12,7 +12,6 @@ import Charts
 class StatisticsViewController: UIViewController {
 
     @IBOutlet weak var PieChart: PieChartView!
-    @IBOutlet weak var LineChart: LineChartView!
     var curr = NSAttributedString()
     var isDataAvailable = false
     
@@ -24,8 +23,6 @@ class StatisticsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        LineChart.isHidden = true
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
         allWalletsBtn.tintColor = bluethemecolor
@@ -138,7 +135,6 @@ class StatisticsViewController: UIViewController {
         
         let lineChartDataSet = LineChartDataSet(values: dataEntries, label: "Units Sold")
         let lineChartData = LineChartData(dataSet: lineChartDataSet)
-        LineChart.data = lineChartData
     }
 
     override func didReceiveMemoryWarning() {
@@ -151,14 +147,12 @@ class StatisticsViewController: UIViewController {
         if sender.tag == 0 {
             filterTransaction()
             self.DrawLineChart(data: transactions)
-            LineChart.isHidden = false
             PieChart.isHidden = true
             sender.tag = 1
         }
         else {
             filterTransaction()
             self.setCharts(data: transactions)
-            LineChart.isHidden = true
             PieChart.isHidden = false
             sender.tag = 0
         }
