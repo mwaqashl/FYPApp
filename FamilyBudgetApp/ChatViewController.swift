@@ -11,8 +11,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func SendMessage(_ sender: Any) {
         if MessageTextField.text != ""{
-        ChatManager.sharedInstance().addNewMessage(msg: Message.init(id: "", message: MessageTextField.text!, date: Date().timeIntervalSince1970, senderID: Resource.sharedInstance().currentUserId! , walletID: walletID))
-            MessageTextField.text = ""
+        ChatManager.sharedInstance().addNewMessage(msg: Message.init(id: "", message: MessageTextField.text!, date: Date().timeIntervalSince1970, senderID: Resource.sharedInstance().currentUserId! , walletID: Resource.sharedInstance().currentWalletID!))
+            self.view.endEditing(true)
+            MessageTextField.text = "Write Message Here"
         }
         
     }
@@ -21,11 +22,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var isKeyboardOpen = false
     var tap = UITapGestureRecognizer()
-
-    var senderID : String!
-    var walletID : String!
-    var walletName : String!
-    var senderName : String!
     
     var dates = [Date]()
     var dateFormat = DateFormatter()
@@ -63,10 +59,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 self.isDataAvailable = true
                 ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
                 self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
-                self.senderID = Resource.sharedInstance().currentUserId
-                self.senderName = Resource.sharedInstance().currentUser?.userName
-                self.walletID = Resource.sharedInstance().currentWalletID
-                self.walletName = Resource.sharedInstance().currentWallet?.name
                 self.extractMessage()
                 
                 
@@ -297,7 +289,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     //Chat Delegate
     func newMessageArrived(message: Message) {
         dateFormat.dateFormat = "dd-MMM-yyyy"
-        if message.walletID == walletID{
+        if message.walletID == Resource.sharedInstance().currentWalletID{
             if isDataAvailable {
                 let strdate = dateFormat.string(from: message.timestamp)
                 print("strdate ",message.timestamp)
