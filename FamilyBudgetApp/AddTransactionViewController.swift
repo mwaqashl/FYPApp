@@ -41,17 +41,24 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     var IncomeCategories = [String]()
     var ExpenseCategories = [String]()
     
+    var tap = UITapGestureRecognizer()
+    var isKeyboardOpen = false
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
+        
         
         isEdit = isNew
         CategoryView.isHidden = true
         DatePickerView.isHidden = true
         backView = UIView(frame: self.view.frame)
         backView!.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
-        backView!.addGestureRecognizer(tap)
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
         
         backView = UIView(frame: self.view.frame)
         backView!.backgroundColor = .lightGray
@@ -125,6 +132,35 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         }
     }
     
+    var SizeOfKeyboard = CGFloat()
+    
+    func keyboardWillShow(notification: NSNotification) {
+        
+        
+        if !isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                SizeOfKeyboard = keyboardSize.height
+                self.view.addGestureRecognizer(tap)
+                isKeyboardOpen = true
+            }
+        }
+        
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        
+        
+        if isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                SizeOfKeyboard = keyboardSize.height
+                isKeyboardOpen = false
+            }
+        }
+        
+    }
+
     
     func addBtnPressed() {
         
@@ -331,6 +367,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             }
                 
             else if cell.title.text == "Date" {
+                cell.textview.inputView = datepicker
                 cell.textview.isEditable = false
                 cell.textview.text = dateformatter.string(from: transaction!.date)
                 cell.textview.isUserInteractionEnabled = false
@@ -387,8 +424,9 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == "Write here" {
-            textView.text = ""
+        if textView.tag == 4 {
+            textView.text = textView.text == "Write here" ? "" : textView.text
+            self.view.frame.origin.y -= SizeOfKeyboard/2
         }
         if textView.tag == 1 {
             textView.text = textView.text == "0" ? "" : "\(transaction!.amount)"
@@ -399,7 +437,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     // Comment tag 4
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.tag == 0 {
+        if textView.tag == 1 {
             transaction?.amount = Double(textView.text!) ?? 0
             if textView.text == "" || textView.text == "0.0" || textView.text == "0" {
                 textView.text = "0"
@@ -411,6 +449,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         else if textView.tag == 4 {
             textView.text = textView.text == "" ? "Write here" : textView.text
             transaction?.comments = textView.text
+            self.view.frame.origin.y += SizeOfKeyboard/2
         }
     }
     
@@ -538,13 +577,14 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     
     func ViewTap() {
         removeView()
+        self.view.endEditing(true)
     }
     
     // Adding Category View
 
     func addView(_ showView : UIView) {
         CategoryCollectionView.reloadData()
-        
+        backView?.addGestureRecognizer(tap)
         self.view.addSubview(backView!)
         showView.alpha = 0
         showView.isHidden = false
@@ -555,6 +595,8 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     }
     
     func removeView() {
+        self.view.removeGestureRecognizer(tap)
+        backView?.removeGestureRecognizer(tap)
         UIView.animate(withDuration: 0.3, animations: {
             self.CategoryView.alpha = 0
             self.DatePickerView.alpha = 0
