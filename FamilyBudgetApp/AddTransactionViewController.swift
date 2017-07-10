@@ -51,7 +51,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
-        
+        datepicker.maximumDate = Date()
         
         isEdit = isNew
         CategoryView.isHidden = true
@@ -426,7 +426,10 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.tag == 4 {
             textView.text = textView.text == "Write here" ? "" : textView.text
-            self.view.frame.origin.y -= SizeOfKeyboard
+//            self.view.frame.origin.y -= SizeOfKeyboard
+            UIView.animate(withDuration: 0.6) {
+                self.view.frame.origin.y -= self.SizeOfKeyboard
+            }
         }
         if textView.tag == 1 {
             textView.text = textView.text == "0" ? "" : "\(transaction!.amount)"
@@ -449,7 +452,10 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         else if textView.tag == 4 {
             textView.text = textView.text == "" ? "Write here" : textView.text
             transaction?.comments = textView.text
-            self.view.frame.origin.y += SizeOfKeyboard
+//            self.view.frame.origin.y += SizeOfKeyboard
+            UIView.animate(withDuration: 0.6) {
+                self.view.frame.origin.y += self.SizeOfKeyboard
+            }
         }
     }
     
@@ -597,14 +603,13 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func removeView() {
         self.view.removeGestureRecognizer(tap)
         backView?.removeGestureRecognizer(tap)
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: 0.6, animations: {
             self.CategoryView.alpha = 0
             self.DatePickerView.alpha = 0
         }) { (Success) in
             self.CategoryView.isHidden = true
             self.DatePickerView.isHidden = true
             self.backView!.removeFromSuperview()
-//            self.navigationController?.isNavigationBarHidden = false
         }
     }
     

@@ -217,12 +217,13 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let cell = tableview.dequeueReusableCell(withIdentifier: "BudgetCell") as! BudgetTableViewCell
         cell.AssignMembersCollectionView.dataSource = self
         cell.AssignMembersCollectionView.delegate = self
+        
         let budget = filterBudget[indexPath.row]
         cell.AssignMembersCollectionView.tag = indexPath.row
         
-        
         cell.BudgetTitle.text = budget.title
         cell.Icon.text = budget.categories.first?.icon ?? ""
+        
         cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount, of: cell.TotalAmount.font.pointSize)
         
         cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget), of: cell.usedAmount.font.pointSize)
@@ -237,6 +238,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), of: cell.BalanceAmount.font.pointSize)
         
         cell.Status.frame.size.width = CGFloat(BudgetRelatedTransaction(budget)/budget.allocAmount)*cell.defaultstatusbar.frame.width
+        
+        cell.Status.backgroundColor = BudgetRelatedTransaction(budget)/budget.allocAmount >= 0.75 ? .red : darkGreenThemeColor
         
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell
