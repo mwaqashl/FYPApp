@@ -6,17 +6,19 @@
 //  Copyright © 2017 Technollage. All rights reserved.
 //
 
+//     MEMBER LEFT DELEGATE MEIN KIYA KARNA HAI
+
 import UIKit
 import Charts
 
-class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource , UICollectionViewDataSource, UICollectionViewDelegate {
+class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource , UICollectionViewDataSource, UICollectionViewDelegate , BudgetDelegate , BudgetCategoryDelegate , BudgetMemberDelegate , WalletDelegate ,WalletMemberDelegate , TransactionDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
     var budget : Budget?
     var transactions = [Transaction]()
-    var transactionAndCategorys : [String:Double] = [:]
-    
+    var CategoriesAndAmount : [String:Double] = [:]
+    var currentWalletTransactions = [Transaction]()
     var Edit = UIBarButtonItem()
     
     var dateformat = DateFormatter()
@@ -30,21 +32,30 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         
         Edit = UIBarButtonItem.init(title: "\u{A013}", style: .plain, target: self, action: #selector(self.EditBudget))
         Edit.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        Edit.tintColor = bluethemecolor
+        Edit.tintColor = darkGreenThemeColor
         
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
+        Delegate.sharedInstance().addBudgetDelegate(self)
+        Delegate.sharedInstance().addBudgetMemberDelegates(self)
+        Delegate.sharedInstance().addBudgetCategoryDelegate(self)
+        Delegate.sharedInstance().addWalletDelegate(self)
+        Delegate.sharedInstance().addWalletMemberDelegate(self)
+        Delegate.sharedInstance().addTransactionDelegate(self)
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
+                self.tableView.delegate = self
+                self.tableView.dataSource = self
+                
+                self.GetCurrentWalletTransactins()
+
                 if self.transactions.count == 0 {
                     self.cells.append("NoTransaction")
                 }
-                if Resource.sharedInstance().currentWallet!.isPersonal {
+                if Resource.sharedInstance().currentWallet!.isPersonal && Resource.sharedInstance().currentWallet!.isOpen {
                     self.cells.append("Delete")
                     self.navigationItem.rightBarButtonItem = self.Edit
                 }
-                if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && self.budget!.wallet.isOpen {
+                else if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
                     
                     self.cells.append("Delete")
                     self.navigationItem.rightBarButtonItem = self.Edit
@@ -53,6 +64,16 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         }
         
         // Do any additional setup after loading the view.
+    }
+    
+    func GetCurrentWalletTransactins() {
+        currentWalletTransactions = []
+        for key in Resource.sharedInstance().transactions.keys {
+            let transaction = Resource.sharedInstance().transactions[key]
+            if transaction!.walletID == Resource.sharedInstance().currentWalletID {
+                currentWalletTransactions.append(transaction!)
+            }
+        }
     }
     
     func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
@@ -90,6 +111,29 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         }
     }
     
+    func extractBudgetTransactions() {
+        transactions = []
+        let members = budget!.getMemberIDs()
+        let categories = budget!.getCategoryIDs()
+        let endDate = budget!.startDate.addingTimeInterval(Double(budget!.daysInbudget()*24*60*60))
+        for i in 0..<currentWalletTransactions.count {
+            if categories.contains(currentWalletTransactions[i].categoryId) && currentWalletTransactions[i].date >= budget!.startDate && currentWalletTransactions[i].date < endDate && members.contains(currentWalletTransactions[i].transactionById) {
+                print("\(i)")
+                transactions.append(currentWalletTransactions[i])
+            }
+        }
+        if self.transactions.count == 0 {
+            if !cells.contains("NoTransaction"){
+                self.cells.insert("NoTransaction", at: 3)
+            }
+        }
+        else {
+            if cells.contains("NoTransaction"){
+                self.cells.remove(at: 3)
+            }
+        }
+    }
+    
     func BudgetRelatedTransaction(_ budget: Budget) -> Double {
     
         var total = 0.0
@@ -98,10 +142,10 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         let endDate = budget.startDate.addingTimeInterval(Double(budget.daysInbudget()*24*60*60))
         //End date validation not done
         
-        for i in 0..<transactions.count {
-            if categories.contains(transactions[i].categoryId) && transactions[i].date >= budget.startDate && transactions[i].date < endDate && members.contains(transactions[i].transactionById) {
+        for i in 0..<currentWalletTransactions.count {
+            if categories.contains(currentWalletTransactions[i].categoryId) && currentWalletTransactions[i].date >= budget.startDate && currentWalletTransactions[i].date < endDate && members.contains(currentWalletTransactions[i].transactionById) {
                 print("\(i)")
-                total += transactions[i].amount
+                total += currentWalletTransactions[i].amount
             }
         }
         return total
@@ -159,6 +203,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             cell.AssignMembersCollectionView.dataSource = self
             cell.AssignMembersCollectionView.delegate = self
             
+            cell.Status.frame.size.width = 0
             cell.AssignMembersCollectionView.tag = indexPath.row
             
             cell.BudgetTitle.text = budget!.title
@@ -188,6 +233,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         case "NoTransaction":
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoTransactionCell") as! TaskTitleTableViewCell
             cell.taskTitle.text = "No Transactions Available"
+            cell.taskTitle.textColor = .lightGray
             cell.isUserInteractionEnabled = false
             cell.taskTitle.isEditable = false
             cell.selectionStyle = .none
@@ -196,10 +242,14 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "statsCell") as! BudgetStatsTableViewCell
             self.filterTransaction()
-            if transactionAndCategorys.count != 0 {
-                self.DrawPieChart(data: transactionAndCategorys, PieChart: cell.PieChartView)
+            if CategoriesAndAmount.count != 0 {
+                self.DrawPieChart(data: CategoriesAndAmount, PieChart: cell.PieChartView)
             }
-//            cell.PieChartView.noDataText = "No Transaction In This Budget"
+            else {
+                cell.PieChartView.data = nil
+            }
+            cell.PieChartView.chartDescription?.text = ""
+            cell.PieChartView.noDataText = "No Transaction In This Budget"
             return cell
         }
         
@@ -241,13 +291,13 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func filterTransaction() {
-        transactionAndCategorys = [:]
+        CategoriesAndAmount = [:]
         for i in 0..<transactions.count {
-            if transactionAndCategorys.keys.contains(transactions[i].categoryId) {
-                transactionAndCategorys[transactions[i].categoryId] = transactionAndCategorys[transactions[i].categoryId]! + transactions[i].amount
+            if CategoriesAndAmount.keys.contains(transactions[i].categoryId) {
+                CategoriesAndAmount[transactions[i].categoryId] = CategoriesAndAmount[transactions[i].categoryId]! + transactions[i].amount
             }
             else {
-                transactionAndCategorys[transactions[i].categoryId] = transactions[i].amount
+                CategoriesAndAmount[transactions[i].categoryId] = transactions[i].amount
             }
         }
     }
@@ -259,7 +309,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             let dataEntry = PieChartDataEntry(value: data[i]!, label: Resource.sharedInstance().categories[i]!.name, data: nil)
             dataEntries.append(dataEntry)
         }
-        let ChartDataSet = PieChartDataSet(values: dataEntries, label: nil)
+        let ChartDataSet = PieChartDataSet(values: dataEntries, label: "")
         
         let chartData = PieChartData(dataSet: ChartDataSet)
         
@@ -279,6 +329,234 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         
     }
 
+    // BudgetDelegate
+    func budgetAdded(_ budget: Budget) {
+    }
+    
+    func budgetDeleted(_ budget: Budget) {
+        if budget.walletID == Resource.sharedInstance().currentWalletID! {
+            if self.budget!.id == budget.id {
+                let alert = UIAlertController(title: "Alert", message: "This Budget Has been deleted", preferredStyle: .alert)
+                let action = UIAlertAction(title: "OK", style: .default) { (flag) in
+                    self.navigationController?.popViewController(animated: true)
+                }
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func budgetUpdated(_ budget: Budget) {
+        if budget.walletID == Resource.sharedInstance().currentWalletID! {
+            if self.budget!.id == budget.id {
+                if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || Resource.sharedInstance().currentWallet!.isPersonal ) && budget.wallet.isOpen && Resource.sharedInstance().currentWallet!.isOpen {
+                    if !cells.contains("Delete") {
+                        self.cells.append("Delete")
+                    }
+                    self.navigationItem.rightBarButtonItem = self.Edit
+                }
+                else {
+                    self.navigationItem.rightBarButtonItem = nil
+                    if cells.contains("Delete") {
+                        self.cells.remove(at: self.cells.index(of: "Delete")!)
+                    }
+                }
+                self.budget! = budget
+                self.extractBudgetTransactions()
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    //Budget Category Delegates
+    func categoryAdded(_ category: Category, budget: Budget) {
+        if Resource.sharedInstance().currentWalletID == budget.walletID {
+            if self.budget!.id == budget.id {
+                self.budget! = budget
+                self.extractBudgetTransactions()
+                self.filterTransaction()
+                tableView.reloadData()
+            }
+        }
+    }
+    
+    func categoryRemoved(_ category: Category, budget: Budget) {
+        if Resource.sharedInstance().currentWalletID == budget.walletID {
+            if self.budget!.id == budget.id {
+                self.budget! = budget
+                self.extractBudgetTransactions()
+                self.filterTransaction()
+                tableView.reloadData()
+            }
+        }
+    }
+    
+    //Budgetmember Delegate
+    func memberLeft(_ member: User, budget: Budget) {
+        if Resource.sharedInstance().currentWalletID == budget.walletID {
+            if self.budget!.id == budget.id {
+                self.budget! = budget
+                self.extractBudgetTransactions()
+                self.filterTransaction()
+                tableView.reloadData()
+            }
+        }
+    }
+    
+    func memberAdded(_ member: User, budget: Budget) {
+        if Resource.sharedInstance().currentWalletID == budget.walletID {
+            if self.budget!.id == budget.id {
+                self.budget! = budget
+                self.extractBudgetTransactions()
+                self.filterTransaction()
+                self.tableView.reloadSections([0,1,2], with: .automatic)
+            }
+        }
+    }
+    
+    //Wallet Delegate
+    func walletAdded(_ wallet: UserWallet) {
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if wallet.id == Resource.sharedInstance().currentWalletID! {
+            if wallet.isOpen {
+                if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner || Resource.sharedInstance().currentWallet!.isPersonal ) && budget!.wallet.isOpen {
+                    self.navigationItem.rightBarButtonItem = self.Edit
+                    if !cells.contains("Delete") {
+                        self.cells.append("Delete")
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+            else if !wallet.isOpen {
+                self.navigationItem.rightBarButtonItem = nil
+                if cells.contains("Delete") {
+                    self.cells.remove(at: self.cells.index(of: "Delete")!)
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        if wallet.id == Resource.sharedInstance().currentWalletID {
+            let alert = UIAlertController(title: "Alert", message: "This Wallet Has been deleted", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default) { (huz) in
+                Resource.sharedInstance().currentWalletID! = Resource.sharedInstance().currentUserId!
+                self.navigationController?.popViewController(animated: true)
+            }
+            alert.addAction(action)
+            present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    //Wallet members Delegate
+    func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
+    }
+    
+    func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
+        if budget!.members.contains(where: { (_user) -> Bool in
+            return _user.getUserID() == member.getUserID()
+        }){
+            if ofType == .admin || ofType == .owner {
+                self.navigationItem.rightBarButtonItem = self.Edit
+                if !cells.contains("Delete") {
+                    self.cells.append("Delete")
+                    self.tableView.reloadData()
+                }
+            }
+            else{
+                self.navigationItem.rightBarButtonItem = nil
+                if cells.contains("Delete") {
+                    self.cells.remove(at: self.cells.index(of: "Delete")!)
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
+        // kiya karna hai is pr us ki transactions rakhni hain ya nhn
+    }
+    
+    //TransactionDelegate
+    func transactionAdded(_ transaction: Transaction) {
+        if transaction.walletID == Resource.sharedInstance().currentWalletID {
+            
+            if !currentWalletTransactions.contains(where: { (_transaction) -> Bool in
+                return _transaction.id == transaction.id
+            }){
+                currentWalletTransactions.append(transaction)
+            }
+            
+            if budget!.categories.contains(where: { (_category) -> Bool in
+                return _category.id == transaction.categoryId
+            }){
+                if budget!.getMemberIDs().contains(where: { (memberID) -> Bool in
+                    return memberID == transaction.transactionById
+                }){
+                    extractBudgetTransactions()
+                    filterTransaction()
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    func transactionDeleted(_ transaction: Transaction) {
+        if transaction.walletID == Resource.sharedInstance().currentWalletID {
+            
+            for i in 0..<currentWalletTransactions.count {
+                if currentWalletTransactions[i].id == transaction.id {
+                    currentWalletTransactions.remove(at: i)
+                    break
+                }
+            }
+            
+            if transactions.contains(where: { (_trans) -> Bool in
+                return _trans.id == transaction.id
+            }){
+                extractBudgetTransactions()
+                filterTransaction()
+                self.tableView.reloadData()
+            }
+            
+//            if budget!.categories.contains(where: { (_category) -> Bool in
+//                return _category.id == transaction.categoryId
+//            }){
+//                if budget!.getMemberIDs().contains(where: { (memberID) -> Bool in
+//                    return memberID == transaction.transactionById
+//                }){
+//                    self.tableView.reloadData()
+//                }
+//            }
+        }
+    }
+    
+    func transactionUpdated(_ transaction: Transaction) {
+        if transaction.walletID == Resource.sharedInstance().currentWalletID {
+            
+            for i in 0..<currentWalletTransactions.count {
+                if currentWalletTransactions[i].id == transaction.id {
+                    currentWalletTransactions[i] = transaction
+                    self.tableView.reloadData()
+                    break
+                }
+            }
+            if budget!.categories.contains(where: { (_category) -> Bool in
+                return _category.id == transaction.categoryId
+            }){
+                if budget!.getMemberIDs().contains(where: { (memberID) -> Bool in
+                    return memberID == transaction.transactionById
+                }){
+                    extractBudgetTransactions()
+                    filterTransaction()
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
     
     /*
     // MARK: - Navigation

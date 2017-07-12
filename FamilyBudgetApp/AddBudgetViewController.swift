@@ -205,6 +205,8 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 BudgetManager.sharedInstance().addNewBudget(budget!)
             }
             else {
+                BudgetManager.sharedInstance().addCategoriesToBudget(budget!.id, categories: selectedCategories)
+                BudgetManager.sharedInstance().addMembersToBudget(budget!.id, members: selectedMembers)
                 BudgetManager.sharedInstance().updateBudgetInWallet(budget!)
             }
             self.navigationController!.popViewController(animated: true)
@@ -231,6 +233,20 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 pselectedCategories = selectedCategories
                 for i in 0..<selectedCategories.count {
                     budget!.addCategory(selectedCategories[i])
+                }
+//                let bCategories = budget!.getCategoryIDs()
+//                if selectedCategories.contains(where: { (_category) -> Bool in
+//                    return _category
+//                })
+//                
+                for i in 0..<budget!.getCategoryIDs().count {
+                    if i < budget!.getCategoryIDs().count {
+                        if !selectedCategories.contains(where: { (_category) -> Bool in
+                            return _category == budget!.categories[i].id
+                        }){
+                            budget!.removeCategory(budget!.categories[i].id)
+                        }
+                    }
                 }
             }
             else {
@@ -369,7 +385,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.title.text = cells[indexPath.row]
             
                 if cell.title.text == "Amount" {
-                    
+                    cell.textview.text = "\(budget!.allocAmount)"
                     cell.textview.isEditable = isEdit
                     cell.textview.isUserInteractionEnabled = isEdit
                     
@@ -538,7 +554,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         else if textView.tag == 2 {
-            textView.text = textView.text == "0" || textView.text == "0.0" ? "" : "\(budget!.allocAmount)"
+            textView.text = textView.text == "0" || textView.text == "0.0" ? "" : floor(budget!.allocAmount) == budget!.allocAmount ? "\(Int(budget!.allocAmount))" : "\(budget!.allocAmount)"
         }
     }
     
@@ -573,25 +589,37 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         view.addSubview(backView)
         DaysPicker.isHidden = isDatePicker
         showView.isHidden = false
-        showView.alpha = 0
-        showView.isHidden = false
         self.view.bringSubview(toFront: showView)
-        UIView.animate(withDuration: 0.3, animations: {
-            showView.alpha = 1.0
-        })
+        
+        if showView == DateAndDaysView {
+//            showView.fra -= showView.frame.size.width
+            UIView.animate(withDuration: 0.6, animations: {
+                showView.frame.origin.y -= showView.frame.size.width
+            })
+        }
+        else {
+            showView.alpha = 0
+            UIView.animate(withDuration: 0.4, animations: {
+                showView.alpha = 1.0
+            })
+        }
     }
     
     func removeView() {
         self.view.removeGestureRecognizer(tap)
-        UIView.animate(withDuration: 0.3, animations: {
-            self.SelectionView.alpha = 0
-            self.DateAndDaysView.alpha = 0
-            
-        }) { (Success) in
-            self.DateAndDaysView.isHidden = true
+        if self.DateAndDaysView.isHidden {
+            UIView.animate(withDuration: 0.4, animations: {
+                self.SelectionView.alpha = 1.0
+            })
             self.SelectionView.isHidden = true
-            self.backView.removeFromSuperview()
         }
+        else if self.SelectionView.isHidden {
+            UIView.animate(withDuration: 0.6, animations: {
+                self.DateAndDaysView.frame.origin.y += self.DateAndDaysView.frame.size.width
+            })
+            self.DateAndDaysView.isHidden = true
+        }
+        self.backView.removeFromSuperview()
     }
 
     //Budget Delegates
@@ -615,8 +643,13 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     func budgetUpdated(_ budget: Budget) {
         if isDataAvailable {
             if self.budget!.id == budget.id {
-                self.budget! = budget
-                self.tableview.reloadData()
+                let alert = UIAlertController(title: "Alert", message: "This Budget Has been Updated", preferredStyle: .alert)
+                let action = UIAlertAction(title: "OK", style: .default) { (flag) in
+                    self.budget! = budget
+                    self.tableview.reloadData()
+                }
+                alert.addAction(action)
+                present(alert, animated: true, completion: nil)
             }
         }
     }

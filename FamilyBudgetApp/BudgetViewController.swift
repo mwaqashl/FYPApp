@@ -236,6 +236,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let budget = filterBudget[indexPath.row]
         cell.AssignMembersCollectionView.tag = indexPath.row
         
+        cell.AssignMembersCollectionView.reloadData()
+        
         cell.BudgetTitle.text = budget.title
         cell.Icon.text = budget.categories.first?.icon ?? ""
         
@@ -296,7 +298,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     break
                 }
             }
-            tableview.reloadData()
+            self.tableview.reloadSections([0], with: .automatic)
         }
             
         else if !budget.isOpen && segmentBtn.selectedSegmentIndex == 1 {
@@ -306,7 +308,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     break
                 }
             }
-            tableview.reloadData()
+            self.tableview.reloadSections([0], with: .automatic)
         }
     }
 
@@ -500,13 +502,16 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func transactionDeleted(_ transaction: Transaction) {
         if isDataAvailable {
             if transaction.walletID == Resource.sharedInstance().currentWalletID {
-                
-                for i in 0..<currentWalletTransactions.count {
-                    if currentWalletTransactions[i].id == transaction.id {
-                        currentWalletTransactions.remove(at: i)
+                if currentWalletTransactions.contains(where: { (_trans) -> Bool in
+                    return _trans.id == transaction.id
+                }) {
+                    for i in 0..<currentWalletTransactions.count {
+                        if currentWalletTransactions[i].id == transaction.id {
+                            currentWalletTransactions.remove(at: i)
+                            break
+                        }
                     }
                 }
-                
                 for i in 0..<budgets.count {
                     if budgets[i].categories.contains(where: { (_category) -> Bool in
                         return _category.id == transaction.categoryId

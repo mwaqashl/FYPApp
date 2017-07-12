@@ -402,28 +402,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         if transaction.walletID == Resource.sharedInstance().currentWalletID {
             
             let date = dateformat.string(from: transaction.date)
-            
-            if transDates.contains(date){
-                var trans = transactions[date]
-                print(trans!.count)
-                for i in 0..<trans!.count {
-                    if transaction.id == trans![i].id {
-                        trans![i] = transaction
-                        break
-                    }
-                }
-            }
-            if filteredDates.contains(date)  {
-                var trans = filteredTransactions[date]
-                for i in 0..<trans!.count {
-                    if transaction.id == trans![i].id {
-                        trans![i] = transaction
-                        break
-                    }
-                }
-                sortDates()
-                tableview.reloadData()
-            }
+            self.TransactionFiltering()
+            self.SegmentbtnAction(self.Segmentbtn)
             
             if (transaction.isExpense && Segmentbtn.selectedSegmentIndex == 1) || (!transaction.isExpense && Segmentbtn.selectedSegmentIndex == 2) || Segmentbtn.selectedSegmentIndex == 0 {
                 sortDates()
@@ -491,7 +471,12 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
         if isDataAvailable {
             if wallet.id == Resource.sharedInstance().currentWalletID {
-                self.tableview.reloadData()
+                if ofType == .admin || ofType == .owner {
+                    self.AddTransactionBtn.isHidden = false
+                }
+                else {
+                    self.AddTransactionBtn.isHidden = true
+                }
             }
         }
         
@@ -511,10 +496,14 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     func userDetailsAdded(_ user: CurrentUser) {
-        
+        if isDataAvailable {
+            tableview.reloadData()
+        }
     }
     func userDetailsUpdated(_ user: CurrentUser) {
-        
+        if isDataAvailable {
+            tableview.reloadData()
+        }
     }
     
 }
