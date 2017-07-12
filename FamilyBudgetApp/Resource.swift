@@ -21,7 +21,7 @@ class Resource {
     var notifications : [String : Notification] = [:]
     var currentWalletID : String?
     var currentWallet : UserWallet? {
-        return self.userWallets[currentWalletID!]
+        return self.userWallets[currentWalletID ?? ""]
     }
     var walletChat : [String:[Message]] = [:]
     

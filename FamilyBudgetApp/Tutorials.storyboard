@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12084"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -44,7 +45,25 @@
                             </imageView>
                             <view alpha="0.80000000000000004" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jUY-bA-KQO">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                <subviews>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="lJ8-fk-rB5">
+                                        <rect key="frame" x="197" y="398" width="20" height="20"/>
+                                    </activityIndicatorView>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-light" translatesAutoresizingMaskIntoConstraints="NO" id="xq9-kz-WeV">
+                                        <rect key="frame" x="78.333333333333314" y="100" width="257.33333333333337" height="257.66666666666669"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="xq9-kz-WeV" secondAttribute="height" id="zsd-an-h7m"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
                                 <color key="backgroundColor" red="0.38280014899999998" green="0.55284925640000004" blue="0.327997133" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="lJ8-fk-rB5" firstAttribute="centerY" secondItem="jUY-bA-KQO" secondAttribute="centerY" constant="40" id="2fU-bT-X1i"/>
+                                    <constraint firstItem="lJ8-fk-rB5" firstAttribute="centerX" secondItem="jUY-bA-KQO" secondAttribute="centerX" id="2wl-wP-5VM"/>
+                                    <constraint firstItem="xq9-kz-WeV" firstAttribute="height" secondItem="jUY-bA-KQO" secondAttribute="height" multiplier="0.35" id="7e3-k0-h7x"/>
+                                    <constraint firstItem="xq9-kz-WeV" firstAttribute="top" secondItem="jUY-bA-KQO" secondAttribute="top" constant="100" id="Tyc-Iw-c1u"/>
+                                    <constraint firstItem="xq9-kz-WeV" firstAttribute="centerX" secondItem="jUY-bA-KQO" secondAttribute="centerX" id="ga6-gI-iAp"/>
+                                </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ejS-zg-akY">
                                 <rect key="frame" x="0.0" y="515" width="414" height="220.66666666666663"/>
@@ -112,6 +131,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activity" destination="lJ8-fk-rB5" id="XNP-6L-BDk"/>
                         <outlet property="alreadyUserBtn" destination="5VS-Ik-rge" id="Wug-fF-3Y5"/>
                         <outlet property="registerBtn" destination="VD4-oh-GmU" id="cVg-cj-PjC"/>
                     </connections>
@@ -1434,6 +1454,7 @@
         <image name="email" width="16" height="12"/>
         <image name="gender" width="15" height="15"/>
         <image name="into-1" width="375" height="667"/>
+        <image name="logo-light" width="2048" height="1721"/>
         <image name="password" width="16" height="16"/>
         <image name="person" width="14" height="16"/>
         <image name="persontemp" width="82" height="82"/>

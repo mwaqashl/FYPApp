@@ -72,6 +72,7 @@ class TransactionObserver {
             transaction.comments = dict[self.FIRKeys[5]] as? String
             transaction.currencyId = dict[self.FIRKeys[7]] as! String
             transaction.isExpense = dict[self.FIRKeys[8]] as! Bool
+            transaction.date = Date(timeIntervalSince1970: dict[self.FIRKeys[9]] as! Double)
             Resource.sharedInstance().transactions[snapshot.key] = transaction
             Delegate.sharedInstance().getTransactionDelegates().forEach({ (transactionDel) in
                 transactionDel.transactionUpdated(transaction)

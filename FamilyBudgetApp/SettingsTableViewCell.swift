@@ -12,7 +12,7 @@ class SettingsTableViewCell: UITableViewCell {
 
     @IBOutlet weak var icon: UILabel!
     @IBOutlet weak var settingName: UILabel!
-    @IBOutlet weak var borderLine: UIView!
+    @IBOutlet var borderLine: [UIView]!
     
     @IBOutlet weak var switchBtn: UISwitch!
     

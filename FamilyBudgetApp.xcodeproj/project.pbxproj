@@ -85,6 +85,7 @@
 		7765A5841ED76F6C00EA42BB /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5831ED76F6C00EA42BB /* ChatMessage.swift */; };
 		7765A5861ED7717A00EA42BB /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5851ED7717A00EA42BB /* ChatManager.swift */; };
 		7765A5881ED7738C00EA42BB /* ChatObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5871ED7738C00EA42BB /* ChatObserver.swift */; };
+		776EE5521F156A0B0044B4B8 /* UserInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 776EE5511F156A0B0044B4B8 /* UserInfoTableViewCell.swift */; };
 		777D02991E8A860000C682F2 /* WalletTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777D02981E8A860000C682F2 /* WalletTableViewCell.swift */; };
 		77AE2F431F06EA5F00814AF4 /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 77AE2F401F06EA5F00814AF4 /* Roboto-Light.ttf */; };
 		77AE2F441F06EA5F00814AF4 /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 77AE2F411F06EA5F00814AF4 /* Roboto-Medium.ttf */; };
@@ -169,6 +170,7 @@
 		7765A5831ED76F6C00EA42BB /* ChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = SOURCE_ROOT; };
 		7765A5851ED7717A00EA42BB /* ChatManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = SOURCE_ROOT; };
 		7765A5871ED7738C00EA42BB /* ChatObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatObserver.swift; sourceTree = SOURCE_ROOT; };
+		776EE5511F156A0B0044B4B8 /* UserInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfoTableViewCell.swift; sourceTree = "<group>"; };
 		777D02981E8A860000C682F2 /* WalletTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletTableViewCell.swift; sourceTree = "<group>"; };
 		77AE2F401F06EA5F00814AF4 /* Roboto-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Light.ttf"; sourceTree = "<group>"; };
 		77AE2F411F06EA5F00814AF4 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Medium.ttf"; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 			children = (
 				047710AD1F10F591004F1DAF /* SettingMembersTableViewCell.swift */,
 				047710AE1F10F591004F1DAF /* SettingsTableViewCell.swift */,
+				776EE5511F156A0B0044B4B8 /* UserInfoTableViewCell.swift */,
 				047710AB1F10E639004F1DAF /* SettingsViewController.swift */,
 			);
 			name = Settings;
@@ -254,16 +257,8 @@
 				045B3ABB1E98DAF30017C115 /* Task */,
 				773859541E90675E004BFBF2 /* Transaction */,
 				773859531E906751004BFBF2 /* Login */,
-				04343C041E5EBDC800417C91 /* HomeViewController.swift */,
-				04C2BD6B1E924BF20064AADB /* TransactionByTableViewCell.swift */,
-				04C2BD671E924B850064AADB /* AssignToTableViewCell.swift */,
 				04A2DBA01F12CBD900C18D45 /* ChatViewController.swift */,
-				04A2DBA11F12CBD900C18D45 /* ReceiverTableViewCell.swift */,
-				04A2DBA21F12CBD900C18D45 /* SenderTableViewCell.swift */,
-				04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */,
-				04C2BD691E924BD80064AADB /* DeleteTableViewCell.swift */,
-				04C2BD651E924B780064AADB /* TaskTitleTableViewCell.swift */,
-				04C2BD551E9247BF0064AADB /* TaskMembersCollectionViewCell.swift */,
+				774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -271,6 +266,7 @@
 		773859531E906751004BFBF2 /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				04343C041E5EBDC800417C91 /* HomeViewController.swift */,
 				04343C021E5EBDB500417C91 /* RegisterViewController.swift */,
 				044B713A1E81618200613ECA /* WalletSetupViewController.swift */,
 				7742C7B71E57231C006A25AF /* ViewController.swift */,
@@ -300,6 +296,14 @@
 				773CC7041E92F9F60046E90F /* MembersCollectionViewCell.swift */,
 				04B093951E827F81003E26DE /* DefaultTableViewCell.swift */,
 				0477E8AD1EBE4C1200EB9C00 /* BudgetTableViewCell.swift */,
+				04A2DBA11F12CBD900C18D45 /* ReceiverTableViewCell.swift */,
+				04A2DBA21F12CBD900C18D45 /* SenderTableViewCell.swift */,
+				04C2BD6B1E924BF20064AADB /* TransactionByTableViewCell.swift */,
+				04C2BD671E924B850064AADB /* AssignToTableViewCell.swift */,
+				04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */,
+				04C2BD691E924BD80064AADB /* DeleteTableViewCell.swift */,
+				04C2BD651E924B780064AADB /* TaskTitleTableViewCell.swift */,
+				04C2BD551E9247BF0064AADB /* TaskMembersCollectionViewCell.swift */,
 				04D3C3311EBF096600EB1488 /* BudgetStatsTableViewCell.swift */,
 			);
 			name = UISubClasses;
@@ -329,7 +333,6 @@
 				7742C7B51E57231C006A25AF /* AppDelegate.swift */,
 				773859551E906777004BFBF2 /* UISubClasses */,
 				773859521E90673D004BFBF2 /* ViewControllers */,
-				774F715E1E8A225500E1BCDC /* AddwalletViewController.swift */,
 				773859511E90672A004BFBF2 /* StoryBoards */,
 				7706A6C51E8717D80074CD60 /* iconFont.ttf */,
 				7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */,
@@ -458,7 +461,7 @@
 				TargetAttributes = {
 					7742C7B11E57231C006A25AF = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 22YYGV536D;
+						DevelopmentTeam = M9MSRMULXS;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
@@ -558,6 +561,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				776EE5521F156A0B0044B4B8 /* UserInfoTableViewCell.swift in Sources */,
 				046DCDAC1E8AA1DF00A3BC15 /* (null) in Sources */,
 				04C2BD6E1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift in Sources */,
 				773CC7051E92F9F60046E90F /* MembersCollectionViewCell.swift in Sources */,
@@ -748,10 +752,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 22YYGV536D;
+				DEVELOPMENT_TEAM = M9MSRMULXS;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
@@ -764,10 +768,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 22YYGV536D;
+				DEVELOPMENT_TEAM = M9MSRMULXS;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;

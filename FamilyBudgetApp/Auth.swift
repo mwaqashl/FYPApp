@@ -12,8 +12,20 @@ import Firebase
         do{
             try Auth.auth().signOut()
             isAuthenticated = false
+            
+            for wallet in Resource.sharedInstance().userWallets {
+                
+                BudgetObserver.sharedInstance().stopObserving(BudgetsOf: wallet.value)
+                TransactionObserver.sharedInstance().stopObservingTransaction(ofWallet: wallet.key)
+                TaskObserver.sharedInstance().stopObserving(TasksOf: wallet.value)
+                ChatObserver.sharedInstance().stopObserving(wallet: wallet.value)
+                WalletObserver.sharedInstance().stopObserving()
+                UserObserver.sharedInstance().stopObserving()
+            }
+            
             Resource.sharedInstance().reset()
             Database.database().reference().removeAllObservers()
+            
             return callback(nil)
         }catch let error as NSError{
             print(error.localizedDescription)
@@ -96,12 +108,14 @@ import Firebase
                     }){
                         
                         Resource.sharedInstance().currentUserId = user!.uid
+                        HelperObservers.sharedInstance().startObserving()
                         UserManager.sharedInstance().userLoggedIn(thisUser.getUserID())
                         callback(false, nil)
                         
                     }else{
                         
                         Resource.sharedInstance().currentUserId = user!.uid
+                        HelperObservers.sharedInstance().startObserving()
                         HelperObservers.sharedInstance().getUserAndWallet({ (success) in
                             if success {
                                 
@@ -124,6 +138,45 @@ import Firebase
             }
             
         })
+    }
+    
+    
+    func signInSiliently(callback: @escaping (Bool, Bool)->Void) {
+        
+        if let user = Auth.auth().currentUser {
+            Database.database().reference().child("Users").child(user.uid).observeSingleEvent(of: .value, with: { (snap) in
+                print(snap.value)
+                print(snap.key)
+                guard let data = snap.value as? NSDictionary else {
+                    self.isAuthenticated = false
+                    self.authUser = nil
+                    return
+                }
+                let thisUser = CurrentUser(id: user.uid, email: data["email"] as! String, userName: data["userName"] as! String, imageURL: data["image"] as! String, birthdate: data["birthDate"] as? Double, deviceID: data["deviceID"] as? String, gender: data["gender"] as! Int)
+                self.isAuthenticated = true
+                self.authUser = thisUser
+                Resource.sharedInstance().currentUserId = thisUser.getUserID()
+                Resource.sharedInstance().currentWalletID = thisUser.getUserID()
+                HelperObservers.sharedInstance().startObserving()
+                HelperObservers.sharedInstance().getUserAndWallet({ (success) in
+                    if success {
+                        var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String:String])
+                        users[thisUser.getUserID()] = thisUser.getUserID()
+                        defaultSettings.setValue(users, forKey: "lastUserIDs")
+                        callback(true, false)
+                        
+                        
+                    }else{
+                        self.authUser = thisUser
+                        callback(true, true)
+                        
+                        
+                    }
+                })
+                //
+            })
+        }
+        callback(false,false)
     }
     
 }

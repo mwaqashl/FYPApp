@@ -32,7 +32,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         
         Edit = UIBarButtonItem.init(title: "\u{A013}", style: .plain, target: self, action: #selector(self.EditBudget))
         Edit.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        Edit.tintColor = bluethemecolor
+        Edit.tintColor = darkThemeColor
         
         self.tableView.delegate = self
         self.tableView.dataSource = self

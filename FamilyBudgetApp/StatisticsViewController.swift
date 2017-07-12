@@ -25,7 +25,7 @@ class StatisticsViewController: UIViewController {
         super.viewDidLoad()
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
-        allWalletsBtn.tintColor = bluethemecolor
+        allWalletsBtn.tintColor = darkThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in

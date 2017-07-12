@@ -40,10 +40,10 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         Delegate.sharedInstance().addWalletDelegate(self)
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
-        allWalletsBtn.tintColor = darkGreenThemeColor
+        allWalletsBtn.tintColor = darkThemeColor
         
         SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
-        SettingsBtn.tintColor = darkGreenThemeColor
+        SettingsBtn.tintColor = darkThemeColor
         
         self.navigationItem.rightBarButtonItem = SettingsBtn
         self.navigationItem.leftBarButtonItem = allWalletsBtn
@@ -53,9 +53,9 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
             
             if flag {
                 self.tabBarController!.tabBar.backgroundColor!.withAlphaComponent(0.5)
-                self.tabBarController!.tabBar.backgroundColor = darkGreenThemeColor
+                self.tabBarController!.tabBar.backgroundColor = darkThemeColor
                 self.tabBarController!.tabBar.unselectedItemTintColor = .gray
-                self.tabBarController!.tabBar.selectedImageTintColor = darkGreenThemeColor
+                self.tabBarController!.tabBar.selectedImageTintColor = darkThemeColor
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 self.isDataAvailable = true
                 self.TaskExtraction()
@@ -67,6 +67,11 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
+        if Resource.sharedInstance().currentWalletID == nil {
+            isDataAvailable = false
+        }
+        
         if isDataAvailable {
             TaskExtraction()
             tableview.reloadData()
@@ -137,6 +142,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
                 }
             }
         }
+        
         tableview.reloadData()
     }
     
@@ -146,20 +152,35 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        
+        let label = UILabel()
+        let vieww = UIView(frame: CGRect(x: 0, y: 10, width: view.frame.size.width, height: 25))
+        if filterTask.count == 0{
+            label.text = "No Tasks to Show\nPress + Button to Add Task"
+            label.numberOfLines = 2
+            label.lineBreakMode = .byWordWrapping
+            label.textAlignment = .center
+            label.clipsToBounds = true
+            label.font = UIFont.systemFont(ofSize: 14)
+            label.textColor = darkThemeColor
+            label.sizeToFit()
+            label.frame.size.width += 20
+            label.frame.size.height += 10
+            label.center = vieww.center
+            vieww.addSubview(label)
+            self.tableview.tableFooterView = vieww
+            return 0
+        }
+        else{
+            self.tableview.tableFooterView = nil
+            return 1
+        }
+
     }
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if filterTask.count == 0 {
-            let label = UILabel.init()
-            label.text = "No Task Available"
-            label.textAlignment = .center
-            self.tableview.backgroundView = label
-        }
-        else {
-            self.tableview.backgroundView = nil
-        }
+       
         return filterTask.count
     }
     

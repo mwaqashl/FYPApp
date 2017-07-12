@@ -18,5 +18,8 @@ let defaultSettings = UserDefaults.standard
 var redColor = UIColor.red
 var yellowColor = UIColor.yellow
 var menuBorderColor = UIColor(red: 61/255, green: 206/255, blue: 216/255, alpha: 1)
-var bluethemecolor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1)
-var darkGreenThemeColor = UIColor(red: 98/255, green: 141/255, blue: 84/255, alpha: 1)
+
+var lightThemeColor = UIColor(red: 205/255, green: 233/255, blue: 178/255, alpha: 1)
+var darkThemeColor = UIColor(red: 98/255, green: 141/255, blue: 84/255, alpha: 1)
+var midThemeColor = UIColor(red: 117/255, green: 171/255, blue: 87/255, alpha: 1)
+var ThemeColor = UIColor(red: 149/255, green: 188/255, blue: 117/255, alpha: 1)

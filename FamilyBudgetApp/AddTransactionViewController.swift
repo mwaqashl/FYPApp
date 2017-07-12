@@ -71,10 +71,9 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         
         editBtn = UIBarButtonItem(title: "\u{A013}", style: .plain, target: self, action: #selector(self.editBtnPressed))
         editBtn.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        addBtn.tintColor = darkGreenThemeColor
-        editBtn.tintColor = darkGreenThemeColor
-        
-        self.navigationItem.backBarButtonItem?.tintColor = darkGreenThemeColor
+        addBtn.tintColor = darkThemeColor
+        editBtn.tintColor = darkThemeColor    
+        self.navigationItem.backBarButtonItem?.tintColor = darkThemeColor
         
         dateformatter.dateFormat = "dd-MMM-yyyy"
         

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate, UISearchBarDelegate {
+class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, UICollectionViewDelegateFlowLayout {
 
     var searchedUsers = [User]()
     
@@ -24,10 +24,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     var walletMembers = [User]()
     var memberTypes = [String:MemberType]()
-    var sections = ["Wallet","Settings","Members","leaveBtn"]
+    var sections = ["Wallet","Wallet Settings","Members","leaveBtn"]
     var settingsSetionCells = ["Add Member","Assign Admin","Transfer OwnerShip","Notification","Close Wallet"]
     var searchtableSection = [String]()
-    
+    var userSettingsOptions = ["Change Password","Edit Name", "Edit Display Picture"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,8 +35,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         backView = UIView(frame: self.view.frame)
         backView.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
-        tap.delegate = self
-        tap.numberOfTapsRequired = 1
         backView.addGestureRecognizer(tap)
         backView.backgroundColor = .lightGray
         backView.alpha = 0.5
@@ -56,18 +54,30 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
                 
-                self.walletMembers = Resource.sharedInstance().currentWallet!.members
-                self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
-                
-                if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-                    self.settingsSetionCells = ["Add Member","Notification"]
-                }
-                else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
+                if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
+                    self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
                     self.settingsSetionCells = ["Notification"]
+                    
                 }
-                else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
-                    self.sections[3] = "Delete Wallet"
+                else {
+                    self.sections = ["Wallet","Wallet Settings", "Members"]
+                    self.walletMembers = Resource.sharedInstance().currentWallet!.members
+                    self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
+                    
+                    if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
+                        self.settingsSetionCells = ["Add Member","Notification"]
+                        self.sections.append("leaveBtn")
+                    }
+                    else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
+                        self.settingsSetionCells = ["Notification"]
+                        self.sections.append("leaveBtn")
+                    }
+                    else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
+                        self.settingsSetionCells += ["Delete Wallet"]
+                    }
+                    self.sections += ["User","User Settings","SignOut"]
                 }
+                
 
             }
         }
@@ -93,8 +103,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
         if tableView == SettingsTableView {
-            return indexPath.section == 1 || indexPath.section == 3 ? 60 : indexPath.section == 2 ? 170 : 85
+            
+            switch sections[indexPath.section] {
+            case "Wallet":
+                return 100
+            case "Members":
+                return 200
+            case "User":
+                return 100
+            default:
+                return 50
+            }
         }
         else {
             return 70
@@ -103,7 +124,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == SettingsTableView {
-            return section == 1 ? settingsSetionCells.count : 1
+            return sections[section] == "Wallet Settings" ? settingsSetionCells.count : sections[section] == "User Settings" ? userSettingsOptions.count : 1
         }
         else {
             return searchtableSection[section] == "searchUsers" ? searchedUsers.count : walletMembers.count
@@ -112,7 +133,18 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if tableView == SettingsTableView {
-            return section == 2 ? "WALLET MEMBERS" : section == 2 ? " " :nil
+            
+            switch sections[section] {
+            case "Wallet":
+                return "WALLET Settings"
+            case "Members":
+                return "Wallet Members"
+            case "User":
+                return "User Settings"
+            default:
+                return nil
+            }
+            
         }
         else {
             return searchtableSection[section] == "searchUsers" ? "Search Results" : "Wallet Members"
@@ -121,7 +153,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if tableView == SettingsTableView {
-            return section == 2 ? 30.0 : section == 1 ? 5.0 : 0
+            return 30
         }
         else {
             return 25
@@ -130,7 +162,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == SettingsTableView {
-            if indexPath.section == 0 {
+            
+            switch sections[indexPath.section] {
+            case "Wallet":
                 let cell = tableView.dequeueReusableCell(withIdentifier: "walletCell") as! SettingsTableViewCell
                 cell.icon.text = Resource.sharedInstance().currentWallet!.icon
                 cell.icon.textColor = Resource.sharedInstance().currentWallet!.color
@@ -138,10 +172,24 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.icon.layer.cornerRadius = cell.icon.layer.frame.height/2
                 cell.icon.layer.borderWidth = 1
                 cell.icon.layer.borderColor = cell.icon.textColor.cgColor
+                
+                for view in cell.borderLine {
+                    view.backgroundColor = cell.icon.textColor
+                }
+                
                 cell.selectionStyle = .none
                 return cell
-            }
-            else if indexPath.section == 1 {
+                
+            case "User":
+                let cell = tableView.dequeueReusableCell(withIdentifier: "user") as! UserInfoTableViewCell
+                
+                cell.userdp.image = Resource.sharedInstance().currentUser?.image ?? #imageLiteral(resourceName: "dp-male")
+                cell.userName.text = Resource.sharedInstance().currentUser?.userName
+                cell.userEmail.text = Resource.sharedInstance().currentUser?.getUserEmail()
+                
+                return cell
+                
+            case "Wallet Settings":
                 let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCells") as! SettingsTableViewCell
                 cell.icon.text = "A"
                 cell.settingName.text = settingsSetionCells[indexPath.row]
@@ -151,23 +199,33 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
                 cell.selectionStyle = .none
                 return cell
-            }
-            else if indexPath.section == 2 {
+                
+            case "User Settings":
+                let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCells") as! SettingsTableViewCell
+                cell.icon.text = "A"
+                cell.switchBtn.isHidden = true
+                cell.settingName.text = userSettingsOptions[indexPath.row]
+                cell.selectionStyle = .none
+                return cell
+                
+            case "Members":
                 let cell = tableView.dequeueReusableCell(withIdentifier: "memberCell") as! SettingMembersTableViewCell
                 cell.membersCollectionView.dataSource = self
                 cell.membersCollectionView.delegate = self
                 cell.membersCollectionView.reloadData()
                 cell.selectionStyle = .none
                 return cell
-            }
-            else {
+            
+                
+            default:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "LeaveCell") as! DeleteTableViewCell
-                cell.DeleteBtn.layer.cornerRadius = cell.DeleteBtn.layer.frame.height/2
-                cell.DeleteBtn.layer.borderWidth = 1
-                cell.DeleteBtn.layer.borderColor = UIColor.red.cgColor
                 cell.selectionStyle = .none
+                
+                cell.DeleteBtn.setTitle(sections[indexPath.section] == "leaveBtn" ? "Leave Wallet" : "Sign Out", for: .normal)
+                
                 return cell
             }
+            
         }
         else {
             if searchtableSection[indexPath.section] == "searchUsers" {
@@ -177,7 +235,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     let cell = tableView.dequeueReusableCell(withIdentifier: "searchedUsers") as! UserSearchResultTableViewCell
                     cell.selectionStyle = .none
                     let this = searchedUsers[indexPath.row]
-                    
+                    cell.memberType.text = memberTypes[this.getUserID()] == .owner ? "Owner" : memberTypes[this.getUserID()] == .admin ? "Admin" : "\(cell.memberType.isHidden = true)"
+
                     this.getImage({ (data) in
                         cell.userImage.image = UIImage(data: data) ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
                     })
@@ -191,7 +250,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     return cell
                     
                 }
-                
                 
             }
             else {
@@ -218,7 +276,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 //                    cell.accessoryType = .checkmark
                     cell.memberTypeBtn.setTitle("Make Admin", for: UIControlState.normal)
                 }
-                
+                cell.memberType.text = memberTypes[this.getUserID()] == .owner ? "Owner" : memberTypes[this.getUserID()] == .admin ? "Admin" : "\(cell.memberType.isHidden = true)"
                 cell.userName.text = this.userName
                 cell.userEmail.text = this.getUserEmail()
                 cell.memberTypeBtn.isHidden = false
@@ -230,7 +288,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
                 cell.memberTypeBtn.layer.cornerRadius = cell.memberTypeBtn.layer.frame.height/4
                 cell.memberTypeBtn.layer.borderWidth = 1
-                cell.memberTypeBtn.layer.borderColor = darkGreenThemeColor.cgColor
+                cell.memberTypeBtn.layer.borderColor = darkThemeColor.cgColor
                 
                 cell.RemoveMemberBtn.layer.cornerRadius = cell.RemoveMemberBtn.layer.frame.height/4
                 cell.RemoveMemberBtn.layer.borderWidth = 1
@@ -254,13 +312,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             else if settingsSetionCells[indexPath.row] == "Assign Admin" {
                 searchtableSection = ["Members"]
-                searchBar.isHidden = true
 //                searchTableView.frame.size.height += searchBar.frame.height
                 AddView(view: SearchMemberView)
                 SearchMemberViewTitle.text = "Assign Admin"
             }
             else if settingsSetionCells[indexPath.row] == "Transfer OwnerShip" {
-                searchBar.isHidden = true
                 searchtableSection = ["Members"]
                 searchTableView.frame.size.height += searchBar.frame.height
                 AddView(view: SearchMemberView)
@@ -268,13 +324,26 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             else if settingsSetionCells[indexPath.row] == "" {
                 let alert = UIAlertController(title: "", message: "close wallet", preferredStyle: .alert)
-//                let yes = UIAlertAction(title: "Yes", style: .destructive, handler: <#T##((UIAlertAction) -> Void)?##((UIAlertAction) -> Void)?##(UIAlertAction) -> Void#>)
-//                let no = UIAlertAction(title: "No", style: .cancel, handler: <#T##((UIAlertAction) -> Void)?##((UIAlertAction) -> Void)?##(UIAlertAction) -> Void#>)
-//                alert.addAction(yes)
-//                alert.addAction(no)
-//                self.present(alert, animated: true, completion: nil)
+                let yes = UIAlertAction(title: "Yes", style: .destructive, handler: { (action) in
+                    
+                    
+                    
+                })
+                let no = UIAlertAction(title: "No", style: .cancel, handler: nil)
+                alert.addAction(yes)
+                alert.addAction(no)
+                self.present(alert, animated: true, completion: nil)
                 
             }
+        }
+        else if sections[indexPath.section] == "SignOut" {
+            
+            Authentication.sharedInstance().logOutUser(callback: { (err) in
+                if err == nil {
+                    self.view.window!.rootViewController?.dismiss(animated: true, completion: nil)
+                }
+            })
+            
         }
         else if tableView == searchTableView && searchtableSection[indexPath.section] == "searchUsers" {
             memberTypes[searchedUsers[indexPath.row].getUserID()] = .member
@@ -296,10 +365,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.memberName.text = member.userName
         cell.memberType.layer.cornerRadius = cell.memberType.layer.frame.height/2
         if Resource.sharedInstance().currentWallet!.memberTypes[member.getUserID()] == .admin {
+            cell.memberType.isHidden = false
             cell.memberType.text = "Admin"
-            cell.memberType.backgroundColor = darkGreenThemeColor
+            cell.memberType.backgroundColor = darkThemeColor
         }
         else if Resource.sharedInstance().currentWallet!.memberTypes[member.getUserID()] == .owner{
+            cell.memberType.isHidden = false
             cell.memberType.text = "Owner"
             cell.memberType.backgroundColor = .black
         }
@@ -310,23 +381,36 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 50, height: 70)
+    }
+    
     func AddView(view : UIView) {
         self.view.addSubview(backView)
         view.isHidden = false
+        view.alpha = 0
         self.view.bringSubview(toFront: view)
-        let transform = CATransform3DTranslate(CATransform3DIdentity, 0, view.frame.maxY+200, 0)
-        view.layer.transform = transform
         
-        UIView.animate(withDuration: 0.5) {
-            view.alpha = 1.0
-            view.layer.transform = CATransform3DIdentity
+        UIView.animate(withDuration: 0.4) { 
+            view.center.y -= view.frame.height
+            view.alpha = 1
         }
+        
         searchTableView.reloadData()
     }
     
     func removeView() {
-        self.SearchMemberView.isHidden = true
-        self.backView.removeFromSuperview()
+        
+        UIView.animate(withDuration: 0.4, animations: { 
+            self.SearchMemberView.center.y += self.SearchMemberView.frame.height
+            self.SearchMemberView.alpha = 0
+            
+        }) { (flag) in
+            self.SearchMemberView.isHidden = true
+            self.backView.removeFromSuperview()
+        }
+        
+        
     }
     
     func NotificationSwitchBtn(_sender : Any) {

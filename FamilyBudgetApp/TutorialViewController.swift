@@ -16,10 +16,34 @@ class TutorialViewController: UIViewController {
     @IBOutlet weak var alreadyUserBtn: UIButton!
     @IBOutlet weak var registerBtn: UIButton!
     
+    @IBOutlet var activity: UIActivityIndicatorView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
+        self.view.bringSubview(toFront: activity)
+        activity.startAnimating()
+        
+        Authentication.sharedInstance().signInSiliently { (success, newUser) in
+            if success {
+                if newUser {
+                    
+                    let cont = UIStoryboard.init(name: "HuzaifaStroyboard", bundle: nil).instantiateViewController(withIdentifier: "walletsetup") as! ViewController
+                    
+                    self.present(cont, animated: true, completion: nil)
+                }
+                else {
+                    
+                    let cont = UIStoryboard.init(name: "HuzaifaStroyboard", bundle: nil).instantiateViewController(withIdentifier: "main")
+                    
+                    self.present(cont, animated: true, completion: nil)
+                }
+            }
+            else {
+                self.activity.stopAnimating()
+            }
+        }
+        
         // Do any additional setup after loading the view.
     }
 

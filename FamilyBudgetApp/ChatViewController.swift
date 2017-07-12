@@ -30,10 +30,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var messages = [Message]()
     var isDataAvailable = false
     
-    var lightThemeColor = UIColor(red: 205/255, green: 233/255, blue: 178/255, alpha: 1)
-    var darkThemeColor = UIColor(red: 98/255, green: 141/255, blue: 84/255, alpha: 1)
-    var midThemeColor = UIColor(red: 117/255, green: 171/255, blue: 87/255, alpha: 1)
-    var ThemeColor = UIColor(red: 149/255, green: 188/255, blue: 117/255, alpha: 1)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,7 +84,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if !isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y -= keyboardSize.height
+                self.view.frame.origin.y -= (keyboardSize.height - 49)
                 isKeyboardOpen = true
             }
         }
@@ -101,7 +97,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y += keyboardSize.height
+                self.view.frame.origin.y += (keyboardSize.height - 49)
                 isKeyboardOpen = false
             }
         }
@@ -190,8 +186,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             label.font = UIFont.systemFont(ofSize: 14)
             label.textColor = darkThemeColor
             label.sizeToFit()
-           // label.layer.cornerRadius = label.frame.width/2
-            label.frame.size.width += 10
+            label.frame.size.width += 20
             label.frame.size.height += 10
             label.center = vieww.center
             vieww.addSubview(label)
@@ -262,9 +257,9 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             cell1.ReceivedMessage.text = ("\(msg![indexPath.row].message)")
             //cell1.ReceivedMessage.sizeToFit()
             cell1.ReceivedTime.text = sortTime
-            cell1.ReceivedTime.textColor = UIColor.lightGray
+            cell1.ReceivedTime.textColor = UIColor.darkGray
             cell1.ReceivedDP.image = Resource.sharedInstance().users[msg![indexPath.row].sender]?.image ?? #imageLiteral(resourceName: "dp-male")
-            cell1.ReceivedName.textColor = UIColor.lightGray
+            cell1.ReceivedName.textColor = UIColor.darkGray
             cell1.ReceivedName.text = Resource.sharedInstance().users[msg![indexPath.row].sender]?.userName
             cell1.ReceivedName.sizeToFit()
             return cell1
@@ -277,8 +272,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let cell2 = tableView.dequeueReusableCell(withIdentifier: "Sent") as! SenderTableViewCell
             cell2.SenderMessage.text = ("\(msg![indexPath.row].message)")
             cell2.SenderMessage.sizeToFit()
-            cell2.SendTime.textColor = UIColor.lightGray
-            cell2.SenderName.textColor = UIColor.lightGray
+            cell2.SendTime.textColor = UIColor.darkGray
+            cell2.SenderName.textColor = UIColor.darkGray
             cell2.SendTime.text = sortTime
             cell2.SenderName.text = Resource.sharedInstance().currentUser?.userName
             cell2.SenderName.sizeToFit()
@@ -286,6 +281,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             return cell2
         }
     }
+    
     //Chat Delegate
     func newMessageArrived(message: Message) {
         dateFormat.dateFormat = "dd-MMM-yyyy"
@@ -314,8 +310,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 let lastRow = tableView.numberOfRows(inSection: lastSection) - 1
                 if lastRow<0  { return}
                 
-                let ip: NSIndexPath = IndexPath(row: lastRow , section: lastSection) as NSIndexPath
-                tableView.scrollToRow(at: ip as IndexPath, at: .bottom, animated: true)
+                let ip = IndexPath(row: lastRow , section: lastSection)
+                tableView.scrollToRow(at: ip, at: .bottom, animated: true)
                 
                 }
         }

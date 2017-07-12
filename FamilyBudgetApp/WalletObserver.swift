@@ -90,6 +90,8 @@ class WalletObserver {
         Database.database().reference().child("Wallets").removeAllObservers()
         Database.database().reference().child("WalletMembers").removeAllObservers()
         Database.database().reference().child("WalletCategories").removeAllObservers()
+        isObservingWallet.removeAll()
+        isObservingWallets = false
     }
     
     func startObserving(PartsOf wallet :  UserWallet){

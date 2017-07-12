@@ -449,7 +449,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.name.text = user!.userName
             cell.image.image = #imageLiteral(resourceName: "dp-male")
             cell.selectedmember.layer.borderWidth = 1
-            cell.selectedmember.layer.borderColor = bluethemecolor.cgColor
+            cell.selectedmember.layer.borderColor = darkThemeColor.cgColor
             cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
             if budget!.getMemberIDs().contains(walletmembers[indexPath.item].getUserID()) && collectionView == self.CategoryAndMembercollectionview {
                 cell.selectedmember.isHidden = false
@@ -476,7 +476,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         else {
             let cell = collectionView.cellForItem(at: indexPath) as! TaskMembersCollectionViewCell
             cell.selectedmember.layer.borderWidth = 1
-            cell.selectedmember.layer.borderColor = bluethemecolor.cgColor
+            cell.selectedmember.layer.borderColor = darkThemeColor.cgColor
             cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
             if selectedMembers.contains(walletmembers[indexPath.item].getUserID()) {
                 selectedMembers.remove(at: selectedMembers.index(of: walletmembers[indexPath.item].getUserID())!)

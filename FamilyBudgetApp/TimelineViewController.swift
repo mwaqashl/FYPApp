@@ -37,24 +37,26 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
         
         Segmentbtn.selectedSegmentIndex = 0
-        UserObserver.sharedInstance().startObserving()
-        Delegate.sharedInstance().addTransactionDelegate(self)
-        Delegate.sharedInstance().addWalletDelegate(self)
-        WalletObserver.sharedInstance().autoObserve = true
-        WalletObserver.sharedInstance().startObserving()
-        TransactionObserver.sharedInstance().startObservingTransaction(ofWallet: (Resource.sharedInstance().currentWalletID)!)
-        Delegate.sharedInstance().addWalletMemberDelegate(self)
-        Delegate.sharedInstance().addUserDelegate(self)
         
         dateformat.dateFormat = "dd-MMM-yyyy"
         
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
+                
+                UserObserver.sharedInstance().startObserving()
+                Delegate.sharedInstance().addTransactionDelegate(self)
+                Delegate.sharedInstance().addWalletDelegate(self)
+                WalletObserver.sharedInstance().autoObserve = true
+                WalletObserver.sharedInstance().startObserving()
+                TransactionObserver.sharedInstance().startObservingTransaction(ofWallet: (Resource.sharedInstance().currentWalletID)!)
+                Delegate.sharedInstance().addWalletMemberDelegate(self)
+                Delegate.sharedInstance().addUserDelegate(self)
+                
                 self.isDataAvailable = true
                 
                 self.tabBarController?.tabBar.unselectedItemTintColor = UIColor.lightGray
-                self.tabBarController?.tabBar.selectedImageTintColor = darkGreenThemeColor
+                self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
                 
                 self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
                 self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
@@ -67,6 +69,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 self.TransactionFiltering()
                 self.SegmentbtnAction(self.Segmentbtn)
                 self.sortDates()
+                print(self.tableview.delegate)
                 self.tableview.reloadData()
                 
 //                let CurrIcon = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
@@ -75,11 +78,11 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
-        allWalletsBtn.tintColor = darkGreenThemeColor
+        allWalletsBtn.tintColor = darkThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         
         SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
-        SettingsBtn.tintColor = darkGreenThemeColor
+        SettingsBtn.tintColor = darkThemeColor
         
         self.navigationItem.rightBarButtonItem = SettingsBtn
         
@@ -88,6 +91,11 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
+        if Resource.sharedInstance().currentWalletID == nil {
+            isDataAvailable = false
+        }
+        
         if isDataAvailable {
             self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
             self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)

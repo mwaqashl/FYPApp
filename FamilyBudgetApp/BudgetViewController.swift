@@ -44,7 +44,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         Delegate.sharedInstance().addTransactionDelegate(self)
         
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
-        allWalletsBtn.tintColor = darkGreenThemeColor
+        allWalletsBtn.tintColor = darkThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         self.tabBarController?.tabBar.barTintColor = .white
 
@@ -52,7 +52,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
                 self.tabBarController!.tabBar.unselectedItemTintColor = .lightGray
-                self.tabBarController!.tabBar.selectedImageTintColor = darkGreenThemeColor
+                self.tabBarController!.tabBar.selectedImageTintColor = darkThemeColor
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 
                 if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
@@ -142,7 +142,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if isDataAvailable {
             
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
-            self.tabBarController?.tabBar.selectedImageTintColor = darkGreenThemeColor
+            self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             
             if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
@@ -239,7 +239,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         cell.Status.frame.size.width = CGFloat(BudgetRelatedTransaction(budget)/budget.allocAmount)*cell.defaultstatusbar.frame.width
         
-        cell.Status.backgroundColor = BudgetRelatedTransaction(budget)/budget.allocAmount >= 0.75 ? .red : darkGreenThemeColor
+        cell.Status.backgroundColor = BudgetRelatedTransaction(budget)/budget.allocAmount >= 0.75 ? .red : darkThemeColor
         
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell
