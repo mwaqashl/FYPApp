@@ -96,10 +96,11 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                 if self.isNew {
                     self.transaction = Transaction(transactionId: "", amount: 0.0, categoryId: "", comments: nil, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: Resource.sharedInstance().currentWallet!.currencyID, isExpense: true, walletID: Resource.sharedInstance().currentWalletID!)
                     self.cells.append("Comments")
-                    
+                    self.datepicker.date = Date()
                     self.navigationItem.rightBarButtonItem = self.addBtn
                 }
                 else {
+                    self.datepicker.date = self.transaction!.date
                     self.headertitle.text = "TRANSACTION DETAILS"
                     self.segmentbtn.isEnabled = false
                     self.cells.append("Transaction By")       // first row for transaction By
@@ -211,6 +212,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                 isEdit = false
                 sender.title = "\u{A013}"
                 TransactionManager.sharedInstance().updateTransactionInWallet(transaction!)
+                self.navigationController!.popViewController(animated: true)
             }
             else {
                 let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
@@ -251,9 +253,10 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch cells[indexPath.row] {
             
-            case "Comments", "Category", "Transaction By" :
+            case "Comments", "Category" :
                 return 70
-            
+            case "Transaction By" :
+                return 60
             default:
                 return 50
         }

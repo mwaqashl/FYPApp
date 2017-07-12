@@ -20,6 +20,9 @@
 		0477D0F61EDA228700E8D358 /* BudgetDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477D0F51EDA228700E8D358 /* BudgetDetailsViewController.swift */; };
 		0477E8AC1EBE4B7C00EB9C00 /* BudgetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477E8AB1EBE4B7C00EB9C00 /* BudgetViewController.swift */; };
 		0477E8AE1EBE4C1200EB9C00 /* BudgetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477E8AD1EBE4C1200EB9C00 /* BudgetTableViewCell.swift */; };
+		047BD92A1F165C850096AB3A /* StatisticsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047BD9291F165C850096AB3A /* StatisticsDetailViewController.swift */; };
+		047BD92C1F165EC00096AB3A /* BalanceAmountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047BD92B1F165EC00096AB3A /* BalanceAmountTableViewCell.swift */; };
+		047BD92E1F165EDE0096AB3A /* ExpenseAndIncomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047BD92D1F165EDE0096AB3A /* ExpenseAndIncomeTableViewCell.swift */; };
 		04845D271E93C77000BDA0FC /* TasksListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04845D261E93C77000BDA0FC /* TasksListViewController.swift */; };
 		04845D291E93C79C00BDA0FC /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04845D281E93C79C00BDA0FC /* TaskTableViewCell.swift */; };
 		049908FC1E7FE610008238F4 /* HuzaifaStroyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */; };
@@ -105,6 +108,9 @@
 		0477D0F51EDA228700E8D358 /* BudgetDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetDetailsViewController.swift; sourceTree = "<group>"; };
 		0477E8AB1EBE4B7C00EB9C00 /* BudgetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetViewController.swift; sourceTree = "<group>"; };
 		0477E8AD1EBE4C1200EB9C00 /* BudgetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetTableViewCell.swift; sourceTree = "<group>"; };
+		047BD9291F165C850096AB3A /* StatisticsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatisticsDetailViewController.swift; sourceTree = "<group>"; };
+		047BD92B1F165EC00096AB3A /* BalanceAmountTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceAmountTableViewCell.swift; sourceTree = "<group>"; };
+		047BD92D1F165EDE0096AB3A /* ExpenseAndIncomeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseAndIncomeTableViewCell.swift; sourceTree = "<group>"; };
 		04845D261E93C77000BDA0FC /* TasksListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksListViewController.swift; sourceTree = "<group>"; };
 		04845D281E93C79C00BDA0FC /* TaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
 		049908FB1E7FE610008238F4 /* HuzaifaStroyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HuzaifaStroyboard.storyboard; sourceTree = "<group>"; };
@@ -225,6 +231,9 @@
 			isa = PBXGroup;
 			children = (
 				04FFF4571ED60C7E005E95E1 /* StatisticsViewController.swift */,
+				047BD9291F165C850096AB3A /* StatisticsDetailViewController.swift */,
+				047BD92B1F165EC00096AB3A /* BalanceAmountTableViewCell.swift */,
+				047BD92D1F165EDE0096AB3A /* ExpenseAndIncomeTableViewCell.swift */,
 			);
 			name = Stats;
 			sourceTree = "<group>";
@@ -594,11 +603,14 @@
 				775C2A201E5B11AD00E409B6 /* UserManager.swift in Sources */,
 				775C2A131E5B11AD00E409B6 /* BudgetObserver.swift in Sources */,
 				775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */,
+				047BD92E1F165EDE0096AB3A /* ExpenseAndIncomeTableViewCell.swift in Sources */,
 				775C2A1E1E5B11AD00E409B6 /* TransactionObserver.swift in Sources */,
+				047BD92A1F165C850096AB3A /* StatisticsDetailViewController.swift in Sources */,
 				04343C051E5EBDC800417C91 /* HomeViewController.swift in Sources */,
 				044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */,
 				775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */,
 				04FFF4581ED60C7E005E95E1 /* StatisticsViewController.swift in Sources */,
+				047BD92C1F165EC00096AB3A /* BalanceAmountTableViewCell.swift in Sources */,
 				0477E8AE1EBE4C1200EB9C00 /* BudgetTableViewCell.swift in Sources */,
 				0477E8AC1EBE4B7C00EB9C00 /* BudgetViewController.swift in Sources */,
 				775C2A231E5B11AD00E409B6 /* WalletManager.swift in Sources */,

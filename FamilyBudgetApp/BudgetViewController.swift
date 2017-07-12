@@ -14,7 +14,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     @IBOutlet weak var tableview: UITableView!
     
     var allWalletsBtn = UIBarButtonItem()
-    
+    var SettingsBtn = UIBarButtonItem()
+
     var budgets = [Budget]()
     var filterBudget = [Budget]()
     var currentWalletTransactions = [Transaction]()
@@ -46,8 +47,12 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
         allWalletsBtn.tintColor = darkThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
-        self.tabBarController?.tabBar.barTintColor = .white
 
+        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
+        SettingsBtn.tintColor = darkGreenThemeColor
+        
+        self.navigationItem.rightBarButtonItem = SettingsBtn
+        
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
@@ -56,6 +61,9 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 
                 if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
+                    self.AddBudgetBtn.isHidden = false
+                }
+                else if Resource.sharedInstance().currentWallet!.isPersonal {
                     self.AddBudgetBtn.isHidden = false
                 }
                 else {
@@ -92,6 +100,12 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.present(cont, animated: true, completion: nil)
     }
     
+    func SettingsBtnTapped() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let cont = storyboard.instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
+        self.present(cont, animated: true, completion: nil)
+    }
+    
     func ExtractBudget() {
         budgets = []
         filterBudget = []
@@ -125,11 +139,11 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         var total = 0.0
         let members = budget.getMemberIDs()
         let categories = budget.getCategoryIDs()
-        
+        let endDate = budget.startDate.addingTimeInterval(Double(budget.daysInbudget()*24*60*60))
         //End date validation not done
-        
+//         && currentWalletTransactions[i].date <= budget.startDate.addTimeInterval(Double(budget.period*24*60*60))
         for i in 0..<currentWalletTransactions.count {
-                if categories.contains(currentWalletTransactions[i].categoryId) && currentWalletTransactions[i].date >= budget.startDate && members.contains(currentWalletTransactions[i].transactionById) {
+                if categories.contains(currentWalletTransactions[i].categoryId) && currentWalletTransactions[i].date >= budget.startDate && currentWalletTransactions[i].date < endDate && members.contains(currentWalletTransactions[i].transactionById) {
                     total += currentWalletTransactions[i].amount
                     budgetAndRelatedTransactions[budget.id]!.append(currentWalletTransactions[i])
                 }
@@ -146,6 +160,9 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             
             if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
+                self.AddBudgetBtn.isHidden = false
+            }
+            else if Resource.sharedInstance().currentWallet!.isPersonal {
                 self.AddBudgetBtn.isHidden = false
             }
             else {
@@ -221,6 +238,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let budget = filterBudget[indexPath.row]
         cell.AssignMembersCollectionView.tag = indexPath.row
         
+        cell.AssignMembersCollectionView.reloadData()
+        
         cell.BudgetTitle.text = budget.title
         cell.Icon.text = budget.categories.first?.icon ?? ""
         
@@ -261,7 +280,37 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.image.image = member.image != nil ? member.image : #imageLiteral(resourceName: "dp-male")
         cell.name.text = member.userName
         cell.selectedmember.isHidden = true
+        cell.isUserInteractionEnabled = false
         return cell
+    }
+    
+    func updateBudgetsArray(budget : Budget){
+        for i in 0..<budgets.count {
+            if budgets[i].id == budget.id {
+                budgets[i] = budget
+                break
+            }
+        }
+        
+        if budget.isOpen && segmentBtn.selectedSegmentIndex == 0 {
+            for i in 0..<filterBudget.count {
+                if filterBudget[i].id == budget.id {
+                    filterBudget[i] = budget
+                    break
+                }
+            }
+            self.tableview.reloadSections([0], with: .automatic)
+        }
+            
+        else if !budget.isOpen && segmentBtn.selectedSegmentIndex == 1 {
+            for i in 0..<filterBudget.count {
+                if filterBudget[i].id == budget.id {
+                    filterBudget[i] = budget
+                    break
+                }
+            }
+            self.tableview.reloadSections([0], with: .automatic)
+        }
     }
 
     //wallet Delegate
@@ -290,71 +339,119 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     //wallet Member delegate
     func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
-    
+        
     }
     
     func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
-        if wallet.id == Resource.sharedInstance().currentWalletID {
-            for i in 0..<budgets.count {
-                if budgets[i].getMemberIDs().contains(member.getUserID()) {
-                    budgets[i].removeMember(member.getUserID())
-                }
-            }
-            for i in 0..<filterBudget.count {
-                if filterBudget[i].getMemberIDs().contains(member.getUserID()) {
-                    filterBudget[i].removeMember(member.getUserID())
+        if isDataAvailable {
+            if wallet.id == Resource.sharedInstance().currentWalletID {
+                for i in 0..<budgets.count {
+                    if budgets[i].getMemberIDs().contains(member.getUserID()) {
+                        budgets[i].removeMember(member.getUserID())
+                        BudgetManager.sharedInstance().addMembersToBudget(budgets[i].id, members: budgets[i].getMemberIDs())
+                    }
                 }
             }
         }
     }
     
     func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
-        
+        if isDataAvailable {
+            if Resource.sharedInstance().currentWallet!.members.contains(where: { (_user) -> Bool in
+                return _user.getUserID() == member.getUserID()
+            }){
+                if ofType == .admin || ofType == .owner {
+                    self.AddBudgetBtn.isHidden = false
+                }
+                else{
+                    self.AddBudgetBtn.isHidden = true
+                }
+            }
+        }
     }
     
     //Budget Delegate
     func budgetAdded(_ budget: Budget) {
         if isDataAvailable {
             if budget.walletID == Resource.sharedInstance().currentWalletID {
-                budgets.append(budget)
+                if !budgets.contains(where: { (_budget) -> Bool in
+                    return _budget.id == budget.id
+                }){
+                    budgets.append(budget)
+                }
                 if budget.isOpen && segmentBtn.selectedSegmentIndex == 0 {
-                    filterBudget.append(budget)
+                    if !filterBudget.contains(where: { (_budget) -> Bool in
+                        return _budget.id == budget.id
+                    }){
+                        filterBudget.append(budget)
+                        tableview.reloadData()
+                    }
                 }
                 else if !budget.isOpen && segmentBtn.selectedSegmentIndex == 1 {
-                    filterBudget.append(budget)
+                    if !filterBudget.contains(where: { (_budget) -> Bool in
+                        return _budget.id == budget.id
+                    }){
+                        filterBudget.append(budget)
+                        tableview.reloadData()
+                    }
                 }
-                tableview.reloadData()
             }
         }
     }
+    
     func budgetDeleted(_ budget: Budget) {
         if isDataAvailable {
             if budget.walletID == Resource.sharedInstance().currentWalletID {
-                self.ExtractBudget()
-                tableview.reloadData()
+                for i in 0..<budgets.count {
+                    if budgets[i].id == budget.id {
+                        budgets.remove(at: i)
+                        break
+                    }
+                }
+                if budget.isOpen && segmentBtn.selectedSegmentIndex == 0 {
+                    for i in 0..<filterBudget.count {
+                        if filterBudget[i].id == budget.id {
+                            filterBudget.remove(at: i)
+                            break
+                        }
+                    }
+                    tableview.reloadData()
+                }
+                else if !budget.isOpen && segmentBtn.selectedSegmentIndex == 1 {
+                    for i in 0..<filterBudget.count {
+                        if filterBudget[i].id == budget.id {
+                            filterBudget.remove(at: i)
+                            break
+                        }
+                    }
+                    tableview.reloadData()
+                }
             }
         }
     }
+    
     func budgetUpdated(_ budget: Budget) {
         if isDataAvailable {
             if budget.walletID == Resource.sharedInstance().currentWalletID {
-                self.ExtractBudget()
-                tableview.reloadData()
+                updateBudgetsArray(budget: budget)
             }
         }
     }
     
     //BudgetMemberDelegate
     func memberLeft(_ member: User, budget: Budget) {
-        if budget.walletID == Resource.sharedInstance().currentWalletID {
-            self.ExtractBudget()
-            tableview.reloadData()
+        if isDataAvailable {
+            if budget.walletID == Resource.sharedInstance().currentWalletID {
+                updateBudgetsArray(budget: budget)
+            }
         }
     }
+    
     func memberAdded(_ member: User, budget: Budget) {
-        if budget.walletID == Resource.sharedInstance().currentWalletID {
-            self.ExtractBudget()
-            tableview.reloadData()
+        if isDataAvailable {
+            if budget.walletID == Resource.sharedInstance().currentWalletID {
+                updateBudgetsArray(budget: budget)
+            }
         }
     }
     
@@ -362,14 +459,14 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func categoryAdded(_ category: Category, budget: Budget) {
         if isDataAvailable {
             if budget.walletID == Resource.sharedInstance().currentWalletID {
-                tableview.reloadData()
+                updateBudgetsArray(budget: budget)
             }
         }
     }
     func categoryRemoved(_ category: Category, budget: Budget) {
         if isDataAvailable {
             if budget.walletID == Resource.sharedInstance().currentWalletID {
-                
+                updateBudgetsArray(budget: budget)
             }
         }
     }
@@ -378,8 +475,27 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func transactionAdded(_ transaction: Transaction) {
         if isDataAvailable {
             if transaction.walletID == Resource.sharedInstance().currentWalletID {
-                currentWalletTransactions.append(transaction)
-                self.tableview.reloadData()
+                
+                if !currentWalletTransactions.contains(where: { (_transaction) -> Bool in
+                    return _transaction.id == transaction.id
+                }){
+                    currentWalletTransactions.append(transaction)
+                }
+                
+                for i in 0..<budgets.count {
+                    if budgets[i].categories.contains(where: { (_category) -> Bool in
+                        return _category.id == transaction.categoryId
+                    }){
+                        if budgets[i].getMemberIDs().contains(where: { (memberID) -> Bool in
+                            return memberID == transaction.transactionById
+                        }){
+                            if budgets[i].isOpen && segmentBtn.selectedSegmentIndex == 0 {
+                                self.tableview.reloadData()
+                            }
+                        }
+
+                    }
+                }
             }
         }
     }
@@ -387,8 +503,28 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func transactionDeleted(_ transaction: Transaction) {
         if isDataAvailable {
             if transaction.walletID == Resource.sharedInstance().currentWalletID {
-                self.ExtractTransactions()
-                self.tableview.reloadData()
+                if currentWalletTransactions.contains(where: { (_trans) -> Bool in
+                    return _trans.id == transaction.id
+                }) {
+                    for i in 0..<currentWalletTransactions.count {
+                        if currentWalletTransactions[i].id == transaction.id {
+                            currentWalletTransactions.remove(at: i)
+                            break
+                        }
+                    }
+                }
+                for i in 0..<budgets.count {
+                    if budgets[i].categories.contains(where: { (_category) -> Bool in
+                        return _category.id == transaction.categoryId
+                    }){
+                        if budgets[i].getMemberIDs().contains(where: { (memberID) -> Bool in
+                            return memberID == transaction.transactionById
+                        }){
+                                self.tableview.reloadData()
+                        }
+                        
+                    }
+                }
             }
         }
     }
@@ -396,8 +532,24 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func transactionUpdated(_ transaction: Transaction) {
         if isDataAvailable {
             if transaction.walletID == Resource.sharedInstance().currentWalletID {
-                self.ExtractTransactions()
-                self.tableview.reloadData()
+                
+                for i in 0..<currentWalletTransactions.count {
+                    if currentWalletTransactions[i].id == transaction.id {
+                        currentWalletTransactions[i] = transaction
+                    }
+                }
+                
+                for i in 0..<budgets.count {
+                    if budgets[i].categories.contains(where: { (_category) -> Bool in
+                        return _category.id == transaction.categoryId
+                    }){
+                        if budgets[i].getMemberIDs().contains(where: { (memberID) -> Bool in
+                            return memberID == transaction.transactionById
+                        }){
+                            self.tableview.reloadData()
+                        }
+                    }
+                }
             }
         }
     }
