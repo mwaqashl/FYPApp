@@ -49,7 +49,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         self.navigationItem.leftBarButtonItem = allWalletsBtn
 
         SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
-        SettingsBtn.tintColor = darkGreenThemeColor
+        SettingsBtn.tintColor = darkThemeColor
         
         self.navigationItem.rightBarButtonItem = SettingsBtn
         

@@ -52,7 +52,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.nextMonthBtn.isEnabled = true
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
-                self.tabBarController?.tabBar.selectedImageTintColor = darkGreenThemeColor
+                self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
                 self.isDataAvailable = true
                 self.ExtractTransactions()
                 self.filterCategoriesAndAmount()
@@ -78,7 +78,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.nextMonthBtn.isEnabled = true
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
-            self.tabBarController?.tabBar.selectedImageTintColor = darkGreenThemeColor
+            self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
             self.ExtractTransactions()
             self.filterCategoriesAndAmount()
             self.sortMonths()

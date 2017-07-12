@@ -225,7 +225,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             let size = CGFloat(BudgetRelatedTransaction(budget!)/budget!.allocAmount)*cell.defaultstatusbar.frame.width
             cell.Status.frame.size.width = size
             print(size)
-            cell.Status.backgroundColor = BudgetRelatedTransaction(budget!)/budget!.allocAmount >= 0.75 ? .red : darkGreenThemeColor
+            cell.Status.backgroundColor = BudgetRelatedTransaction(budget!)/budget!.allocAmount >= 0.75 ? .red : darkThemeColor
             
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
