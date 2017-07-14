@@ -1,3 +1,4 @@
+
 //
 //  SettingsViewController.swift
 //  FamilyBudgetApp
@@ -10,10 +11,8 @@ import UIKit
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, UICollectionViewDelegateFlowLayout {
 
-    var searchedUsers = [User]()
     
     @IBOutlet weak var SearchMemberViewTitle: UILabel!
-    var backView = UIView()
     
     @IBOutlet weak var searchTableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -22,11 +21,23 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var SearchMemberView: UIView!
     @IBOutlet weak var SettingsTableView: UITableView!
     
+    var backView = UIView()
+    var searchedUsers = [User]()
     var walletMembers = [User]()
     var memberTypes = [String:MemberType]()
+    var selectedWallet : UserWallet?
+    var currentUser : User?
+    
+    var isKeyboardOpen = false
+    var isUserSearch = false
+    
+    var tap = UITapGestureRecognizer()
+    
     var sections = ["Wallet","Wallet Settings","Members","leaveBtn"]
     var settingsSetionCells = ["Add Member","Assign Admin","Transfer OwnerShip","Notification","Close Wallet"]
+    
     var searchtableSection = [String]()
+    
     var userSettingsOptions = ["Change Password","Edit Name", "Edit Display Picture"]
     
     override func viewDidLoad() {
@@ -34,7 +45,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         backView = UIView(frame: self.view.frame)
         backView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
         backView.addGestureRecognizer(tap)
         backView.backgroundColor = .lightGray
         backView.alpha = 0.5
@@ -45,12 +56,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         SettingsTableView.dataSource = self
         SettingsTableView.delegate = self
-        searchBar.delegate = self
         
         SearchMemberView.isHidden = true
+        SearchMemberView.frame.origin.y += self.SearchMemberView.frame.height
         searchBar.autocapitalizationType = .none
 
+        searchBar.delegate = self
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
                 
@@ -63,7 +78,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     self.sections = ["Wallet","Wallet Settings", "Members"]
                     self.walletMembers = Resource.sharedInstance().currentWallet!.members
                     self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
-                    
+                    self.currentUser = Resource.sharedInstance().currentUser!
+                    self.selectedWallet = Resource.sharedInstance().userWallets[Resource.sharedInstance().currentWalletID!]
+//                    self.selectedWallet! = Resource.sharedInstance().currentWallet?
+//                    
                     if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
                         self.settingsSetionCells = ["Add Member","Notification"]
                         self.sections.append("leaveBtn")
@@ -86,7 +104,36 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func ViewTap() {
-        removeView()
+        if isKeyboardOpen {
+            isKeyboardOpen = false
+            self.view.endEditing(true)
+        }
+        else {
+            removeView()
+        }
+    }
+    
+    func updateSettingCells(){
+        self.sections = ["Wallet","Wallet Settings", "Members"]
+        self.walletMembers = Resource.sharedInstance().currentWallet!.members
+        self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
+        
+        self.selectedWallet = Resource.sharedInstance().userWallets[Resource.sharedInstance().currentWalletID!]
+        //                    self.selectedWallet! = Resource.sharedInstance().currentWallet?
+        //
+        if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
+            self.settingsSetionCells = ["Add Member","Notification"]
+            self.sections.append("leaveBtn")
+        }
+        else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
+            self.settingsSetionCells = ["Notification"]
+            self.sections.append("leaveBtn")
+        }
+        else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
+            self.settingsSetionCells += ["Delete Wallet"]
+            settingsSetionCells[4] = selectedWallet!.isOpen ? "Close Wallet" : "Open Wallet"
+        }
+        self.sections += ["User","User Settings","SignOut"]
     }
 
     override func didReceiveMemoryWarning() {
@@ -97,6 +144,32 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.dismiss(animated: true, completion: nil)
     }
     
+    var SizeOfKeyboard = CGFloat()
+    
+    func keyboardWillShow(notification: NSNotification) {
+        
+        if !isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                SizeOfKeyboard = keyboardSize.height
+                SearchMemberView.frame.origin.y -= SizeOfKeyboard/2
+                isKeyboardOpen = true
+            }
+        }
+        
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+    
+        if isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                SizeOfKeyboard = keyboardSize.height
+                isKeyboardOpen = false
+            }
+        }
+        
+    }
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return tableView == SettingsTableView ? sections.count : searchtableSection.count
@@ -160,6 +233,21 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        if tableView == searchTableView {
+            if section == 0 {
+                let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 50))
+                let label = UILabel(frame: view.frame)
+                label.text = searchedUsers.count == 0 ? "No users to show." : ""
+                label.textAlignment = .center
+                view.addSubview(label)
+                
+                return view
+            }
+        }
+        return UIView()
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == SettingsTableView {
             
@@ -195,7 +283,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.settingName.text = settingsSetionCells[indexPath.row]
                 if settingsSetionCells[indexPath.row] == "Notification" {
                     cell.switchBtn.isHidden = false
-                    cell.switchBtn.target(forAction: #selector(self.NotificationSwitchBtn), withSender: nil)
+                    cell.switchBtn.addTarget(self, action: #selector(self.NotificationSwitchBtn(_sender:)), for: .valueChanged)
                 }
                 cell.selectionStyle = .none
                 return cell
@@ -262,19 +350,25 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     cell.userImage.image = UIImage(data: data) ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
                 })
                 cell.memberTypeBtn.isEnabled = true
+//                if SearchMemberViewTitle.text == "Add Members" {
                 if memberTypes[this.getUserID()] == .owner {
-                    cell.accessoryType = .none
-                    cell.memberTypeBtn.setTitle("Owner", for: UIControlState.normal)
+                    cell.memberTypeBtn.setTitle("Owner", for: UIControlState.disabled)
                     cell.memberTypeBtn.isEnabled = false
                     cell.RemoveMemberBtn.isEnabled = false
+                    cell.memberTypeBtn.isHidden = self.SearchMemberViewTitle.text == "Add Members"
+                    cell.RemoveMemberBtn.isHidden = self.SearchMemberViewTitle.text! == "Assign Admin" || self.SearchMemberViewTitle.text! == "Transfer OwnerShip"
                 }
                 else if memberTypes[this.getUserID()] == .admin {
-//                    cell.accessoryType = .no
-                    cell.memberTypeBtn.setTitle("Remove from Admin", for: UIControlState.normal)
+                    cell.memberTypeBtn.isHidden = self.SearchMemberViewTitle.text! == "Add Members"
+                    cell.RemoveMemberBtn.isHidden = self.SearchMemberViewTitle.text! == "Assign Admin" || self.SearchMemberViewTitle.text! == "Transfer OwnerShip"
+                    let btntext = self.SearchMemberViewTitle.text == "Asign Admin" ? "Remove from Admin" : "Make Owner"
+                    cell.memberTypeBtn.setTitle(btntext, for: UIControlState.normal)
                 }
                 else {
-//                    cell.accessoryType = .checkmark
-                    cell.memberTypeBtn.setTitle("Make Admin", for: UIControlState.normal)
+                    cell.RemoveMemberBtn.isHidden = self.SearchMemberViewTitle.text! == "Assign Admin" || self.SearchMemberViewTitle.text! == "Transfer OwnerShip"
+                    cell.memberTypeBtn.isHidden = self.SearchMemberViewTitle.text == "Add Members"
+                    let btntext = self.SearchMemberViewTitle.text == "Asign Admin" ? "Make Admin" : "Make Owner"
+                    cell.memberTypeBtn.setTitle(btntext, for: UIControlState.normal)
                 }
                 cell.memberType.text = memberTypes[this.getUserID()] == .owner ? "Owner" : memberTypes[this.getUserID()] == .admin ? "Admin" : "\(cell.memberType.isHidden = true)"
                 cell.userName.text = this.userName
@@ -304,36 +398,57 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         if indexPath.section == 1 && tableView == SettingsTableView {
+            
             if settingsSetionCells[indexPath.row] == "Add Member" {
                 searchtableSection = ["searchUsers","Members"]
-                AddView(view: SearchMemberView)
+                isUserSearch = true
+                AddView(showView: SearchMemberView)
                 SearchMemberViewTitle.text = "Add Members"
             }
+                
             else if settingsSetionCells[indexPath.row] == "Assign Admin" {
                 searchtableSection = ["Members"]
-//                searchTableView.frame.size.height += searchBar.frame.height
-                AddView(view: SearchMemberView)
+                isUserSearch = false
+                AddView(showView: SearchMemberView)
                 SearchMemberViewTitle.text = "Assign Admin"
             }
+                
             else if settingsSetionCells[indexPath.row] == "Transfer OwnerShip" {
                 searchtableSection = ["Members"]
-                searchTableView.frame.size.height += searchBar.frame.height
-                AddView(view: SearchMemberView)
+                isUserSearch = false
+                AddView(showView: SearchMemberView)
                 SearchMemberViewTitle.text = "Transfer OwnerShip"
             }
-            else if settingsSetionCells[indexPath.row] == "" {
-                let alert = UIAlertController(title: "", message: "close wallet", preferredStyle: .alert)
+                
+            else if settingsSetionCells[indexPath.row] == "Close Wallet" {
+                let message = selectedWallet!.isOpen ? "Do you want to close this Wallet" : "Do you want to open this Wallet"
+                let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
                 let yes = UIAlertAction(title: "Yes", style: .destructive, handler: { (action) in
-                    
-                    
-                    
+                    self.selectedWallet!.isOpen = !self.selectedWallet!.isOpen
+                    WalletManager.sharedInstance().updateWallet(self.selectedWallet!)
+                    self.updateSettingCells()
+                    tableView.reloadData()
                 })
                 let no = UIAlertAction(title: "No", style: .cancel, handler: nil)
                 alert.addAction(yes)
                 alert.addAction(no)
                 self.present(alert, animated: true, completion: nil)
                 
+            }
+                
+            else if settingsSetionCells[indexPath.row] == "Delete Wallet" {
+                let alert = UIAlertController(title: "", message: "Do you want to delete this wallet", preferredStyle: .alert)
+                let yes = UIAlertAction(title: "Yes", style: .destructive, handler: { (action) in
+                    WalletManager.sharedInstance().removeWallet(Resource.sharedInstance().currentWallet!)
+                    Resource.sharedInstance().currentWalletID = Resource.sharedInstance().currentUserId
+                    self.dismiss(animated: true, completion: nil)
+                })
+                let no = UIAlertAction(title: "No", style: .cancel, handler: nil)
+                alert.addAction(yes)
+                alert.addAction(no)
+                self.present(alert, animated: true, completion: nil)
             }
         }
         else if sections[indexPath.section] == "SignOut" {
@@ -344,6 +459,104 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
             })
             
+        }
+        else if sections[indexPath.section] == "leaveBtn" {
+            
+            let alert = UIAlertController(title: "", message: "Do you want to leave this wallet", preferredStyle: .alert)
+            let yes = UIAlertAction(title: "Yes", style: .destructive, handler: { (action) in
+                WalletManager.sharedInstance().removeMemberFromWallet(self.selectedWallet!.id, memberID: Resource.sharedInstance().currentUserId!)
+                Resource.sharedInstance().currentWalletID = Resource.sharedInstance().currentUserId
+                self.dismiss(animated: true, completion: nil)
+            })
+            let no = UIAlertAction(title: "No", style: .cancel, handler: nil)
+            alert.addAction(yes)
+            alert.addAction(no)
+            self.present(alert, animated: true, completion: nil)
+            
+        }
+        // User Settings
+        else if tableView == SettingsTableView && sections[indexPath.section] == "User Settings" {
+            
+            if userSettingsOptions[indexPath.row] == "Change Password" {
+                let alert = UIAlertController(title: "", message: "Edit Name", preferredStyle: .alert)
+                alert.addTextField(configurationHandler: { (textfield) in
+                    textfield.placeholder = "Enter Current Password"
+                })
+                alert.addTextField(configurationHandler: { (textfield) in
+                    textfield.placeholder = "Enter New Password"
+                })
+                alert.addTextField(configurationHandler: { (textfield) in
+                    textfield.placeholder = "Re-Enter New Password"
+                })
+                let Save = UIAlertAction(title: "Save", style: .default, handler: { (action) in
+                    let currentPass = alert.textFields![0]
+                    let newPass = alert.textFields![1]
+                    let retypePass = alert.textFields![2]
+                    var error = ""
+                    if currentPass.text == "" {
+                        error = "Current Password Cannot be empty"
+                    }
+                    else if newPass.text == "" || newPass.text!.characters.count < 6 {
+                        error = "New Password Cannot be less than 6 Characters"
+                    }
+                    else if retypePass.text == "" || retypePass.text!.characters.count < 6 {
+                        error = "Re-type Password Cannot be less than 6 Characters"
+                    }
+                    else if retypePass.text != newPass.text{
+                        error = "New and Re-type Password must be same"
+                    }
+                    if error == "" {
+//                        self.currentUser! = currentPass.text!
+//                        UserManager.sharedInstance().updateUserState(self.currentUser!)
+                    }
+                    else {
+                        let alert2 = UIAlertController(title: "", message: error, preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: "Ok", style: .default, handler : { (action) in
+                            self.present(alert, animated: true, completion: nil)
+                        })
+                        alert2.addAction(okAction)
+                        self.present(alert2, animated: true, completion: nil)
+                    }
+                })
+                let Cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                alert.addAction(Save)
+                alert.addAction(Cancel)
+                self.present(alert, animated: true, completion: nil)
+            }
+                
+        //  Edit Name
+            else if userSettingsOptions[indexPath.row] == "Edit Name" {
+                let alert = UIAlertController(title: "", message: "Edit Name", preferredStyle: .alert)
+                alert.addTextField(configurationHandler: { (textfield) in
+                    textfield.placeholder = "Enter User Name"
+                })
+                let Save = UIAlertAction(title: "Save", style: .default, handler: { (action) in
+                    let userName = alert.textFields![0]
+                    var error = ""
+                    if userName.text == "" {
+                         error = "User Name cannot be empty"
+                    }
+                    if error == "" {
+                        self.currentUser!.userName = userName.text!
+                        UserManager.sharedInstance().updateUserState(self.currentUser!)
+                    }
+                    else {
+                        let alert2 = UIAlertController(title: "", message: error, preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: "Ok", style: .default, handler : { (action) in
+                            self.present(alert, animated: true, completion: nil)
+                        })
+                        alert2.addAction(okAction)
+                        self.present(alert2, animated: true, completion: nil)
+                    }
+                })
+                let Cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                alert.addAction(Save)
+                alert.addAction(Cancel)
+                self.present(alert, animated: true, completion: nil)
+            }
+            else if userSettingsOptions[indexPath.row] == "Edit Display Picture" {
+                
+            }
         }
         else if tableView == searchTableView && searchtableSection[indexPath.section] == "searchUsers" {
             memberTypes[searchedUsers[indexPath.row].getUserID()] = .member
@@ -385,15 +598,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         return CGSize(width: 50, height: 70)
     }
     
-    func AddView(view : UIView) {
+    func AddView(showView : UIView) {
         self.view.addSubview(backView)
-        view.isHidden = false
-        view.alpha = 0
-        self.view.bringSubview(toFront: view)
-        
+        showView.isHidden = false
+        showView.alpha = 0
+        self.view.bringSubview(toFront: showView)
+
         UIView.animate(withDuration: 0.4) { 
-            view.center.y -= view.frame.height
-            view.alpha = 1
+            showView.frame.origin.y -= showView.frame.height
+            showView.alpha = 1
         }
         
         searchTableView.reloadData()
@@ -402,7 +615,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func removeView() {
         
         UIView.animate(withDuration: 0.4, animations: { 
-            self.SearchMemberView.center.y += self.SearchMemberView.frame.height
+            self.SearchMemberView.frame.origin.y += self.SearchMemberView.frame.height
             self.SearchMemberView.alpha = 0
             
         }) { (flag) in
@@ -434,27 +647,34 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    var deletememberIndex = Int()
+    func TransferOwnerShip(sender: UIButton) {
+        
+        print("Transfer Owner Ship")
+        let thisUser = walletMembers[sender.tag]
+        
+        if sender.currentTitle == "Make Owner" {
+            
+            memberTypes[thisUser.getUserID()] = .owner
+            sender.setTitle("Remove from Owner", for: .normal)
+        }
+        else if sender.currentTitle == "Remove from Owner" {
+            
+            memberTypes[thisUser.getUserID()] = .member
+            sender.setTitle("Make Owner", for: .normal)
+        }
+    }
     
     func removeMember(sender: UIButton) {
-        deletememberIndex = sender.tag
         let alert = UIAlertController(title: "Alert", message: "Are you sure you want to remove this member", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
-        let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
-        alert.addAction(action)
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { (success) in
+            self.memberTypes.removeValue(forKey: self.walletMembers[sender.tag].getUserID())
+            self.walletMembers.remove(at: sender.tag)
+            self.searchTableView.reloadData()
+        }
+        let noAction = UIAlertAction(title: "No", style: .cancel, handler: nil)
+        alert.addAction(yesAction)
         alert.addAction(noAction)
         self.present(alert, animated: true, completion: nil)
-    }
-    
-    func YesPressed(action : UIAlertAction) {
-        print("Kar de Romove")
-        memberTypes.removeValue(forKey: walletMembers[deletememberIndex].getUserID())
-        walletMembers.remove(at: deletememberIndex)
-        searchTableView.reloadData()
-    }
-    
-    func NoPressed(action : UIAlertAction) {
-        print("Nhn Kr Delete")
     }
     
     // Search Delegate
@@ -470,27 +690,21 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }))
         }
         
-//        var results = [User]()
-//        
-//        for key in Resource.sharedInstance().users.keys {
-//            if Resource.sharedInstance().users[key]!.getUserEmail().contains(searchText) {
-//                for i in 0..<walletMembers.count {
-//                    if walletMembers[i].getUserID() == key {
-//                        return
-//                    }
-//                    else{
-//                        results.append(Resource.sharedInstance().users[key]!)
-//                    }
-//                }
-//            }
-//        }
-        
         print("search results = ", results.count)
         for i in 0..<results.count {
             searchedUsers.append(results[i].value)
         }
         searchTableView.reloadSections([0], with: .left)
     }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+//        SearchMemberView.frame.origin.y -= SizeOfKeyboard
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        SearchMemberView.center.y += SizeOfKeyboard/2
+    }
+    
   
     
 }

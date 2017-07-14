@@ -73,9 +73,10 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         }
         
         if isDataAvailable {
+            self.tabBarController!.tabBar.unselectedItemTintColor = .gray
+            self.tabBarController!.tabBar.selectedImageTintColor = darkThemeColor
+            self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             TaskExtraction()
-            tableview.reloadData()
-            
             for key in Resource.sharedInstance().tasks.keys {
                 let task = Resource.sharedInstance().tasks[key]
                 if task!.walletID == Resource.sharedInstance().currentWalletID {
@@ -83,6 +84,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
                     print(task!.amount)
                 }
             }
+            tableview.reloadData()
         }
     }
     

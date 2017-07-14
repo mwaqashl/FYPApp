@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UITableViewDataSource , UITableViewDelegate , UITextViewDelegate , UICollectionViewDelegate , UICollectionViewDataSource, TaskDelegate, WalletMemberDelegate, TaskMemberDelegate, WalletDelegate{
+class AddTaskViewController: UIViewController , UITableViewDataSource , UITableViewDelegate , UITextViewDelegate , UICollectionViewDelegate , UICollectionViewDataSource, TaskDelegate, WalletMemberDelegate, TaskMemberDelegate, WalletDelegate{
 
     @IBOutlet weak var collectionviewTitle: UILabel!
     @IBOutlet weak var collectionview: UICollectionView!
@@ -23,7 +23,7 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
     @IBOutlet weak var acceptBtn: UIButton!
     @IBOutlet weak var rejectBtn: UIButton!
 
-    var newView : UIView?
+    var backView : UIView?
     
     var Add = UIBarButtonItem()
     var Edit = UIBarButtonItem()
@@ -41,6 +41,7 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
     var isEdit = false
     
     var isCategoryView = true
+    var isKeyboardOpen = false
     
     var selectedCategory = String()
     var pselectedCategory = String()
@@ -48,18 +49,18 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
     var selectedMembers = [String]()
     var pselecctedMembers = [String]()
     
+    var tap = UITapGestureRecognizer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        newView = UIView(frame: self.view.frame)
-        newView!.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
-        tap.delegate = self
-        tap.numberOfTapsRequired = 1
-        newView!.addGestureRecognizer(tap)
-        newView!.backgroundColor = .lightGray
-        newView!.alpha = 0.5
-        newView!.isUserInteractionEnabled = true
+        backView = UIView(frame: self.view.frame)
+        backView!.isUserInteractionEnabled = true
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
+        backView!.addGestureRecognizer(tap)
+        backView!.backgroundColor = .lightGray
+        backView!.alpha = 0.5
+        backView!.isUserInteractionEnabled = true
         
         
         dateformatter.dateFormat = "dd-MMM-yyyy"
@@ -87,6 +88,10 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
         
         SelectionView.isHidden = true
         DateView.isHidden = true
+        DateView.frame.origin.y += DateView.frame.height
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         Add = UIBarButtonItem.init(title: "\u{A009}", style: .plain, target: self, action: #selector(self.AddTask))
         Add.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
@@ -110,7 +115,7 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
                     self.isEdit = true
                     self.task = Task.init(taskID: "", title: "", categoryID: "", amount: 0.0, comment: nil, dueDate: Date().timeIntervalSince1970, startDate: Date().timeIntervalSince1970, creatorID: Resource.sharedInstance().currentUserId!, status: .open, doneByID: nil, memberIDs: [], walletID:Resource.sharedInstance().currentWalletID!)
                     self.navigationItem.rightBarButtonItem = self.Add
-                    
+                    self.datepicker.date = Date()
                     if Resource.sharedInstance().currentWallet!.isPersonal {
                         self.task!.addMember(Resource.sharedInstance().currentUserId!)
                         self.task!.doneByID = Resource.sharedInstance().currentUserId
@@ -122,12 +127,13 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
                     
                 // Previous Tasks Viewing
                 else {
-                    self.acceptBtn.frame.size.width = self.acceptBtn.frame.width*2
+                    self.acceptBtn.contentHorizontalAlignment = .center
                     self.acceptBtn.center = self.view.center
                     self.selectedCategory = self.task!.categoryID
                     self.pselectedCategory = self.selectedCategory
                     self.selectedMembers = self.task!.memberIDs
                     self.pselecctedMembers = self.selectedMembers
+                    self.datepicker.date = self.task!.dueDate
                     self.updateCells()
                 }
             }
@@ -139,6 +145,35 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    var SizeOfKeyboard = CGFloat()
+    
+    func keyboardWillShow(notification: NSNotification) {
+        
+        
+        if !isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                SizeOfKeyboard = keyboardSize.height
+                self.view.addGestureRecognizer(tap)
+                isKeyboardOpen = true
+            }
+        }
+        
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        
+        
+        if isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                SizeOfKeyboard = keyboardSize.height
+                isKeyboardOpen = false
+            }
+        }
+        
     }
     
     func ViewTap() {
@@ -391,10 +426,8 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
                 
             else if cell.title.text == "Due Date" {
                 cell.textview.text = dateformatter.string(from: task!.dueDate)
-                cell.textview.isUserInteractionEnabled = true
-                cell.textview.tag = 3                   // Date tag 3
+                cell.textview.isUserInteractionEnabled = false
             }
-            cell.textview.isUserInteractionEnabled = task!.status == .completed ? false : isNew! || isEdit
             cell.textview.delegate = self
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
@@ -405,10 +438,13 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if isEdit {
-            if indexPath.item == 2 {
+            if indexPath.row == 2 {
                 isCategoryView = true
                 collectionviewTitle.text = "SELECT CATEGORY"
                 self.addView(SelectionView)
+            }
+            if cells[indexPath.row] == "Due Date" {
+                self.addView(DateView)
             }
         }
         else {
@@ -436,34 +472,52 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
     }
     
     func addView(_ showView : UIView) {
-        self.collectionview.reloadData()
-        view.addSubview(newView!)
+        self.backView?.addGestureRecognizer(tap)
         if showView == SelectionView {
-            SelectionView.isHidden = false
-            collectionview.alpha = 0
-            collectionview.isHidden = false
+            self.collectionview.reloadData()
+        }
+        view.addSubview(backView!)
+        if showView == SelectionView {
+            showView.isHidden = false
+            showView.alpha = 0
             self.view.bringSubview(toFront: SelectionView)
             UIView.animate(withDuration: 0.3, animations: {
-                self.collectionview.alpha = 1.0
+                showView.alpha = 1.0
             })
         }
         else {
             self.DateView.isHidden = false
+            UIView.animate(withDuration: 0.3, animations: { 
+                self.DateView.frame.origin.y -= self.DateView.frame.height
+            })
             self.view.bringSubview(toFront: DateView)
         }
         
     }
     
     func removeView() {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.collectionview.alpha = 0
-            
-        }) { (Success) in
-            self.DateView.isHidden = true
-            self.SelectionView.isHidden = true
-            self.collectionview.isHidden = true
-            self.newView!.removeFromSuperview()
+        if isKeyboardOpen {
+            self.view.removeGestureRecognizer(tap)
+            self.view.endEditing(true)
         }
+        if !SelectionView.isHidden {
+            UIView.animate(withDuration: 0.3, animations: {
+                self.SelectionView.alpha = 0
+            }) { (Success) in
+                self.SelectionView.isHidden = true
+                self.backView!.removeFromSuperview()
+            }
+        }
+        else if !DateView.isHidden {
+            self.DateView.isHidden = false
+            UIView.animate(withDuration: 0.3, animations: {
+                self.DateView.frame.origin.y += self.DateView.frame.height
+            }) { (Success) in
+                self.backView!.removeFromSuperview()
+                self.DateView.isHidden = true
+            }
+        }
+        
     }
 
 //    TextView Delegates
@@ -484,6 +538,9 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
             else {
                 textView.text = task!.comment
             }
+            UIView.animate(withDuration: 0.4, animations: { 
+                self.view.frame.origin.y -= self.SizeOfKeyboard
+            })
         }
         else if textView.tag == 1 {
             if textView.text == "Enter Title" {
@@ -496,23 +553,23 @@ class AddTaskViewController: UIViewController, UIGestureRecognizerDelegate , UIT
         else if textView.tag == 2 {
             textView.text = textView.text == "0" ? "" : "\(task!.amount)"
         }
-        else if textView.tag == 3 {
-            self.addView(DateView)
-        }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.tag == 1 {
             task!.title = textView.text
-            textView.text = task?.title != nil || task!.title != "" ? task!.title : "Enter Title"
+            textView.textColor = textView.text == "" ? .gray : .black
+            textView.text = textView.text == "" ? "Task title" : textView.text
         }
         else if textView.tag == 2 {
             task!.amount = Double(textView.text) ?? 0.0
             textView.text = task!.amount == 0.0 ? "0" : "\(task!.amount)"
         }
         else if textView.tag == 5 {
-            task!.comment = textView.text
-            textView.text = task?.comment != nil || task!.comment != "" ? task!.comment : "Write Here"
+            task?.comment = textView.text
+            textView.textColor = textView.text == "" ? .gray : .black
+            textView.text = textView.text == "" ? "Write here" : textView.text
+            self.view.frame.origin.y += self.SizeOfKeyboard
         }
     }
     

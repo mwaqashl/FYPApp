@@ -69,7 +69,7 @@ class UserManager {
             "gender" : user.gender
         ]
         
-        data.setValue(ServerValue.timestamp(), forKey: "lastSeen")
+        //data.setValue(ServerValue.timestamp(), forKey: "lastSeen")
         
         userInfo.updateChildValues(data as! [AnyHashable:Any])
 
