@@ -28,31 +28,39 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     @IBOutlet weak var deleteImageBtn: UIButton!
 
     @IBOutlet var viewsForShadow: [UIView]!
+    @IBOutlet weak var viewForDateAndGender: UIView!
+    @IBOutlet weak var datePicker: UIDatePicker!
+    @IBOutlet weak var genderPicker: UIPickerView!
+    @IBOutlet weak var HeaderForDateAndGenderView: UILabel!
     
-    var datepicker = UIDatePicker()
-    var genderpicker = UIPickerView()
     let dateformat = DateFormatter()
     let imagePicker = UIImagePickerController()
     var selectedImage : UIImage?
     
     var isKeyboardOpen = false
-    
+    var tap = UITapGestureRecognizer()
+    var isDateView = false
+    var backView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        genderpicker.delegate = self
-        genderpicker.dataSource = self
+        
+        backView = UIView(frame: self.view.frame)
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
+        backView.backgroundColor = .lightGray
+        backView.alpha = 0.5
+        backView.isUserInteractionEnabled = true
+        backView.addGestureRecognizer(tap)
+        
+        genderPicker.delegate = self
+        genderPicker.dataSource = self
         imagePicker.delegate = self
         
-        gender.inputView = genderpicker
-        dateofbirth.inputView = datepicker
+//        viewForDateAndGender.isHidden = true
+        gender.inputView = viewForDateAndGender
+        dateofbirth.inputView = viewForDateAndGender
         
-        datepicker.datePickerMode = .date
         dateformat.dateFormat = "dd-MMM-yyyy"
-//        
-        genderpicker.backgroundColor = .white
-        datepicker.backgroundColor = .white
-                
         
         for view in viewsForShadow {
             view.layer.shadowOffset = CGSize.zero
@@ -64,20 +72,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
-        
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        
-        
-        let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
-        let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([cancel,spaceButton,done], animated: false)
-        
-        gender.inputAccessoryView = toolbar
-        dateofbirth.inputAccessoryView = toolbar
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
         self.view.addGestureRecognizer(tap)
         
         
@@ -85,42 +80,76 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     override func viewDidLayoutSubviews() {
-        
         userImage.layer.cornerRadius = userImage.frame.width/2
         cameraBtn.layer.cornerRadius = cameraBtn.frame.width/2
         deleteImageBtn.layer.cornerRadius = deleteImageBtn.frame.width/2
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.viewForDateAndGender.removeFromSuperview()
+    }
+    
     func viewTapped() {
         self.view.endEditing(true)
+//        removeView()
     }
     
-    func donepressed(){
-        if dateofbirth.isEditing {
-            date = datepicker.date.timeIntervalSince1970
-            dateofbirth.text = dateformat.string(from: datepicker.date)
-            //date = datepicker.date as? Double
-        }
-        if gender.isEditing {
-            gender.text = gend[selectedrow]
-            previous = selectedrow
-        }
-        
-        if gend[selectedrow] == "Male" && userImage.image == #imageLiteral(resourceName: "dp-female") {
-            userImage.image = #imageLiteral(resourceName: "dp-male")
-        }
-        else if gend[selectedrow] == "Female" && userImage.image == #imageLiteral(resourceName: "dp-male") {
-            userImage.image = #imageLiteral(resourceName: "dp-female")
-        }
-        
-        self.view.endEditing(true)
-    }
     
-    func cancelpressed(){
-        if gender.isEditing {
+//    func addView() {
+//        self.backView.addGestureRecognizer(tap)
+//        view.addSubview(backView)
+//        if isDateView {
+//            datePicker.isHidden = false
+//            genderPicker.isHidden = true
+//        }
+//        else {
+//            datePicker.isHidden = true
+//            genderPicker.isHidden = false
+//        }
+//        self.view.bringSubview(toFront: viewForDateAndGender)
+//        UIView.animate(withDuration: 0.3, animations: {
+//            self.viewForDateAndGender.frame.origin.y -= self.viewForDateAndGender.frame.height
+//        })
+//        
+//    }
+//    
+//    func removeView() {
+//        UIView.animate(withDuration: 0.3, animations: {
+//            self.viewForDateAndGender.frame.origin.y += self.viewForDateAndGender.frame.height
+//        }) { (Success) in
+//            self.backView.removeFromSuperview()
+//        }
+//    }
+    
+    
+    @IBAction func CancelButton(_ sender: Any) {
+        if isDateView {
+            dateofbirth.text = dateofbirth.text
+        }
+        else {
             gender.text = previous == nil ? "" : gend[previous!]
         }
         self.view.endEditing(true)
+//        removeView()
+    }
+    
+    @IBAction func DoneButton(_ sender: Any) {
+        if isDateView {
+            dateofbirth.text = dateformat.string(from: datePicker.date)
+            date = datePicker.date.timeIntervalSince1970
+        }
+        else {
+            gender.text = gend[selectedrow]
+            previous = selectedrow
+            if gend[selectedrow] == "Male" && userImage.image == #imageLiteral(resourceName: "dp-female") {
+                userImage.image = #imageLiteral(resourceName: "dp-male")
+            }
+            else if gend[selectedrow] == "Female" && userImage.image == #imageLiteral(resourceName: "dp-male") {
+                userImage.image = #imageLiteral(resourceName: "dp-female")
+            }
+        }
+        self.view.endEditing(true)
+//        removeView()
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -204,16 +233,12 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     @IBAction func backBtnAction(_ sender: Any) {
-        
         self.dismiss(animated: true, completion: nil)
-        
     }
     
     func keyboardWillShow(notification: NSNotification) {
         
-        
         if !isKeyboardOpen {
-            
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
                 self.view.frame.origin.y -= keyboardSize.height
                 isKeyboardOpen = true
@@ -223,15 +248,12 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        
         if isKeyboardOpen {
-            
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
                 self.view.frame.origin.y += keyboardSize.height
                 isKeyboardOpen = false
             }
         }
-        
     }
     
     @IBAction func imageTapped(_ sender: UITapGestureRecognizer) {
@@ -272,6 +294,21 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         dismiss(animated: true, completion: nil)
     }
+    
+    @IBAction func GenderAndDateTextFieldEditingBegin(_ sender: UITextField) {
+        gender.inputView = viewForDateAndGender
+        dateofbirth.inputView = viewForDateAndGender
+        if sender == dateofbirth {
+            datePicker.isHidden = false
+            gender.isHidden = true
+        }
+        else {
+            genderPicker.isHidden = false
+            datePicker.isHidden = true
+        }
+//        addView()
+    }
+    
     
     /*
     // MARK: - Navigation

@@ -28,7 +28,7 @@ class TutorialViewController: UIViewController {
             if success {
                 if newUser {
                     
-                    let cont = UIStoryboard.init(name: "HuzaifaStroyboard", bundle: nil).instantiateViewController(withIdentifier: "walletsetup") as! ViewController
+                    let cont = UIStoryboard.init(name: "HuzaifaStroyboard", bundle: nil).instantiateViewController(withIdentifier: "walletsetup")
                     
                     self.present(cont, animated: true, completion: nil)
                 }

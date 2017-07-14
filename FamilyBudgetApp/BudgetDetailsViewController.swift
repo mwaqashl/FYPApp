@@ -66,6 +66,12 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         // Do any additional setup after loading the view.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        if budget?.walletID != Resource.sharedInstance().currentWalletID! {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
     func GetCurrentWalletTransactins() {
         currentWalletTransactions = []
         for key in Resource.sharedInstance().transactions.keys {

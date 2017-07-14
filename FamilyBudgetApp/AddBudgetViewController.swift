@@ -125,6 +125,12 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        if budget?.walletID != Resource.sharedInstance().currentWalletID! {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
     var SizeOfKeyboard = CGFloat()
     
     func keyboardWillShow(notification: NSNotification) {
