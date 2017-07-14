@@ -150,7 +150,6 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        print(Resource.sharedInstance().currencies.count)
         return Resource.sharedInstance().currencies.count
     }
     
@@ -242,6 +241,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 findFirstVC(cont: self).dismiss(animated: true, completion: nil)
             }
             else {
+                
                 print(err?.localizedDescription)
             }
         })

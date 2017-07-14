@@ -19,10 +19,11 @@ class BudgetTableViewCell: UITableViewCell {
     @IBOutlet weak var StartDate: UILabel!
     @IBOutlet weak var EndDate: UILabel!
     @IBOutlet weak var AssignMembersCollectionView: UICollectionView!
-    
     @IBOutlet weak var balanceAmountTitle: UILabel!
     @IBOutlet weak var BalanceAmount: UILabel!
     @IBOutlet weak var defaultstatusbar: UIView!
+    @IBOutlet weak var budgetUsed: NSLayoutConstraint!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

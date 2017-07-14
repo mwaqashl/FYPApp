@@ -304,7 +304,6 @@ class budgetHelper {
                 
                 return transaction.date.isBetween(date: Resource.sharedInstance().budgets[budgetID]!.startDate, andDate: endDate!)
             }.forEach { (id, transaction) in
-                print(transaction.id)
                 spendings = spendings + transaction.amount
         }
         return spendings
@@ -344,7 +343,6 @@ class budgetHelper {
                 
                 return transaction.date.isBetween(date: Resource.sharedInstance().budgets[budgetID]!.startDate, andDate: endDate!)
             }.forEach { (id, transaction) in
-                print(transaction.id)
                 spendings = spendings + transaction.amount
         }
         return spendings

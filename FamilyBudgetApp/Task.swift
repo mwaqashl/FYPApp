@@ -99,7 +99,6 @@ class Task {
     
     @objc func startObservingTimeLeft() {
         
-        print("Start Observing timeleft")
         let times : [Double] = [5*60, 10*60, 30*60, 60*60, 24*60*60, 7*24*60*60, 7*24*60*60, 31*24*60*60, 365*24*60*60]
         
         timeLeft = dueDate.timeIntervalSince(Date())

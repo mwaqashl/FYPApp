@@ -118,7 +118,6 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         let endDate = budget!.startDate.addingTimeInterval(Double(budget!.daysInbudget()*24*60*60))
         for i in 0..<currentWalletTransactions.count {
             if categories.contains(currentWalletTransactions[i].categoryId) && currentWalletTransactions[i].date >= budget!.startDate && currentWalletTransactions[i].date < endDate && members.contains(currentWalletTransactions[i].transactionById) {
-                print("\(i)")
                 transactions.append(currentWalletTransactions[i])
             }
         }
@@ -144,7 +143,6 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         
         for i in 0..<currentWalletTransactions.count {
             if categories.contains(currentWalletTransactions[i].categoryId) && currentWalletTransactions[i].date >= budget.startDate && currentWalletTransactions[i].date < endDate && members.contains(currentWalletTransactions[i].transactionById) {
-                print("\(i)")
                 total += currentWalletTransactions[i].amount
             }
         }
@@ -156,7 +154,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.section == 0 ? 130 : indexPath.section == 1 ? 300 : cells[indexPath.section] == "Transactions" || cells[indexPath.section] == "NoTransaction" ? 60 : 40
+        return indexPath.section == 0 ? 160 : indexPath.section == 1 ? 300 : cells[indexPath.section] == "Transactions" || cells[indexPath.section] == "NoTransaction" ? 60 : 40
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -224,7 +222,6 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             
             let size = CGFloat(BudgetRelatedTransaction(budget!)/budget!.allocAmount)*cell.defaultstatusbar.frame.width
             cell.Status.frame.size.width = size
-            print(size)
             cell.Status.backgroundColor = BudgetRelatedTransaction(budget!)/budget!.allocAmount >= 0.75 ? .red : darkThemeColor
             
             cell.selectionStyle = UITableViewCellSelectionStyle.none
@@ -281,13 +278,11 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func YesPressed(action : UIAlertAction) {
-        //        print("Kar de Delete")
         BudgetManager.sharedInstance().removeBudgetFromWallet(budget!)
         self.navigationController!.popViewController(animated: true)
     }
     
     func NoPressed(action : UIAlertAction) {
-        //        print("Nhn Kr Delete")
     }
     
     func filterTransaction() {

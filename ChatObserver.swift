@@ -63,7 +63,6 @@ class ChatObserver {
                 print("Error! Data is not dictionary", #function)
                 return
             }
-            print(data)
             let message = Message(id: snap.key, message: data["message"] as! String, date: data["timestamp"] as! Double , senderID: data["sender"] as! String, walletID: wallet.id)
             
             let dels = Delegate.sharedInstance().getChatDelegates()

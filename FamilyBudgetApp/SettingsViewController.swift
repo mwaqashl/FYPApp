@@ -626,13 +626,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
     }
     
+    // Notification Switch
     func NotificationSwitchBtn(_sender : Any) {
-        print("Switch Btn Pressed")
+
     }
     
     func memberTypeChanged(sender: UIButton) {
         
-        print("member type changed")
         let thisUser = walletMembers[sender.tag]
         
         if sender.currentTitle == "Make Admin" {

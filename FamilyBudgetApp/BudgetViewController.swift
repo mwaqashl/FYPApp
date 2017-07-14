@@ -34,9 +34,6 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         dateformat.dateFormat = "dd-MMM-yyyy"
         
-        tableview.dataSource = self
-        tableview.delegate = self
-        
         Delegate.sharedInstance().addWalletDelegate(self)
         Delegate.sharedInstance().addWalletMemberDelegate(self)
         Delegate.sharedInstance().addBudgetDelegate(self)
@@ -48,7 +45,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         allWalletsBtn.tintColor = darkThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
 
-        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
+        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "settings"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
         SettingsBtn.tintColor = darkThemeColor
         
         self.navigationItem.rightBarButtonItem = SettingsBtn
@@ -78,15 +75,13 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
     }
     
-    func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
-        
-        let font = UIFont(name: "untitled-font-25", size: size)!
+    func getAmountwithCurrency(Amount : Double , of font : UIFont) -> NSMutableAttributedString {
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
         
         let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
-        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: size)])
+        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
         let str = NSMutableAttributedString()
         str.append(CurrIcon)
@@ -151,7 +146,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         return total
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
         if isDataAvailable {
             
@@ -171,7 +166,15 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
             ExtractBudget()
             ExtractTransactions()
-            tableview.reloadData()
+            
+            if tableview.delegate == nil {
+                tableview.dataSource = self
+                tableview.delegate = self
+            }
+            else {
+                
+                tableview.reloadData()
+            }
         }
     }
 
@@ -216,17 +219,34 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if filterBudget.count == 0 {
-            let label = UILabel.init()
-            label.text = "No Budget Available"
+    func numberOfSections(in tableView: UITableView) -> Int {
+        
+        let label = UILabel()
+        let vieww = UIView(frame: CGRect(x: 0, y: 10, width: view.frame.size.width, height: 25))
+        if filterBudget.count == 0{
+            label.text = "No Budgets to Show\nPress + Button to Add Budget"
+            label.numberOfLines = 2
+            label.lineBreakMode = .byWordWrapping
             label.textAlignment = .center
-            self.tableview.backgroundView = label
+            label.clipsToBounds = true
+            label.font = UIFont.systemFont(ofSize: 14)
+            label.textColor = darkThemeColor
+            label.sizeToFit()
+            label.frame.size.width += 20
+            label.frame.size.height += 10
+            label.center = vieww.center
+            vieww.addSubview(label)
+            self.tableview.tableFooterView = vieww
+            return 0
         }
-        else {
-            self.tableview.backgroundView = nil
+        else{
+            self.tableview.tableFooterView = nil
+            return 1
         }
+        
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filterBudget.count
     }
     
@@ -243,9 +263,9 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.BudgetTitle.text = budget.title
         cell.Icon.text = budget.categories.first?.icon ?? ""
         
-        cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount, of: cell.TotalAmount.font.pointSize)
+        cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount, of: cell.TotalAmount.font)
         
-        cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget), of: cell.usedAmount.font.pointSize)
+        cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget), of: cell.usedAmount.font)
         
         cell.StartDate.text = dateformat.string(from: budget.startDate)
         cell.EndDate.text = dateformat.string(from: budget.startDate.addingTimeInterval(Double(24*60*60*budget.daysInbudget())))
@@ -254,10 +274,9 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.Icon.layer.borderColor = budget.categories.first?.color.cgColor
         cell.Icon.textColor = budget.categories.first?.color
         
-        cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), of: cell.BalanceAmount.font.pointSize)
-        
-        cell.Status.frame.size.width = CGFloat(BudgetRelatedTransaction(budget)/budget.allocAmount)*cell.defaultstatusbar.frame.width
-        
+        cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), of: cell.BalanceAmount.font)
+
+        cell.budgetUsed.constant = CGFloat(BudgetRelatedTransaction(budget)/budget.allocAmount)*(tableview.frame.width-40)
         cell.Status.backgroundColor = BudgetRelatedTransaction(budget)/budget.allocAmount >= 0.75 ? .red : darkThemeColor
         
         cell.selectionStyle = UITableViewCellSelectionStyle.none

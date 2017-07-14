@@ -94,7 +94,7 @@ class WalletManager {
             "status" : wallet.isOpen,
             "currency" : wallet.currencyID,
             "creator" : wallet.creatorID,
-            "creationDate" : wallet.creationDate,
+            "creationDate" : wallet.creationDate.timeIntervalSince1970,
             "isPersonal" : wallet.isPersonal
         ] as [String : Any]
         

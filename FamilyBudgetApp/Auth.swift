@@ -81,8 +81,6 @@ import Firebase
             else {
                 
                 Database.database().reference().child("Users").child(user!.uid).observeSingleEvent(of: .value, with: { (snap) in
-                    print(snap.value)
-                    print(snap.key)
                     guard let data = snap.value as? NSDictionary else {
                         self.isAuthenticated = false
                         self.authUser = nil
@@ -145,8 +143,6 @@ import Firebase
         
         if let user = Auth.auth().currentUser {
             Database.database().reference().child("Users").child(user.uid).observeSingleEvent(of: .value, with: { (snap) in
-                print(snap.value)
-                print(snap.key)
                 guard let data = snap.value as? NSDictionary else {
                     self.isAuthenticated = false
                     self.authUser = nil
@@ -160,11 +156,10 @@ import Firebase
                 HelperObservers.sharedInstance().startObserving()
                 HelperObservers.sharedInstance().getUserAndWallet({ (success) in
                     if success {
-                        var users = (defaultSettings.value(forKey: "lastUserIDs") as! [String:String])
+                        var users = (defaultSettings.value(forKey: "lastUserIDs") as? [String:String]) ?? [:]
                         users[thisUser.getUserID()] = thisUser.getUserID()
                         defaultSettings.setValue(users, forKey: "lastUserIDs")
                         callback(true, false)
-                        
                         
                     }else{
                         self.authUser = thisUser

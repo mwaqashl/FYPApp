@@ -309,9 +309,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
             
             cell.name.text = selectedCategory == "" ? "None" : ( (transaction?.category.isExpense)! && segmentbtn.selectedSegmentIndex == 1 ? "None" : ( !((transaction?.category.isExpense)!) && segmentbtn.selectedSegmentIndex == 0 ? "None" : transaction!.category.name ))
-            
-            print("Category name : \(cell.name.text)")
-            
+                        
             cell.icon.text = cell.name.text != "None" ? transaction?.category.icon : ""
             cell.icon.backgroundColor = transaction?.category != nil ? transaction!.category.color : UIColor.lightGray
             cell.icon.textColor = transaction!.category.color
@@ -340,15 +338,12 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             cell.personimage.image = #imageLiteral(resourceName: "dp-male")
             
             if type == .admin {
-                print("admin")
                 cell.type.text = "Admin"
             }
             else if type == .owner {
-                print("Owner")
                 cell.type.text = "Owner"
             }
             else if type == .member {
-                print("member")
                 cell.type.text = "Member"
             }
             cell.selectionStyle = UITableViewCellSelectionStyle.none
@@ -391,12 +386,11 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     }
     
     func YesPressed(action : UIAlertAction) {
-        print("Kar de Delete")
         TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
     }
     
     func NoPressed(action : UIAlertAction) {
-        print("Nhn Kr Delete")
+
     }
     
     func textViewDidChange(_ textView: UITextView) {
@@ -667,7 +661,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     
     //Transaction Delegate
     func transactionAdded(_ transaction: Transaction) {
-        print("Aya kuch")
     }
     
     func transactionDeleted(_ transaction: Transaction) {

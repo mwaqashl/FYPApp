@@ -55,7 +55,6 @@ class TransactionManager {
         
         walletRef.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
             if var walletData = currentData.value as? [String : Any] {
-                print(walletData["balance"])
                 var balance = walletData["balance"] as! Double
                 var totExp = walletData["totExpense"] as! Double
                 var totInc = walletData["totIncome"] as! Double
