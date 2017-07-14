@@ -413,13 +413,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
     }
     
+    // Notification Switch
     func NotificationSwitchBtn(_sender : Any) {
-        print("Switch Btn Pressed")
+
     }
     
     func memberTypeChanged(sender: UIButton) {
         
-        print("member type changed")
         let thisUser = walletMembers[sender.tag]
         
         if sender.currentTitle == "Make Admin" {
@@ -447,14 +447,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func YesPressed(action : UIAlertAction) {
-        print("Kar de Romove")
         memberTypes.removeValue(forKey: walletMembers[deletememberIndex].getUserID())
         walletMembers.remove(at: deletememberIndex)
         searchTableView.reloadData()
     }
     
     func NoPressed(action : UIAlertAction) {
-        print("Nhn Kr Delete")
+
     }
     
     // Search Delegate
@@ -470,22 +469,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }))
         }
         
-//        var results = [User]()
-//        
-//        for key in Resource.sharedInstance().users.keys {
-//            if Resource.sharedInstance().users[key]!.getUserEmail().contains(searchText) {
-//                for i in 0..<walletMembers.count {
-//                    if walletMembers[i].getUserID() == key {
-//                        return
-//                    }
-//                    else{
-//                        results.append(Resource.sharedInstance().users[key]!)
-//                    }
-//                }
-//            }
-//        }
-        
-        print("search results = ", results.count)
         for i in 0..<results.count {
             searchedUsers.append(results[i].value)
         }

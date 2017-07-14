@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, WalletDelegate {
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, WalletDelegate, WalletMemberDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     var walletIDs : [String] = []
     
@@ -18,6 +18,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         super.viewDidLoad()
         
         Delegate.sharedInstance().addWalletDelegate(self)
+        Delegate.sharedInstance().addWalletMemberDelegate(self)
         WalletObserver.sharedInstance().autoObserve = true
         WalletObserver.sharedInstance().startObserving()
         
@@ -37,7 +38,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                     
                 }
                 
-                print(self.walletIDs)
                 self.tableView.delegate = self
                 self.tableView.dataSource = self
                 
@@ -74,8 +74,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        
         Resource.sharedInstance().currentWalletID = walletIDs[indexPath.row]
         self.dismiss(animated: true, completion: nil)
         
@@ -88,7 +86,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let this = Resource.sharedInstance().userWallets[walletIDs[indexPath.row]]
-        
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "showWallet") as! WalletTableViewCell
         
         cell.icon.layer.borderWidth = 2
@@ -97,12 +95,20 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.icon.clipsToBounds = true
         cell.icon.textColor = this!.color
         cell.selectionStyle = .none
+        cell.membersCollectionView.tag = indexPath.row
+        if cell.membersCollectionView.delegate == nil {
+            cell.membersCollectionView.delegate = self
+            cell.membersCollectionView.dataSource = self
+        }
+        else {
+            cell.membersCollectionView.reloadData()
+        }
         for view in cell.views {
             view.backgroundColor = this!.color
         }
         cell.ownerName.text = this?.creator.userName
         this?.creator.getImage({ (data) in
-            cell.ownerImage.image = UIImage(data: data) ?? #imageLiteral(resourceName: "persontemp")
+            cell.ownerImage.image = UIImage(data: data) ?? #imageLiteral(resourceName: "dp-male")
         })
         
         if this!.isPersonal {
@@ -110,16 +116,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.membersLabel.isHidden = true
         }
         else {
-            
             cell.membersCollectionView.isHidden = false
             cell.membersLabel.isHidden = false
         }
         
         cell.icon.text = this?.icon
         cell.name.text = this?.name
-        cell.membersCollectionView.tag = indexPath.row
-//        cell.membersCollectionView.delegate = self
-        //        cell.membersCollectionView.dataSource = self
         cell.balance.text = "\(this!.balance)"
         cell.income.text = "\(this!.totalIncome)"
         cell.expense.text = "\(this!.totalExpense)"
@@ -127,21 +129,42 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         return cell
     }
     
+    // Collectionview Methods
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let wallet = Resource.sharedInstance().userWallets[walletIDs[collectionView.tag]]
+        return wallet!.memberTypes.count
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let wallet = Resource.sharedInstance().userWallets[walletIDs[collectionView.tag]]
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "member", for: indexPath) as! ImageCollectionViewCell
+        
+        cell.memberImage.image = wallet?.members[indexPath.item].image ?? #imageLiteral(resourceName: "dp-male")
+        cell.layer.cornerRadius = cell.frame.height/2
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 15, height: 15)
+    }
     
     // Wallet Delegate Methods
     
     func walletAdded(_ wallet: UserWallet) {
         
-        if !walletIDs.contains(wallet.id) {
+        if wallet.memberTypes[Resource.sharedInstance().currentUserId!] != nil {
             self.walletIDs.append(wallet.id)
-            tableView.reloadData()
+            tableView.reloadSections([0], with: .automatic)
         }
-        
     }
     
     func walletUpdated(_ wallet: UserWallet) {
         if walletIDs.contains(wallet.id) {
-            tableView.reloadData()
+            tableView.reloadSections([0], with: .automatic)
         }
     }
     
@@ -149,6 +172,28 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     }
     
+    func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
+        
+        if wallet.memberTypes[Resource.sharedInstance().currentUserId!] != nil && !walletIDs.contains(wallet.id) {
+            self.walletIDs.append(wallet.id)
+            tableView.reloadSections([0], with: .automatic)
+        }
+    }
+    
+    func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
+        if wallet.memberTypes[Resource.sharedInstance().currentUserId!] == nil && walletIDs.contains(wallet.id) {
+            
+            walletIDs.remove(at: walletIDs.index(of: wallet.id)!)
+            tableView.reloadSections([0], with: .automatic)
+        }
+
+    }
+    
+    func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
+        if walletIDs.contains(wallet.id) {
+            tableView.reloadSections([0], with: .automatic)
+        }
+    }
     
     /*
     // MARK: - Navigation

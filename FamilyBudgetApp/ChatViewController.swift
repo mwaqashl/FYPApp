@@ -40,23 +40,17 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         self.view.addGestureRecognizer(tap)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 80
-        
-        
         Delegate.sharedInstance().addChatDelegate(self)
-        
-        tableView.backgroundColor = UIColor.clear
-        
+        ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
+
         dateFormat.dateFormat = "dd-MMM-yyyy"
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag{
                 self.isDataAvailable = true
-                ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
                 self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
                 self.extractMessage()
-                
                 
                 self.tableView.reloadData()
             }
@@ -68,7 +62,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidAppear(_ animated: Bool) {
         
         if isDataAvailable {
-            ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
             self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
             extractMessage()
         }
@@ -119,16 +112,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         dates = []
         sortedMessages = [:]
         messages = []
-        
-        print("wallet id",Resource.sharedInstance().currentWalletID!)
-        for key in Resource.sharedInstance().walletChat.keys{
-            if key == Resource.sharedInstance().currentWalletID{
-                print(key)
-                messages = Resource.sharedInstance().walletChat[key]!
-                print(messages.count)
-                print("time is: \(timeFormat.string(from: messages.first!.timestamp))")
-            }
-        }
+        messages = Resource.sharedInstance().walletChat[Resource.sharedInstance().currentWalletID!] ?? []
         
         for i in 0..<messages.count{
             let date = dateFormat.string(from: messages[i].timestamp)
@@ -138,38 +122,19 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
             else{
                 sortedMessages[date] = [messages[i]]
                 dates.append(messages[i].timestamp)
-                print("timestamp: ",messages[i].timestamp)
             }
         }
-        
-            }
-        
-    func sortDates(){
-        var dt = [String]()
-        for i in 0..<dates.count{
-            dt = [dateFormat.string(from: dates[i])]
-            }
-        var dts = [Date]()
-        for i in 0..<dt.count{
-            dts = [dateFormat.date(from: dt[i])!]
-        }
-        dts.sort { (a, b) -> Bool in
-            a.compare(b) == .orderedAscending
-        }
-        dates = dts
+        sortDates()
+        tableView.reloadData()
         
     }
     
-    
-    
-    override func viewWillAppear(_ animated: Bool) {
-        if isDataAvailable {
-            ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
-            self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
-            extractMessage()
+    func sortDates(){
+        
+        dates.sort { (dt1, dt2) -> Bool in
+            return dt1 < dt2
         }
-        tableView.reloadData()
-
+        
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -284,37 +249,40 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     //Chat Delegate
     func newMessageArrived(message: Message) {
-        dateFormat.dateFormat = "dd-MMM-yyyy"
-        if message.walletID == Resource.sharedInstance().currentWalletID{
-            if isDataAvailable {
-                let strdate = dateFormat.string(from: message.timestamp)
-                print("strdate ",message.timestamp)
-                if sortedMessages.keys.contains(strdate){
-                    let msgs = sortedMessages[strdate]
-                    if !msgs!.contains(where: { (msg) -> Bool in
-                        return msg.id == message.id
-                    }){
-                        sortedMessages[strdate]?.append(message)
-                        }
-                    }
-                else{
-                    sortedMessages[strdate] = [message]
-                    dates.append(message.timestamp)
-                    sortDates()
-                }
-                
-                tableView.reloadData()
-                
-                let lastSection = tableView.numberOfSections - 1
-                if lastSection<0 {return}
-                let lastRow = tableView.numberOfRows(inSection: lastSection) - 1
-                if lastRow<0  { return}
-                
-                let ip = IndexPath(row: lastRow , section: lastSection)
-                tableView.scrollToRow(at: ip, at: .bottom, animated: true)
-                
-                }
+        
+        if message.walletID == Resource.sharedInstance().currentWalletID {
+            extractMessage()
         }
+        
+//        if message.walletID == Resource.sharedInstance().currentWalletID{
+//            if isDataAvailable {
+//                let strdate = dateFormat.string(from: message.timestamp)
+//                if sortedMessages.keys.contains(strdate){
+//                    let msgs = sortedMessages[strdate]
+//                    if !msgs!.contains(where: { (msg) -> Bool in
+//                        return msg.id == message.id
+//                    }){
+//                        sortedMessages[strdate]?.append(message)
+//                        }
+//                    }
+//                else{
+//                    sortedMessages[strdate] = [message]
+//                    dates.append(message.timestamp)
+//                    sortDates()
+//                }
+//                
+//                tableView.reloadData()
+//                
+//                let lastSection = tableView.numberOfSections - 1
+//                if lastSection<0 {return}
+//                let lastRow = tableView.numberOfRows(inSection: lastSection) - 1
+//                if lastRow<0  { return}
+//                
+//                let ip = IndexPath(row: lastRow , section: lastSection)
+//                tableView.scrollToRow(at: ip, at: .bottom, animated: true)
+//                
+//                }
+//        }
     }
 
     override func didReceiveMemoryWarning() {

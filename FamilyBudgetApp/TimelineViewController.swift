@@ -69,7 +69,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 self.TransactionFiltering()
                 self.SegmentbtnAction(self.Segmentbtn)
                 self.sortDates()
-                print(self.tableview.delegate)
                 self.tableview.reloadData()
                 
 //                let CurrIcon = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
@@ -81,7 +80,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         allWalletsBtn.tintColor = darkThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         
-        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
+        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "settings"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
         SettingsBtn.tintColor = darkThemeColor
         
         self.navigationItem.rightBarButtonItem = SettingsBtn
@@ -168,7 +167,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
         for i in 0..<Dates.count {
             ArrangeDates.append(dateformat.string(from: Dates[i]))
-            print(" Date : \(ArrangeDates)")
         }
         
         filteredDates = ArrangeDates
@@ -192,20 +190,30 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        var label = UILabel()
         
-        
-        if filteredDates.count == 0 {
-            label.text = "no transactions yet."
+        let label = UILabel()
+        let vieww = UIView(frame: CGRect(x: 0, y: 10, width: view.frame.size.width, height: 25))
+        if filteredDates.count == 0{
+            label.text = "No Transactions to Show\nPress '+' Button to Add Transaction"
+            label.numberOfLines = 2
+            label.lineBreakMode = .byWordWrapping
             label.textAlignment = .center
+            label.clipsToBounds = true
+            label.font = UIFont.systemFont(ofSize: 14)
+            label.textColor = darkThemeColor
             label.sizeToFit()
-            
-            tableView.backgroundView = label
+            label.frame.size.width += 20
+            label.frame.size.height += 10
+            label.center = vieww.center
+            vieww.addSubview(label)
+            self.tableview.tableFooterView = vieww
+            return 0
         }
-        else {
-            tableView.backgroundView = nil
+        else{
+            self.tableview.tableFooterView = nil
+            return filteredDates.count
         }
-        return filteredDates.count
+        
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -270,7 +278,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
             destination.isNew = false
             let trans = filteredTransactions[filteredDates[selectedrow!.section]]
             destination.transaction = trans![selectedrow!.row]
-            print("transaction Date\(trans![selectedrow!.row].date)")
             
         }
         else if segue.identifier == "addTrans" {

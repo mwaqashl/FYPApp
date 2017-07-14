@@ -40,7 +40,6 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(Resource.sharedInstance().currencies.count)
         genderpicker.delegate = self
         genderpicker.dataSource = self
         imagePicker.delegate = self
@@ -101,7 +100,6 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             date = datepicker.date.timeIntervalSince1970
             dateofbirth.text = dateformat.string(from: datepicker.date)
             //date = datepicker.date as? Double
-            print("\(date))")
         }
         if gender.isEditing {
             gender.text = gend[selectedrow]

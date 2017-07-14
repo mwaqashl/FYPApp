@@ -57,7 +57,6 @@ class HelperObservers  {
         })
         
         //for getting the wallet which is to be shown
-        print(Resource.sharedInstance().currentWalletID)
         Database.database().reference().child("Wallets").child(Resource.sharedInstance().currentWalletID!).observeSingleEvent(of: DataEventType.value, with: { (snap) in
             guard let dict = snap.value as? [String: Any] else {
                 print("Wallet value isnt a dictionary \(snap.key)")

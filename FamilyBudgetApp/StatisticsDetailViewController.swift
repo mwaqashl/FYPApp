@@ -108,7 +108,6 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         for i in 0..<currentWalletTransactions.count {
             
             let date = dateFormat.string(from: currentWalletTransactions[i].date)
-            print(date)
             if MonthRelatedTransaction.keys.contains(date) {
                 MonthRelatedTransaction[date]!.append(currentWalletTransactions[i])
             }
@@ -139,7 +138,6 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
                 CategoryAndAmount[transaction[i].categoryId] = transaction[i].amount
             }
         }
-        print(CategoryAndAmount.keys)
     }
     
     func DrawPieChart(data : [String : Double], PieChart : PieChartView) {

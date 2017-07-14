@@ -133,7 +133,6 @@ class WalletObserver {
     }
     
     fileprivate func observeWalletAdded(){
-        //print(Resource.sharedInstance().currentUserId)
         let walletsRef = ref.child("UserWallets").child(Resource.sharedInstance().currentUserId!)
         walletsRef.observe(DataEventType.childAdded, with:  { (snapshot) in
             let walletRef = self.ref.child("Wallets").child(snapshot.key)
@@ -163,8 +162,6 @@ class WalletObserver {
                     let wallet = UserWallet(id: snapshot1.key,
                                             name: dict["name"] as! String, icon: dict["icon"] as! String, currencyID: dict["currency"] as! String, creatorID: dict["creator"] as! String, balance: dict["balance"] as! Double, totInc: dict["totIncome"] as! Double, totExp: dict["totExpense"] as! Double, creationDate: (dict["creationDate"] as! Double)/1000, isPersonal: dict["isPersonal"] as! Bool, memberTypes: [:], isOpen: dict["isOpen"] as! Bool, color: dict["color"] as! String)
                     Resource.sharedInstance().userWallets[snapshot1.key] = wallet
-                    print("Printing dict : \(dict)\n\(dict["balance"])\n")
-                    print("Printing Wallet : \(wallet.creator.userName)\n\(wallet.balance)")
                     if self.autoObserve { self.startObserving(PartsOf : wallet) }
                     if self.autoObserveTransactions { self.startObserving(TransactionsOf : wallet) }
                     if self.autoObserveTasks { self.startObserving(TasksOf: wallet) }

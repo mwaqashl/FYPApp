@@ -18,13 +18,14 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     @IBOutlet weak var editIconBtn: UIButton!
     @IBOutlet weak var currencyName: UITextField!
     @IBOutlet weak var currencyCode: UITextField!
-    @IBOutlet weak var currencyIcon: UILabel!
     @IBOutlet var walletIcons: [UILabel]!
     @IBOutlet weak var membersCollectionView: UICollectionView!
     @IBOutlet weak var popoverView: UIView!
     @IBOutlet weak var iconsCollectionView: UICollectionView!
     @IBOutlet weak var colorsCollectionView: UICollectionView!
     @IBOutlet weak var doneBtn: UIButton!
+    @IBOutlet var viewsForShadow: [UIView]!
+    
     
     var searchedUsers : [User] = []
     var selectedindex = 0
@@ -32,10 +33,10 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     var wallet : UserWallet?
     var backView = UIView()
     var selectedIcon = ""
-    var selectedColor : UIColor = .brown
+    var selectedColor : UIColor = themeColorDark
     var pSelectedIcon = ""
     var pSelectedColor : UIColor = .brown
-    var colors : [UIColor] = [.blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
+    var colors : [UIColor] = [themeColorDark, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
     
     var walletMembers = [String:MemberType]()
     var members = [User]()
@@ -71,8 +72,19 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             icon.textColor = selectedColor
             icon.text = selectedIcon
         }
-        walletName.textColor = selectedColor
         
+        
+        for view in viewsForShadow {
+            view.layer.shadowOffset = CGSize.zero
+            view.layer.shadowOpacity = 0.6
+            view.layer.shadowRadius = 2
+            view.layer.shadowColor = selectedColor.cgColor
+        }
+        
+        walletName.textColor = themeColorDark
+        balance.textColor = themeColorDark
+        currencyName.textColor = themeColorDark
+        currencyCode.textColor = themeColorDark
         
         wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [Resource.sharedInstance().currentUserId! : .owner], isOpen: true, color: UIColor.blue.stringRepresentation)
         
@@ -211,7 +223,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         let this = all[selectedindex]
         
         wallet?.currencyID = this
-        currencyIcon.text = wallet!.currency.icon
         currencyCode.text = wallet!.currency.code
         currencyName.text = wallet!.currency.name
         self.view.endEditing(true)
@@ -219,7 +230,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     func cancelpressed(){
         if wallet!.currencyID != "" {
-            currencyIcon.text = wallet!.currency.icon
             currencyCode.text = wallet!.currency.code
             currencyName.text = wallet!.currency.name
         }
@@ -231,7 +241,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        print(Resource.sharedInstance().currencies.count)
         return Resource.sharedInstance().currencies.count
     }
     
@@ -273,7 +282,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 icon.textColor = selectedColor
                 icon.text = selectedIcon
             }
-            walletName.textColor = selectedColor
+            
         }
         else if sender.tag == 1 {
             
@@ -308,7 +317,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 icon.textColor = pSelectedColor
                 icon.text = pSelectedIcon
             }
-            walletName.textColor = pSelectedColor
+            
         }
         else if sender.tag == 1 {
             
@@ -342,10 +351,12 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             let index = selectedIcon.unicodeScalars.first!.value - 41011
             
-            let prev = collectionView.cellForItem(at: IndexPath.init(item: Int(index), section: 0)) as! DefaultCollectionViewCell
+            if let prev = collectionView.cellForItem(at: IndexPath.init(item: Int(index), section: 0)) as? DefaultCollectionViewCell {
+                
+                prev.layer.borderColor = UIColor.lightGray.cgColor
+                prev.icon.textColor = UIColor.lightGray
+            }
             
-            prev.layer.borderColor = UIColor.lightGray.cgColor
-            prev.icon.textColor = UIColor.lightGray
             
             let cell = collectionView.cellForItem(at: indexPath) as! DefaultCollectionViewCell
             //            pSelectedIcon = selectedIcon
@@ -360,11 +371,11 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             let index = selectedIcon.unicodeScalars.first!.value - 41011
             
-            let prev = collectionView.cellForItem(at: IndexPath.init(item: colors.index(of: selectedColor)!, section: 0))
-            
-            prev?.layer.borderColor = UIColor.white.cgColor
-            //            pSelectedColor = selectedColor
-            selectedColor = colors[indexPath.item]
+            if let prev = collectionView.cellForItem(at: IndexPath.init(item: colors.index(of: selectedColor)!, section: 0)) {
+                prev.layer.borderColor = UIColor.white.cgColor
+                //            pSelectedColor = selectedColor
+                selectedColor = colors[indexPath.item]
+            }
             
             let new = collectionView.cellForItem(at: indexPath)
             new?.layer.borderColor = selectedColor.cgColor
@@ -376,9 +387,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
         }
         
-        
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -464,7 +473,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             return CGSize(width: 50, height: 70)
         }
         
-        return collectionView.tag == 1 ? CGSize(width: 50, height: 50) : CGSize(width: 24, height: 24)
+        return collectionView.tag == 1 ? CGSize(width: Int(collectionView.frame.height/2)-20, height: Int(collectionView.frame.height/2)-20) : CGSize(width: 24, height: 24)
     }
 
 
@@ -496,7 +505,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.section == 0 {
-            
+            self.view.endEditing(true)
             walletMembers[searchedUsers[indexPath.row].getUserID()] = .member
             members.append(searchedUsers[indexPath.row])
             searchedUsers.remove(at: indexPath.row)
@@ -576,7 +585,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     func memberTypeChanged(sender: UIButton) {
         
-        print("member type changed")
         let thisUser = members[sender.tag]
         
         if sender.currentTitle == "Make Admin" {
@@ -606,7 +614,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             }))
             
         }
-        print("search results = ", results.count)
         for i in 0..<results.count {
             searchedUsers.append(results[i].value)
         }
