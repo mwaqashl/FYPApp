@@ -52,12 +52,22 @@
                                             <constraint firstAttribute="width" secondItem="xq9-kz-WeV" secondAttribute="height" id="zsd-an-h7m"/>
                                         </constraints>
                                     </imageView>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="lJ8-fk-rB5">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                        <color key="color" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </activityIndicatorView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.38280014899999998" green="0.55284925640000004" blue="0.327997133" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
+                                    <constraint firstItem="lJ8-fk-rB5" firstAttribute="centerX" secondItem="jUY-bA-KQO" secondAttribute="centerX" id="2YD-Fn-EqR"/>
                                     <constraint firstItem="xq9-kz-WeV" firstAttribute="height" secondItem="jUY-bA-KQO" secondAttribute="height" multiplier="0.35" id="7e3-k0-h7x"/>
                                     <constraint firstItem="xq9-kz-WeV" firstAttribute="top" secondItem="jUY-bA-KQO" secondAttribute="top" constant="100" id="Tyc-Iw-c1u"/>
+                                    <constraint firstItem="lJ8-fk-rB5" firstAttribute="centerY" secondItem="jUY-bA-KQO" secondAttribute="centerY" id="X45-hO-wqI"/>
+                                    <constraint firstAttribute="trailing" secondItem="lJ8-fk-rB5" secondAttribute="trailing" id="cAb-ZN-b4k"/>
+                                    <constraint firstItem="lJ8-fk-rB5" firstAttribute="leading" secondItem="jUY-bA-KQO" secondAttribute="leading" id="deb-5c-ZKP"/>
                                     <constraint firstItem="xq9-kz-WeV" firstAttribute="centerX" secondItem="jUY-bA-KQO" secondAttribute="centerX" id="ga6-gI-iAp"/>
+                                    <constraint firstAttribute="bottom" secondItem="lJ8-fk-rB5" secondAttribute="bottom" id="idO-SZ-XZJ"/>
+                                    <constraint firstItem="lJ8-fk-rB5" firstAttribute="top" secondItem="jUY-bA-KQO" secondAttribute="top" id="mPX-23-A69"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ejS-zg-akY">
@@ -108,18 +118,12 @@
                                     <constraint firstItem="CcF-6w-D0K" firstAttribute="centerY" secondItem="ejS-zg-akY" secondAttribute="centerY" id="m8W-Va-w0j"/>
                                 </constraints>
                             </view>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="lJ8-fk-rB5">
-                                <rect key="frame" x="189" y="350" width="37" height="37"/>
-                                <color key="color" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" red="0.10196078431372549" green="0.20392156862745098" blue="0.42745098039215684" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="zcH-TD-Z0N" firstAttribute="top" secondItem="ejS-zg-akY" secondAttribute="bottom" id="Ao6-Xf-4bG"/>
                             <constraint firstItem="zcH-TD-Z0N" firstAttribute="top" secondItem="Mru-UT-usa" secondAttribute="bottom" id="L6z-GA-Njq"/>
-                            <constraint firstItem="lJ8-fk-rB5" firstAttribute="centerX" secondItem="1V5-G5-484" secondAttribute="centerX" id="LG8-Qo-AG6"/>
                             <constraint firstItem="Mru-UT-usa" firstAttribute="leading" secondItem="1V5-G5-484" secondAttribute="leading" id="RrI-1t-LBw"/>
-                            <constraint firstItem="lJ8-fk-rB5" firstAttribute="centerY" secondItem="1V5-G5-484" secondAttribute="centerY" id="S1R-5A-z3G"/>
                             <constraint firstAttribute="trailing" secondItem="ejS-zg-akY" secondAttribute="trailing" id="bJu-tX-BoX"/>
                             <constraint firstItem="jUY-bA-KQO" firstAttribute="top" secondItem="1V5-G5-484" secondAttribute="top" id="cAc-tL-k6L"/>
                             <constraint firstItem="ejS-zg-akY" firstAttribute="leading" secondItem="1V5-G5-484" secondAttribute="leading" id="dxN-u5-r9w"/>
@@ -665,7 +669,7 @@
                 <navigationController id="1hB-GB-zk1" sceneMemberID="viewController">
                     <toolbarItems/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="4Ba-IP-G9z">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="4Ba-IP-G9z">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

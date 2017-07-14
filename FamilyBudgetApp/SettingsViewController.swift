@@ -9,7 +9,7 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, UICollectionViewDelegateFlowLayout {
+class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, UICollectionViewDelegateFlowLayout, UserDelegate, WalletDelegate, WalletMemberDelegate {
 
     
     @IBOutlet weak var SearchMemberViewTitle: UILabel!
@@ -62,7 +62,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         searchBar.autocapitalizationType = .none
 
         searchBar.delegate = self
-        
+        Delegate.sharedInstance().addUserDelegate(self)
+        Delegate.sharedInstance().addWalletDelegate(self)
+        Delegate.sharedInstance().addWalletMemberDelegate(self)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
 
@@ -83,7 +85,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 //                    self.selectedWallet! = Resource.sharedInstance().currentWallet?
 //                    
                     if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-                        self.settingsSetionCells = ["Add Member","Notification"]
+                        self.settingsSetionCells = ["Add Member","Notification","Change Name", "Change Icon"]
                         self.sections.append("leaveBtn")
                     }
                     else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
@@ -91,7 +93,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                         self.sections.append("leaveBtn")
                     }
                     else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
-                        self.settingsSetionCells += ["Delete Wallet"]
+                        self.settingsSetionCells += ["Change Name", "Change Icon", "Delete Wallet"]
                     }
                     self.sections += ["User","User Settings","SignOut"]
                 }
@@ -274,7 +276,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.userdp.image = Resource.sharedInstance().currentUser?.image ?? #imageLiteral(resourceName: "dp-male")
                 cell.userName.text = Resource.sharedInstance().currentUser?.userName
                 cell.userEmail.text = Resource.sharedInstance().currentUser?.getUserEmail()
-                
+                cell.selectionStyle = .none
+
                 return cell
                 
             case "Wallet Settings":
@@ -293,6 +296,22 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.icon.text = "A"
                 cell.switchBtn.isHidden = true
                 cell.settingName.text = userSettingsOptions[indexPath.row]
+                cell.selectionStyle = .none
+                return cell
+                
+            case "Change Name":
+                let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCells") as! SettingsTableViewCell
+                cell.icon.text = "A"
+                cell.switchBtn.isHidden = true
+                cell.settingName.text = settingsSetionCells[indexPath.row]
+                cell.selectionStyle = .none
+                return cell
+                
+            case "Change Icon":
+                let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCells") as! SettingsTableViewCell
+                cell.icon.text = "A"
+                cell.switchBtn.isHidden = true
+                cell.settingName.text = settingsSetionCells[indexPath.row]
                 cell.selectionStyle = .none
                 return cell
                 
@@ -450,6 +469,46 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 alert.addAction(no)
                 self.present(alert, animated: true, completion: nil)
             }
+            
+            else if settingsSetionCells[indexPath.row] == "Change Name" {
+                let alert = UIAlertController(title: "Edit Name", message: "Please Enter New Wallet Name", preferredStyle: .alert)
+                alert.addTextField(configurationHandler: { (textfield) in
+                    textfield.placeholder = "Wallet Name"
+                })
+                let Save = UIAlertAction(title: "Save", style: .default, handler: { (action) in
+                    let walletName = alert.textFields![0]
+                    var error = ""
+                    if walletName.text == "" {
+                        error = "Wallet Name cannot be empty"
+                    }
+                    if error == "" {
+                        let wallet = Resource.sharedInstance().currentWallet!
+                        let update = UserWallet(id: wallet.id, name: walletName.text!, icon: wallet.icon, currencyID: wallet.currencyID, creatorID: wallet.creatorID, balance: wallet.balance, totInc: wallet.totalIncome, totExp: wallet.totalExpense, creationDate: wallet.creationDate.timeIntervalSince1970, isPersonal: wallet.isPersonal, memberTypes: wallet.memberTypes, isOpen: wallet.isOpen, color: wallet.color.stringRepresentation)
+                        
+                        WalletManager.sharedInstance().updateWallet(update)
+                        
+                    }
+                    else {
+                        let alert2 = UIAlertController(title: "", message: error, preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: "Ok", style: .default, handler : { (action) in
+                            self.present(alert, animated: true, completion: nil)
+                        })
+                        alert2.addAction(okAction)
+                        self.present(alert2, animated: true, completion: nil)
+                    }
+                })
+                let Cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                alert.addAction(Save)
+                alert.addAction(Cancel)
+                self.present(alert, animated: true, completion: nil)
+            }
+            
+            else if settingsSetionCells[indexPath.row] == "Change Icon" {
+                
+                // Present icon and color popover here....
+                
+                
+            }
         }
         else if sections[indexPath.section] == "SignOut" {
             
@@ -460,6 +519,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             })
             
         }
+            
         else if sections[indexPath.section] == "leaveBtn" {
             
             let alert = UIAlertController(title: "", message: "Do you want to leave this wallet", preferredStyle: .alert)
@@ -526,7 +586,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
         //  Edit Name
             else if userSettingsOptions[indexPath.row] == "Edit Name" {
-                let alert = UIAlertController(title: "", message: "Edit Name", preferredStyle: .alert)
+                let alert = UIAlertController(title: "Edit Name", message: "Please Enter Your Name", preferredStyle: .alert)
                 alert.addTextField(configurationHandler: { (textfield) in
                     textfield.placeholder = "Enter User Name"
                 })
@@ -537,8 +597,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                          error = "User Name cannot be empty"
                     }
                     if error == "" {
-                        self.currentUser!.userName = userName.text!
-                        UserManager.sharedInstance().updateUserState(self.currentUser!)
+                        let user = Resource.sharedInstance().currentUser!
+                        let update = User(id: user.getUserID(), email: user.getUserEmail(), userName: userName.text!, imageURL: user.imageURL, gender: user.gender)
+                        UserManager.sharedInstance().updateUserState(update)
                     }
                     else {
                         let alert2 = UIAlertController(title: "", message: error, preferredStyle: .alert)
@@ -565,7 +626,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             searchTableView.reloadSections([0,1], with: .top)
         }
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return Resource.sharedInstance().currentWallet!.members.count
@@ -705,6 +765,68 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         SearchMemberView.center.y += SizeOfKeyboard/2
     }
     
-  
+// Wallet Delegate
+    
+    
+    func walletAdded(_ wallet: UserWallet) {
+        
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if wallet.id == Resource.sharedInstance().currentWalletID {
+            
+            self.SettingsTableView.reloadSections([sections.index(of: "Wallet")!], with: .fade)
+            
+        }
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        if wallet.id == Resource.sharedInstance().currentWalletID {
+            Resource.sharedInstance().currentWalletID = Resource.sharedInstance().currentUserId
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    func userAdded(_ user: User) {
+        
+    }
+    
+    func userUpdated(_ user: User) {
+        if user.getUserID() == Resource.sharedInstance().currentUserId {
+            self.SettingsTableView.reloadSections([sections.index(of: "User")!], with: .fade)
+        }
+    }
+    
+    func userDetailsAdded(_ user: CurrentUser) {
+        
+    }
+    
+    func userDetailsUpdated(_ user: CurrentUser) {
+        if user.getUserID() == Resource.sharedInstance().currentUserId {
+            self.SettingsTableView.reloadSections([sections.index(of: "User")!], with: .fade)
+        }
+    }
+    
+    func memberLeft(_ member: User, ofType: MemberType, wallet: Wallet) {
+        if member.getUserID() == Resource.sharedInstance().currentUserId && wallet.id == Resource.sharedInstance().currentWalletID {
+            Resource.sharedInstance().currentWalletID = Resource.sharedInstance().currentUserId
+            self.dismiss(animated: true, completion: nil)
+        }
+        else if Resource.sharedInstance().currentWalletID == wallet.id {
+            self.SettingsTableView.reloadSections([sections.index(of: "Members")!], with: .fade)
+        }
+    }
+    
+    func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
+        if Resource.sharedInstance().currentWalletID == wallet.id {
+            self.SettingsTableView.reloadSections([sections.index(of: "Members")!], with: .fade)
+        }
+    }
+    
+    func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
+        if Resource.sharedInstance().currentWalletID == wallet.id {
+            self.SettingsTableView.reloadSections([sections.index(of: "Members")!], with: .fade)
+        }
+    }
     
 }

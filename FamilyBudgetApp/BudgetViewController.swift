@@ -148,6 +148,10 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidAppear(_ animated: Bool) {
         
+        if Resource.sharedInstance().currentWalletID == nil {
+            isDataAvailable = false
+        }
+        
         if isDataAvailable {
             
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray

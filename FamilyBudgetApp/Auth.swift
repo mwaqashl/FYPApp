@@ -160,18 +160,48 @@ import Firebase
                         users[thisUser.getUserID()] = thisUser.getUserID()
                         defaultSettings.setValue(users, forKey: "lastUserIDs")
                         callback(true, false)
+                        return
                         
                     }else{
                         self.authUser = thisUser
                         callback(true, true)
-                        
-                        
+                        return
                     }
                 })
-                //
+                
             })
         }
-        callback(false,false)
+        else {
+            callback(false,false)
+        }
+    }
+    
+    func sendPasswordResetEmail(email: String, callback: @escaping (Bool)->Void) {
+        
+        Auth.auth().sendPasswordReset(withEmail: email) { (err) in
+            if err != nil {
+                print(err?.localizedDescription)
+                callback(false)
+                return
+            }
+            callback(true)
+        }
+        
+    }
+    
+    func updatePassword(newPassword: String, callback: (Bool)->Void) {
+        
+//        Auth.auth().cred
+//        
+//        if let user = Auth.auth().currentUser {
+//            
+//            user.createProfileChangeRequest()
+//            user.updatePassword(to: newPassword, completion: { (err) in
+//                <#code#>
+//            })
+//            
+//        }
+        
     }
     
 }

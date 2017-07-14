@@ -44,7 +44,8 @@ class UserObserver {
                 return
             }
             let user = User(id: snapshot.key, email: dict["email"] as! String, userName: dict["userName"] as! String, imageURL: dict["image"] as! String, gender: dict["gender"] as! Int)
-            guard let devices = dict["birthdate"] as? Double else{
+            print(dict)
+            guard let devices = dict["birthDate"] as? Double else{
                 Resource.sharedInstance().users[snapshot.key] = user
                 Delegate.sharedInstance().getUserDelegates().forEach({ (userDelegate) in
                     userDelegate.userUpdated(user)
@@ -59,7 +60,7 @@ class UserObserver {
             Resource.sharedInstance().currentUserId = snapshot.key
             Resource.sharedInstance().users[snapshot.key] = currentUser
             Delegate.sharedInstance().getUserDelegates().forEach({ (userDel) in
-                userDel.userDetailsAdded(currentUser)
+                userDel.userDetailsUpdated(currentUser)
             })
         })
     }
