@@ -10,6 +10,9 @@ import UIKit
 
 class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
+    @IBOutlet weak var currencyView: UIView!
+    @IBOutlet weak var currencyPicker: UIPickerView!
+    
     @IBOutlet weak var walletName: UITextField!
     @IBOutlet weak var searchTable: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -29,7 +32,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     var searchedUsers : [User] = []
     var selectedindex = 0
-    var currencypicker = UIPickerView()
     var wallet : UserWallet?
     var backView = UIView()
     var selectedIcon = ""
@@ -42,19 +44,19 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     var members = [User]()
     var label = UILabel()
     
-    
+    var tap = UITapGestureRecognizer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         Delegate.sharedInstance().addWalletDelegate(self)
         searchBar.autocapitalizationType = .none
-        currencypicker.dataSource = self
-        currencypicker.delegate = self
-        currencyName.inputView = currencypicker
-        currencyCode.inputView = currencypicker
+        currencyPicker.dataSource = self
+        currencyPicker.delegate = self
+        currencyName.inputView = currencyView
+        currencyCode.inputView = currencyView
+        
         searchBar.delegate = self
-        currencypicker.backgroundColor = .white
         backView = UIView(frame: self.view.frame)
         backView.backgroundColor = UIColor.init(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.2)
         
@@ -88,22 +90,20 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [Resource.sharedInstance().currentUserId! : .owner], isOpen: true, color: UIColor.blue.stringRepresentation)
         
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        
-        let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
-        let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([cancel,spaceButton,done], animated: false)
-        
-        currencyName.inputAccessoryView = toolbar
-        currencyCode.inputAccessoryView = toolbar
-
-        
-        
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
+        backView.addGestureRecognizer(tap)
         // Do any additional setup after loading the view.
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        self.currencyView.removeFromSuperview()
+    }
+    
+    func viewTapped() {
+        self.view.endEditing(true)
+        //        removeView()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -214,26 +214,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 self.backView.removeFromSuperview()
             }
         }
-        
-    }
-    
-    func donepressed(){
-        
-        let all = Array(Resource.sharedInstance().currencies.keys)
-        let this = all[selectedindex]
-        
-        wallet?.currencyID = this
-        currencyCode.text = wallet!.currency.code
-        currencyName.text = wallet!.currency.name
-        self.view.endEditing(true)
-    }
-    
-    func cancelpressed(){
-        if wallet!.currencyID != "" {
-            currencyCode.text = wallet!.currency.code
-            currencyName.text = wallet!.currency.name
-        }
-        self.view.endEditing(true)
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -305,6 +285,16 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 membersCollectionView.backgroundView = label
             }
         }
+        else if sender.tag == 2 {
+            let all = Array(Resource.sharedInstance().currencies.keys)
+            let this = all[selectedindex]
+            
+            wallet?.currencyID = this
+            currencyCode.text = wallet!.currency.code
+            currencyName.text = wallet!.currency.name
+            self.view.endEditing(true)
+//            removeView()
+        }
     }
     
     @IBAction func cancelBtnAction(_ sender: UIButton) {
@@ -322,9 +312,16 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         else if sender.tag == 1 {
             
             hideSearchView()
-            
-            
         }
+        else if sender.tag == 2 {
+            if wallet!.currencyID != "" {
+                currencyCode.text = wallet!.currency.code
+                currencyName.text = wallet!.currency.name
+            }
+            self.view.endEditing(true)
+//            removeView()
+        }
+        
     }
     
     @IBAction func addMemberBtnAction(_ sender: Any) {

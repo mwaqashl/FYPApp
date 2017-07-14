@@ -31,8 +31,10 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     
     var isNew : Bool = true
     var isEdit: Bool = true
+    
     var addBtn = UIBarButtonItem()
     var editBtn = UIBarButtonItem()
+    
     let dateformatter = DateFormatter()
     
     var selectedCategory = ""
@@ -129,6 +131,12 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                 self.CategoryCollectionView.dataSource = self
                 
             }
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if transaction?.walletID != Resource.sharedInstance().currentWalletID! {
+            self.navigationController?.popViewController(animated: true)
         }
     }
     

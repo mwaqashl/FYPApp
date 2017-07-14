@@ -26,10 +26,14 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBOutlet weak var finishBtn: UIButton!
     
     @IBOutlet var viewsForShadow: [UIView]!
+    @IBOutlet weak var currencyView: UIView!
     
     
     var isKeyboardOpen = false
-    var currencypicker = UIPickerView()
+    var tap = UITapGestureRecognizer()
+    
+    @IBOutlet weak var currencyPicker: UIPickerView!
+    
     var wallet : UserWallet?
     var backView = UIView()
     var selectedIcon = ""
@@ -42,11 +46,12 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         super.viewDidLoad()
         
         //Currency picker
-        currencypicker.dataSource = self
-        currencypicker.delegate = self
-        currencyName.inputView = currencypicker
-        currencyCode.inputView = currencypicker
-        currencypicker.backgroundColor = .white
+        currencyPicker.dataSource = self
+        currencyPicker.delegate = self
+        
+        currencyName.inputView = currencyView
+        currencyCode.inputView = currencyView
+        
         backView = UIView(frame: self.view.frame)
         backView.backgroundColor = UIColor.init(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.2)
         
@@ -72,16 +77,6 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         
-        
-        let done = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donepressed))
-        let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: #selector(cancelpressed))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([cancel,spaceButton,done], animated: false)
-        
-        currencyName.inputAccessoryView = toolbar
-        currencyCode.inputAccessoryView = toolbar
-        
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
@@ -94,8 +89,15 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         walletIconHeader.layer.cornerRadius = walletIconHeader.frame.height/2
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        currencyView.frame.origin.y = self.view.frame.height
+        self.currencyView.removeFromSuperview()
+    }
+    
+    
     func viewTapped() {
         self.view.endEditing(true)
+//        removeView()
     }
     func showPopUp() {
         
@@ -126,24 +128,28 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
     }
     
-    func donepressed(){
-        
-        let all = Array(Resource.sharedInstance().currencies.keys)
-        let this = all[selectedindex]
-        
-        wallet?.currencyID = this
-        currencyCode.text = wallet!.currency.code
-        currencyName.text = wallet!.currency.name
-        self.view.endEditing(true)
-    }
+    //currency view adding methods
+//    func addView() {
+//        self.backView.addGestureRecognizer(tap)
+//        view.addSubview(backView)
+//        currencyView.isHidden = false
+//        currencyPicker.isHidden = false
+//
+//        self.view.bringSubview(toFront: currencyView)
+//        UIView.animate(withDuration: 0.3, animations: {
+//            self.currencyView.frame.origin.y -= self.currencyView.frame.height
+//        })
+//        
+//    }
+//    
+//    func removeView() {
+//        UIView.animate(withDuration: 0.3, animations: {
+//            self.currencyView.frame.origin.y += self.currencyView.frame.height
+//        }) { (Success) in
+//            self.backView.removeFromSuperview()
+//        }
+//    }
     
-    func cancelpressed(){
-        if wallet!.currencyID != "" {
-            currencyCode.text = wallet!.currency.code
-            currencyName.text = wallet!.currency.name
-        }
-        self.view.endEditing(true)
-    }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -249,21 +255,42 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
     }
     
-    @IBAction func doneBtnAction(_ sender: Any) {
+    @IBAction func doneBtnAction(_ sender: UIButton) {
+        //tag 2 for currency buttons
+        if sender.tag == 2 {
+            let all = Array(Resource.sharedInstance().currencies.keys)
+            let this = all[selectedindex]
+            
+            wallet?.currencyID = this
+            currencyCode.text = wallet!.currency.code
+            currencyName.text = wallet!.currency.name
+            self.view.endEditing(true)
+//            removeView()
+        }
+        else {
+            hidePopUp()
         
-        hidePopUp()
-        
-        walletIconHeader.textColor = selectedColor
-        walletIconHeader.text = selectedIcon
+            walletIconHeader.textColor = selectedColor
+            walletIconHeader.text = selectedIcon
+        }
     }
     
-    @IBAction func cancelBtnAction(_ sender: Any) {
-        
-        hidePopUp()
-        walletIconHeader.textColor = pSelectedColor
-        walletIconHeader.text = pSelectedIcon
+    @IBAction func cancelBtnAction(_ sender: UIButton) {
+        //tag 2 for currency buttons
+        if sender.tag == 2 {
+            if wallet!.currencyID != "" {
+                currencyCode.text = wallet!.currency.code
+                currencyName.text = wallet!.currency.name
+            }
+            self.view.endEditing(true)
+//            removeView()
+        }
+        else {
+            hidePopUp()
+            walletIconHeader.textColor = pSelectedColor
+            walletIconHeader.text = pSelectedIcon
+        }
     }
-    
     
     @IBAction func changeIconAction(_ sender: Any) {
         
