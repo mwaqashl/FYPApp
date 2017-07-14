@@ -771,7 +771,7 @@
 				DEVELOPMENT_TEAM = 4947Y2A6XF;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppHuzaifa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
@@ -787,7 +787,7 @@
 				DEVELOPMENT_TEAM = 4947Y2A6XF;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppHuzaifa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;

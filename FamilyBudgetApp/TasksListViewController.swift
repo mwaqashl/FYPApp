@@ -42,7 +42,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
         allWalletsBtn.tintColor = darkThemeColor
         
-        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
+        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "settings"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
         SettingsBtn.tintColor = darkThemeColor
         
         self.navigationItem.rightBarButtonItem = SettingsBtn
