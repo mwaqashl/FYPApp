@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import ALCameraViewController
 
-class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
 
     // For Signup
     var date : Double?
@@ -36,7 +38,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     let dateformat = DateFormatter()
     let imagePicker = UIImagePickerController()
     var selectedImage : UIImage?
-    
+    var keyboardHeight : CGFloat = 0.0
     var isKeyboardOpen = false
     var tap = UITapGestureRecognizer()
     var isDateView = false
@@ -165,7 +167,6 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        //gender.text = gend[row]
         selectedrow = row
     }
 
@@ -240,7 +241,9 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         if !isKeyboardOpen {
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y -= keyboardSize.height
+                UIView.animate(withDuration: 0.3) {
+                    self.view.frame.origin.y -= keyboardSize.height/2
+                }
                 isKeyboardOpen = true
             }
         }
@@ -250,19 +253,55 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     func keyboardWillHide(notification: NSNotification) {
         if isKeyboardOpen {
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y += keyboardSize.height
+                UIView.animate(withDuration: 0.3) {
+                    self.view.frame.origin.y += keyboardSize.height/2
+                }
                 isKeyboardOpen = false
             }
         }
     }
     
-    @IBAction func imageTapped(_ sender: UITapGestureRecognizer) {
+    @IBAction func openCamera(_ sender: UIButton) {
         
-        imagePicker.allowsEditing = false
-        imagePicker.sourceType = .photoLibrary
+        let croppingEnabled = true
+        let cameraViewController = CameraViewController(croppingEnabled: croppingEnabled) { [weak self] image, asset in
+            
+            if image != nil {
+                self?.userImage.image = image
+            }
+            else {
+                self?.userImage.image = self?.gender.text == "Female" ? #imageLiteral(resourceName: "dp-female") : #imageLiteral(resourceName: "dp-male")
+            }
+            
+            self?.dismiss(animated: true, completion: nil)
+        }
         
-        self.present(imagePicker, animated: true, completion: nil)
+        present(cameraViewController, animated: true, completion: nil)
         
+    }
+    
+    @IBAction func deleteImage(_ sender: Any) {
+        if gender.text == "Female" {
+            userImage.image = #imageLiteral(resourceName: "dp-female")
+        }
+        else {
+            userImage.image = #imageLiteral(resourceName: "dp-male")
+        }
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        UIView.animate(withDuration: 0.3) { 
+            self.view.frame.origin.y -= self.keyboardHeight/2
+        }
+        
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame.origin.y += self.keyboardHeight/2
+        }
     }
     
     internal func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
@@ -275,16 +314,6 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
         dismiss(animated: true, completion: nil)
     }
-    
-//    private func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-//        if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
-//            selectedImage = pickedImage
-//        }
-//        
-//        userImage.image = selectedImage != nil ? selectedImage : #imageLiteral(resourceName: "persontemp")
-//        
-//        dismiss(animated: true, completion: nil)
-//    }
     
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -299,16 +328,19 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         gender.inputView = viewForDateAndGender
         dateofbirth.inputView = viewForDateAndGender
         if sender == dateofbirth {
+            isDateView = true
+            HeaderForDateAndGenderView.text = "Select Date"
             datePicker.isHidden = false
-            gender.isHidden = true
+            genderPicker.isHidden = true
         }
         else {
+            isDateView = false
+            HeaderForDateAndGenderView.text = "Select Gender"
             genderPicker.isHidden = false
             datePicker.isHidden = true
         }
 //        addView()
     }
-    
     
     /*
     // MARK: - Navigation

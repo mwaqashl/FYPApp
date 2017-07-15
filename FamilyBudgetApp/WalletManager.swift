@@ -91,7 +91,7 @@ class WalletManager {
             "name" : wallet.name,
             "icon" : wallet.icon,
             "color": wallet.color.stringRepresentation,
-            "status" : wallet.isOpen,
+            "isOpen" : wallet.isOpen,
             "currency" : wallet.currencyID,
             "creator" : wallet.creatorID,
             "creationDate" : wallet.creationDate.timeIntervalSince1970,

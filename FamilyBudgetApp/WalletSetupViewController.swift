@@ -244,10 +244,9 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
             (err) in
             
             if err == nil {
-                findFirstVC(cont: self).dismiss(animated: true, completion: nil)
+                self.view.window!.rootViewController?.dismiss(animated: true, completion: nil)
             }
             else {
-                
                 print(err?.localizedDescription)
             }
         })

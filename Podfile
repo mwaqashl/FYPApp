@@ -10,6 +10,7 @@ target 'FamilyBudgetApp' do
   pod 'Firebase/Auth'
   pod 'Firebase'
   pod 'Firebase/Storage’
+  pod 'ALCameraViewController'
 
   # Pods for FamilyBudgetApp
 

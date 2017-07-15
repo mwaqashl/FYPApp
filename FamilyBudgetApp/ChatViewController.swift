@@ -7,7 +7,7 @@
 //
 
 import UIKit
-class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ChatDelegate, UITextViewDelegate {
+class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ChatDelegate, UITextViewDelegate, UserDelegate, WalletDelegate {
     
     @IBAction func SendMessage(_ sender: Any) {
         if MessageTextField.text != ""{
@@ -30,6 +30,8 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var messages = [Message]()
     var isDataAvailable = false
     
+    var SettingsBtn = UIBarButtonItem()
+    var allWalletsBtn = UIBarButtonItem()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,10 +44,26 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 80
+        
+        
+        allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
+        allWalletsBtn.tintColor = darkThemeColor
+        
+        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "settings"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
+        SettingsBtn.tintColor = darkThemeColor
+        
+        self.navigationItem.rightBarButtonItem = SettingsBtn
+        self.navigationItem.leftBarButtonItem = allWalletsBtn
+        self.tabBarController?.tabBar.barTintColor = .white
+        
         Delegate.sharedInstance().addChatDelegate(self)
-        ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
+        
 
         dateFormat.dateFormat = "dd-MMM-yyyy"
+        
+        Delegate.sharedInstance().addWalletDelegate(self)
+        Delegate.sharedInstance().addUserDelegate(self)
+        
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag{
                 self.isDataAvailable = true
@@ -59,10 +77,37 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
         // Do any additional setup after loading the view.
     }
+    
+    
+    func SettingsBtnTapped() {
+        let cont = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
+        self.present(cont, animated: true, completion: nil)
+    }
+    
+    func allWalletsBtnTapped() {
+        let storyboard = UIStoryboard(name: "HuzaifaStroyboard", bundle: nil)
+        let cont = storyboard.instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
+        self.present(cont, animated: true, completion: nil)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         
         if isDataAvailable {
             self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
+            
+            if Resource.sharedInstance().currentWallet!.isPersonal {
+                
+                let alert = UIAlertController(title: "Message", message: "Chat not Available in Personal Wallet", preferredStyle: .alert)
+                let ok = UIAlertAction(title: "OK", style: .destructive, handler: { (ac) in
+                    self.tabBarController?.selectedIndex = 0
+                })
+                alert.addAction(ok)
+                self.present(alert, animated: true, completion: nil)
+                
+            }
+            
+            ChatObserver.sharedInstance().startObserving(wallet: Resource.sharedInstance().currentWallet!)
+            
             extractMessage()
         }
         tableView.reloadData()
@@ -113,7 +158,7 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         sortedMessages = [:]
         messages = []
         messages = Resource.sharedInstance().walletChat[Resource.sharedInstance().currentWalletID!] ?? []
-        
+        self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
         for i in 0..<messages.count{
             let date = dateFormat.string(from: messages[i].timestamp)
             if sortedMessages.keys.contains(date){
@@ -252,43 +297,67 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         if message.walletID == Resource.sharedInstance().currentWalletID {
             extractMessage()
+            
+            let section: Int = dates.count
+            let rows = sortedMessages[dateFormat.string(from: dates[section-1])]?.count
+            self.tableView.scrollToRow(at: IndexPath(row: rows!-1, section: section-1), at: .bottom, animated: true)
+            
         }
         
-//        if message.walletID == Resource.sharedInstance().currentWalletID{
-//            if isDataAvailable {
-//                let strdate = dateFormat.string(from: message.timestamp)
-//                if sortedMessages.keys.contains(strdate){
-//                    let msgs = sortedMessages[strdate]
-//                    if !msgs!.contains(where: { (msg) -> Bool in
-//                        return msg.id == message.id
-//                    }){
-//                        sortedMessages[strdate]?.append(message)
-//                        }
-//                    }
-//                else{
-//                    sortedMessages[strdate] = [message]
-//                    dates.append(message.timestamp)
-//                    sortDates()
-//                }
-//                
-//                tableView.reloadData()
-//                
-//                let lastSection = tableView.numberOfSections - 1
-//                if lastSection<0 {return}
-//                let lastRow = tableView.numberOfRows(inSection: lastSection) - 1
-//                if lastRow<0  { return}
-//                
-//                let ip = IndexPath(row: lastRow , section: lastSection)
-//                tableView.scrollToRow(at: ip, at: .bottom, animated: true)
-//                
-//                }
-//        }
     }
+    
+    
+    func walletAdded(_ wallet: UserWallet) {
+        
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        
+        if Resource.sharedInstance().currentWalletID == wallet.id {
+            
+            let alert = UIAlertController(title: "Message", message: "This Wallet has been deleted", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style: .destructive, handler: { (ac) in
+                self.tabBarController?.selectedIndex = 0
+            })
+            alert.addAction(ok)
+            self.present(alert, animated: true, completion: nil)
+            
+        }
+        
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if wallet.id == Resource.sharedInstance().currentWalletID {
+            extractMessage()
+        }
+    }
+    
+    func userAdded(_ user: User) {
+        
+    }
+    
+    func userUpdated(_ user: User) {
+        
+    }
+    
+    func userDetailsAdded(_ user: CurrentUser) {
+        
+    }
+    
+    func userDetailsUpdated(_ user: CurrentUser) {
+        if Resource.sharedInstance().currentWallet?.memberTypes[user.getUserID()] != nil {
+            extractMessage()
+        }
+    }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+    
     
 
     /*

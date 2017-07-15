@@ -13,7 +13,7 @@
 		044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B713E1E81764200613ECA /* WalletsCollectionViewCell.swift */; };
 		044B71411E81889A00613ECA /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71401E81889A00613ECA /* TimelineViewController.swift */; };
 		044B71431E8188D600613ECA /* TimelineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044B71421E8188D600613ECA /* TimelineTableViewCell.swift */; };
-		046DCDAC1E8AA1DF00A3BC15 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		046DCDAC1E8AA1DF00A3BC15 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		047710AC1F10E639004F1DAF /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047710AB1F10E639004F1DAF /* SettingsViewController.swift */; };
 		047710AF1F10F591004F1DAF /* SettingMembersTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047710AD1F10F591004F1DAF /* SettingMembersTableViewCell.swift */; };
 		047710B01F10F591004F1DAF /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047710AE1F10F591004F1DAF /* SettingsTableViewCell.swift */; };
@@ -36,8 +36,8 @@
 		04B0939C1E82803C003E26DE /* AddTransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B0939B1E82803C003E26DE /* AddTransactionViewController.swift */; };
 		04C2BD5B1E9247BF0064AADB /* AddTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD511E9247BF0064AADB /* AddTaskViewController.swift */; };
 		04C2BD5F1E9247BF0064AADB /* TaskMembersCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD551E9247BF0064AADB /* TaskMembersCollectionViewCell.swift */; };
-		04C2BD611E9247BF0064AADB /* (null) in Sources */ = {isa = PBXBuildFile; };
-		04C2BD631E9247BF0064AADB /* (null) in Sources */ = {isa = PBXBuildFile; };
+		04C2BD611E9247BF0064AADB /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		04C2BD631E9247BF0064AADB /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		04C2BD661E924B780064AADB /* TaskTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD651E924B780064AADB /* TaskTitleTableViewCell.swift */; };
 		04C2BD681E924B850064AADB /* AssignToTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD671E924B850064AADB /* AssignToTableViewCell.swift */; };
 		04C2BD6A1E924BD80064AADB /* DeleteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD691E924BD80064AADB /* DeleteTableViewCell.swift */; };
@@ -563,7 +563,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -575,7 +575,7 @@
 			files = (
 				776EE5521F156A0B0044B4B8 /* UserInfoTableViewCell.swift in Sources */,
 				7796D62D1F17E5FD00FAC5A7 /* ImageCollectionViewCell.swift in Sources */,
-				046DCDAC1E8AA1DF00A3BC15 /* (null) in Sources */,
+				046DCDAC1E8AA1DF00A3BC15 /* BuildFile in Sources */,
 				04C2BD6E1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift in Sources */,
 				773CC7051E92F9F60046E90F /* MembersCollectionViewCell.swift in Sources */,
 				777D02991E8A860000C682F2 /* WalletTableViewCell.swift in Sources */,
@@ -591,12 +591,12 @@
 				04C2BD661E924B780064AADB /* TaskTitleTableViewCell.swift in Sources */,
 				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
 				775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */,
-				04C2BD611E9247BF0064AADB /* (null) in Sources */,
+				04C2BD611E9247BF0064AADB /* BuildFile in Sources */,
 				0477D0F61EDA228700E8D358 /* BudgetDetailsViewController.swift in Sources */,
 				7765A5861ED7717A00EA42BB /* ChatManager.swift in Sources */,
 				047710B01F10F591004F1DAF /* SettingsTableViewCell.swift in Sources */,
 				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
-				04C2BD631E9247BF0064AADB /* (null) in Sources */,
+				04C2BD631E9247BF0064AADB /* BuildFile in Sources */,
 				775C2A1C1E5B11AD00E409B6 /* Transaction.swift in Sources */,
 				04B0939A1E82801D003E26DE /* CommentsTableViewCell.swift in Sources */,
 				04B093961E827F81003E26DE /* DefaultTableViewCell.swift in Sources */,

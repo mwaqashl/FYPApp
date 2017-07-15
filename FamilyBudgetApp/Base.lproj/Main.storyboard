@@ -562,7 +562,6 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="515" id="3Wg-uI-nYM"/>
                                     <constraint firstItem="chL-Ve-6dd" firstAttribute="top" secondItem="ATE-GM-ed5" secondAttribute="top" id="5Cj-07-A4a"/>
                                     <constraint firstItem="AwU-dR-qcq" firstAttribute="leading" secondItem="ATE-GM-ed5" secondAttribute="leading" id="CCr-BX-1vk"/>
                                     <constraint firstItem="aZZ-EQ-bJn" firstAttribute="leading" secondItem="ATE-GM-ed5" secondAttribute="leading" id="KfZ-2L-wr9"/>
@@ -579,6 +578,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="d06-66-kUL" firstAttribute="leading" secondItem="zxF-Fk-dTl" secondAttribute="leading" id="2ze-r3-q37"/>
+                            <constraint firstItem="ATE-GM-ed5" firstAttribute="height" secondItem="zxF-Fk-dTl" secondAttribute="height" multiplier="0.7" id="DJF-Ka-jnm"/>
                             <constraint firstAttribute="trailing" secondItem="ATE-GM-ed5" secondAttribute="trailing" id="EOU-0f-hCM"/>
                             <constraint firstItem="WuJ-Qf-DKl" firstAttribute="top" secondItem="d06-66-kUL" secondAttribute="bottom" id="F3y-dT-bdN"/>
                             <constraint firstItem="ATE-GM-ed5" firstAttribute="leading" secondItem="zxF-Fk-dTl" secondAttribute="leading" id="Hjz-aL-FfF"/>

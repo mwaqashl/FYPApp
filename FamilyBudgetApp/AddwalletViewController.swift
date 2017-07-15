@@ -66,7 +66,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         popoverView.layer.shadowRadius = 2
         searchView.isHidden = true
         
-        doneBtn.layer.borderColor = UIColor(red: 26/255, green: 52/255, blue: 109/255, alpha: 1).cgColor
+        doneBtn.layer.borderColor = themeColorDark.cgColor
         doneBtn.layer.borderWidth = 1
         
         selectedIcon = "\u{A037}"
@@ -91,7 +91,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [Resource.sharedInstance().currentUserId! : .owner], isOpen: true, color: UIColor.blue.stringRepresentation)
         
         tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
-        backView.addGestureRecognizer(tap)
+        self.view.addGestureRecognizer(tap)
         // Do any additional setup after loading the view.
     }
 
@@ -101,7 +101,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     func viewTapped() {
         self.view.endEditing(true)
-        //        removeView()
     }
     
     override func didReceiveMemoryWarning() {
@@ -148,7 +147,8 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     }
     
     func showPopUp() {
-        
+        self.view.removeGestureRecognizer(tap)
+        backView.addGestureRecognizer(tap)
         self.view.addSubview(backView)
         
         backView.alpha = 0
@@ -172,6 +172,9 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             self.popoverView.isHidden = true
             self.backView.removeFromSuperview()
+            
+            self.backView.removeGestureRecognizer(self.tap)
+            self.view.addGestureRecognizer(self.tap)
             
         })
         

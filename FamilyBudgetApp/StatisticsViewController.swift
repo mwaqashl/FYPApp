@@ -123,7 +123,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         Months.sort { (a, b) -> Bool in
             a.compare(b) == .orderedAscending
         }
-        selectedMonthIndex = Months.count-1
+        selectedMonthIndex = selectedMonthIndex != 0 ? Months.count-1 : 0
     }
     //Categories and its amount
     func filterCategoriesAndAmount() {

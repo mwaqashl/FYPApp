@@ -133,7 +133,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         if !isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y -= keyboardSize.height
+                self.view.frame.origin.y -= keyboardSize.height/2
                 isKeyboardOpen = true
             }
         }
@@ -147,7 +147,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         if isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y += keyboardSize.height
+                self.view.frame.origin.y += keyboardSize.height/2
                 isKeyboardOpen = false
             }
         }

@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>ALCameraViewController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Charts.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -27,22 +32,27 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>07C004EE9675A950E771D1109A09AE79</key>
+		<key>107A9565F9DF88517DFD3E28C05B2B96</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>1A3C1A6FEDE2E71B69AB0A24F918EBBB</key>
+		<key>591DBA81BAD8F4EE0CC506F85D2CF92A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>23BA9083ED0D2392A167A8AFA04427FA</key>
+		<key>C052BEBFBD0AB5218CC64BA3450F6547</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7D04535608058A2FABC0D16935868FB9</key>
+		<key>D7FAEFEAF68AE19EB2D22369766AF24E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F307B842FF76B2DE6C55DB67C0885325</key>
 		<dict>
 			<key>primary</key>
 			<true/>
