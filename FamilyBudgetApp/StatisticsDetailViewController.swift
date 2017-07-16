@@ -31,12 +31,12 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     var expenseTransaction = [Transaction]()
     var incomeTransaction = [Transaction]()
     
-    var cells = ["Stats","Transactions"]
+    var cells = ["Statistical view","Transactions"]
     var isDataAvailable = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        nextMonthBtn.transform = CGAffineTransform.init(rotationAngle: CGFloat(Double.pi))
         tableView.delegate = self
         tableView.dataSource = self
         
@@ -210,7 +210,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return cells[indexPath.section] == "Stats" ? 300 : 60
+        return cells[indexPath.section] == "Statistical view" ? 300 : 60
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -225,7 +225,13 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             cell.category.text = transaction.category.name
             
             cell.amount.attributedText = getAmountwithCurrency(Amount: transaction.amount, of: cell.amount.font.pointSize)
-            //             cell.imageView!.image = transaction.transactionBy.image != nil ? transaction.transactionBy.image : #imageLiteral(resourceName: "dp-male")
+
+            cell.personImage.image = transaction.transactionBy.image
+            
+            transaction.transactionBy.imageCallback = {
+                image in
+                cell.personImage.image = image
+            }
             
             cell.categoryIcon.textColor = transaction.category.color
             cell.categoryIcon.layer.borderColor = cell.categoryIcon.textColor.cgColor
@@ -238,10 +244,6 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             
         case "NoTransaction":
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoTransactionCell") as! TaskTitleTableViewCell
-            cell.taskTitle.text = "No Transactions Available"
-            cell.taskTitle.textColor = .lightGray
-            cell.isUserInteractionEnabled = false
-            cell.taskTitle.isEditable = false
             cell.selectionStyle = .none
             return cell
             
@@ -252,8 +254,12 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             if CategoryAndAmount.isEmpty {
                 cell.PieChartView.data?.clearValues()
                 cell.PieChartView.noDataText = "No transaction Available"
+                cell.PieChartView.isHidden = true
+                cell.noDataLabel.isHidden = false
             }
             else {
+                cell.PieChartView.isHidden = false
+                cell.noDataLabel.isHidden = true
                 self.DrawPieChart(data: CategoryAndAmount, PieChart: cell.PieChartView)
             }
             cell.PieChartView.chartDescription?.text = ""
@@ -261,6 +267,10 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             
             cell.selectionStyle = .none
             return cell        }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return cells[section]
     }
     
     @IBAction func segmentBtnAction(_ sender: Any) {

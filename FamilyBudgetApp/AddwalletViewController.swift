@@ -29,7 +29,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     @IBOutlet weak var doneBtn: UIButton!
     @IBOutlet var viewsForShadow: [UIView]!
     
-    
+    var isKeyboardOpen = false
     var searchedUsers : [User] = []
     var selectedindex = 0
     var wallet : UserWallet?
@@ -92,6 +92,10 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
         self.view.addGestureRecognizer(tap)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
         // Do any additional setup after loading the view.
     }
 
@@ -182,6 +186,8 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     }
     
     func showSearchView() {
+        self.view.removeGestureRecognizer(tap)
+        backView.addGestureRecognizer(tap)
         self.view.addSubview(backView)
         
         backView.alpha = 0
@@ -207,6 +213,9 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     }
     
     func hideSearchView() {
+        
+        backView.removeGestureRecognizer(tap)
+        self.view.addGestureRecognizer(tap)
         
         UIView.animate(withDuration: 0.3, animations: {
             self.searchView.frame.origin.y += self.searchView.frame.height
@@ -513,6 +522,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             walletMembers[searchedUsers[indexPath.row].getUserID()] = .member
             members.append(searchedUsers[indexPath.row])
             searchedUsers.remove(at: indexPath.row)
+            searchBar.text = ""
             tableView.reloadSections([0,1], with: .top)
         }
         
@@ -542,12 +552,11 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                     image in
                     cell.userImage.image = image
                 }
-                
+                cell.memberType.isHidden = true
+                cell.actionsStackView.isHidden = true
                 cell.accessoryType = .none
                 cell.userName.text = this.userName
                 cell.userEmail.text = this.getUserEmail()
-                
-                cell.memberTypeBtn.isHidden = true
                 
                 return cell
                 
@@ -559,57 +568,47 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             let cell = tableView.dequeueReusableCell(withIdentifier: "searchedUsers") as! UserSearchResultTableViewCell
             cell.selectionStyle = .none
             let this = members[indexPath.row]
-            
+            cell.memberType.isHidden = false
             cell.userImage.image = this.image ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
             
             this.imageCallback = {
                 image in
                 cell.userImage.image = image
             }
+            cell.actionsStackView.isHidden = false
+            let type = self.walletMembers[this.getUserID()]
             
-            cell.memberTypeBtn.isEnabled = true
-            if walletMembers[this.getUserID()] == .owner {
-                cell.accessoryType = .none
-                cell.memberTypeBtn.setTitle("Owner", for: UIControlState.normal)
-                cell.memberTypeBtn.isEnabled = false
+            if type == .owner {
+                cell.memberType.text = "Owner"
+                cell.actionsStackView.isHidden = true
             }
-            else if walletMembers[this.getUserID()] == .admin {
-                cell.accessoryType = .checkmark
-                cell.memberTypeBtn.setTitle("Remove from Admin", for: UIControlState.normal)
+            else if type == .admin {
+                cell.memberType.text = "Admin"
             }
             else {
-                cell.accessoryType = .checkmark
-                cell.memberTypeBtn.setTitle("Make Admin", for: UIControlState.normal)
+                cell.memberType.text = "Member"
+            }
+            
+            cell.adminBtnAction = {
+                print(this.userName)
+                print(self.walletMembers[this.getUserID()])
+                self.walletMembers[this.getUserID()] = self.walletMembers[this.getUserID()] == .admin ? .member : .admin
+                
+                cell.memberType.text = self.walletMembers[this.getUserID()] == .admin ? "Admin" : "Member"
+//                tableView.reloadSections([1], with: .fade)
+            }
+            cell.removeMemberAction = {
+                self.walletMembers[this.getUserID()] = nil
+                tableView.reloadSections([1], with: .fade)
             }
             
             cell.userName.text = this.userName
             cell.userEmail.text = this.getUserEmail()
-            cell.memberTypeBtn.isHidden = false
-            cell.memberTypeBtn.addTarget(self, action: #selector(self.memberTypeChanged), for: .touchUpInside)
-            cell.memberTypeBtn.tag = indexPath.row
+            
             return cell
         }
         
         return UITableViewCell()
-    }
-    
-    
-    func memberTypeChanged(sender: UIButton) {
-        
-        let thisUser = members[sender.tag]
-        
-        if sender.currentTitle == "Make Admin" {
-            
-            walletMembers[thisUser.getUserID()] = .admin
-            sender.setTitle("Remove from Admin", for: .normal)
-        }
-        else if sender.currentTitle == "Remove from Admin" {
-            
-            walletMembers[thisUser.getUserID()] = .member
-            sender.setTitle("Make Admin", for: .normal)
-        }
-        
-        
     }
     
     /// Search Bar delegate Functions 
@@ -630,7 +629,30 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         }
         searchTable.reloadSections([0], with: .left)
     }
-
+    
+    func keyboardWillShow(notification: NSNotification) {
+        
+        if !isKeyboardOpen {
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                UIView.animate(withDuration: 0.3) {
+                    self.view.frame.origin.y -= keyboardSize.height/2
+                }
+                isKeyboardOpen = true
+            }
+        }
+        
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        if isKeyboardOpen {
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                UIView.animate(withDuration: 0.3) {
+                    self.view.frame.origin.y += keyboardSize.height/2
+                }
+                isKeyboardOpen = false
+            }
+        }
+    }
 }
 
 extension AddwalletViewController: WalletDelegate {

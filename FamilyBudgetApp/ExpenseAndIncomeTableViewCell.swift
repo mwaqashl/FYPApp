@@ -18,7 +18,7 @@ class ExpenseAndIncomeTableViewCell: UITableViewCell {
     @IBOutlet weak var ExpenseAmount: UILabel!
     @IBOutlet weak var ExpenseBtn: UIButton!
     
-    @IBOutlet weak var Separator: UIView!
+    @IBOutlet var detailIndicators: [UILabel]!
     
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -13,6 +13,7 @@ class BudgetStatsTableViewCell: UITableViewCell {
 
 
     
+    @IBOutlet weak var noDataLabel: UILabel!
     @IBOutlet weak var PieChartView: PieChartView!
     
     override func awakeFromNib() {

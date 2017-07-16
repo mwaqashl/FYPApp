@@ -34,6 +34,8 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        nextMonthBtn.transform = CGAffineTransform.init(rotationAngle: CGFloat(Double.pi))
+        
         dateFormat.dateFormat = "MMMM-yyyy"
         MonthHeader.text = dateFormat.string(from: Date())
         
@@ -116,7 +118,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     func ExtractTransactions() {
         currentWalletTransactions = Resource.sharedInstance().currentWallet!.transactions
         MonthRelatedTransaction = [:]
-        Months = [Date()]
+        Months = []
         
         for i in 0..<currentWalletTransactions.count {
             
@@ -128,6 +130,9 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 MonthRelatedTransaction[date] = [currentWalletTransactions[i]]
                 Months.append(currentWalletTransactions[i].date)
             }
+        }
+        if Months.count == 0 {
+            Months.append(Date())
         }
         sortMonths()
         tableView.reloadData()
@@ -228,7 +233,6 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             cell.BalanceHeader.text = "Remaining Balance"
             cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: cell.BalanceAmount.font.pointSize)
             cell.BalanceAmount.textColor = .blue
-            cell.backgroundColor? = .white
             cell.selectionStyle = .none
             return cell
             
@@ -236,6 +240,10 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             let cell = tableView.dequeueReusableCell(withIdentifier: "IncomeExpenceCell") as! ExpenseAndIncomeTableViewCell
             cell.ExpenseBtn.isHidden = true
             cell.IncomeExpandBtn.isHidden = true
+            for view in cell.detailIndicators {
+                view.isHidden = true
+            }
+            
             var income = 0.0
             var expense = 0.0
             
@@ -247,7 +255,6 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                     income += currentWalletTransactions[i].amount
                 }
             }
-            
             cell.ExpenseHeader.text = "Avg. Monthly Expense"
             cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense/Double(Months.count), of: cell.ExpenseAmount.font.pointSize)
             cell.ExpenseAmount.textColor = .red
@@ -285,6 +292,12 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             
             cell.ExpenseBtn.isHidden = false
             cell.IncomeExpandBtn.isHidden = false
+            for view in cell.detailIndicators {
+                view.isHidden = false
+                view.transform = CGAffineTransform.init(rotationAngle: CGFloat(Double.pi))
+            }
+            
+            
             
             for i in 0..<transactions.count {
                 if transactions[i].isExpense {
@@ -306,6 +319,9 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             
             cell.ExpenseBtn.isHidden = true
             cell.IncomeExpandBtn.isHidden = true
+            for view in cell.detailIndicators {
+                view.isHidden = true
+            }
             
             var income = 0.0
             var expense = 0.0

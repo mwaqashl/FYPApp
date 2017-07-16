@@ -351,21 +351,18 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     let cell = tableView.dequeueReusableCell(withIdentifier: "searchedUsers") as! UserSearchResultTableViewCell
                     cell.selectionStyle = .none
                     let this = searchedUsers[indexPath.row]
-                    cell.memberType.text = memberTypes[this.getUserID()] == .owner ? "Owner" : memberTypes[this.getUserID()] == .admin ? "Admin" : "\(cell.memberType.isHidden = true)"
                     
                     cell.userImage.image = this.image ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
-
+                    
                     this.imageCallback = {
                         image in
                         cell.userImage.image = image
                     }
-                    
+                    cell.memberType.isHidden = true
+                    cell.actionsStackView.isHidden = true
                     cell.accessoryType = .none
                     cell.userName.text = this.userName
                     cell.userEmail.text = this.getUserEmail()
-                    
-                    cell.memberTypeBtn.isHidden = true
-                    cell.RemoveMemberBtn.isHidden = true
                     
                     return cell
                     
@@ -385,45 +382,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     cell.userImage.image = image
                 }
                 
-                
-                cell.memberTypeBtn.isEnabled = true
-//                if SearchMemberViewTitle.text == "Add Members" {
-                if memberTypes[this.getUserID()] == .owner {
-                    cell.memberTypeBtn.setTitle("Owner", for: UIControlState.disabled)
-                    cell.memberTypeBtn.isEnabled = false
-                    cell.RemoveMemberBtn.isEnabled = false
-                    cell.memberTypeBtn.isHidden = self.SearchMemberViewTitle.text == "Add Members"
-                    cell.RemoveMemberBtn.isHidden = self.SearchMemberViewTitle.text! == "Assign Admin" || self.SearchMemberViewTitle.text! == "Transfer OwnerShip"
-                }
-                else if memberTypes[this.getUserID()] == .admin {
-                    cell.memberTypeBtn.isHidden = self.SearchMemberViewTitle.text! == "Add Members"
-                    cell.RemoveMemberBtn.isHidden = self.SearchMemberViewTitle.text! == "Assign Admin" || self.SearchMemberViewTitle.text! == "Transfer OwnerShip"
-                    let btntext = self.SearchMemberViewTitle.text == "Asign Admin" ? "Remove from Admin" : "Make Owner"
-                    cell.memberTypeBtn.setTitle(btntext, for: UIControlState.normal)
-                }
-                else {
-                    cell.RemoveMemberBtn.isHidden = self.SearchMemberViewTitle.text! == "Assign Admin" || self.SearchMemberViewTitle.text! == "Transfer OwnerShip"
-                    cell.memberTypeBtn.isHidden = self.SearchMemberViewTitle.text == "Add Members"
-                    let btntext = self.SearchMemberViewTitle.text == "Asign Admin" ? "Make Admin" : "Make Owner"
-                    cell.memberTypeBtn.setTitle(btntext, for: UIControlState.normal)
-                }
-                cell.memberType.text = memberTypes[this.getUserID()] == .owner ? "Owner" : memberTypes[this.getUserID()] == .admin ? "Admin" : "\(cell.memberType.isHidden = true)"
                 cell.userName.text = this.userName
                 cell.userEmail.text = this.getUserEmail()
-                cell.memberTypeBtn.isHidden = false
-                cell.RemoveMemberBtn.isHidden = false
-                cell.memberTypeBtn.addTarget(self, action: #selector(self.memberTypeChanged), for: .touchUpInside)
-                cell.RemoveMemberBtn.addTarget(self, action: #selector(self.removeMember), for: .touchUpInside)
-                cell.RemoveMemberBtn.tag = indexPath.row
-                cell.memberTypeBtn.tag = indexPath.row
-                
-                cell.memberTypeBtn.layer.cornerRadius = cell.memberTypeBtn.layer.frame.height/4
-                cell.memberTypeBtn.layer.borderWidth = 1
-                cell.memberTypeBtn.layer.borderColor = darkThemeColor.cgColor
-                
-                cell.RemoveMemberBtn.layer.cornerRadius = cell.RemoveMemberBtn.layer.frame.height/4
-                cell.RemoveMemberBtn.layer.borderWidth = 1
-                cell.RemoveMemberBtn.layer.borderColor = UIColor.red.cgColor
+
                 
                 return cell
             }
