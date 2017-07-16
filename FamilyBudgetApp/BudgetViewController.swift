@@ -80,7 +80,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
         
-        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
+        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font.withSize(font.pointSize*0.7)])
         let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
         let str = NSMutableAttributedString()
@@ -469,7 +469,6 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
     }
-    
     func memberAdded(_ member: User, budget: Budget) {
         if isDataAvailable {
             if budget.walletID == Resource.sharedInstance().currentWalletID {

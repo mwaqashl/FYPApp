@@ -89,13 +89,11 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
-        Add = UIBarButtonItem.init(title: "\u{A009}", style: .plain, target: self, action: #selector(self.AddTask))
-        Add.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
+        Add = UIBarButtonItem.init(image: #imageLiteral(resourceName: "add-icon"), style: .plain, target: self, action: #selector(self.AddTask))
         Add.tintColor = darkThemeColor
         
-        Edit = UIBarButtonItem.init(title: "\u{A013}", style: .plain, target: self, action: #selector(self.EditTask))
-        Edit.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-//        Edit.tintColor = darkThemeColorddWalletMemberDelegate(self)
+        Edit = UIBarButtonItem.init(image: #imageLiteral(resourceName: "edit"), style: .plain, target: self, action: #selector(self.EditTask))
+
         Delegate.sharedInstance().addTaskDelegate(self)
         Delegate.sharedInstance().addTaskMemberDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)

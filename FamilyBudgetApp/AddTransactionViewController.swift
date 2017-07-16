@@ -67,13 +67,11 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         backView!.alpha = 0.5
         backView!.isUserInteractionEnabled = true
         
-        addBtn = UIBarButtonItem(title: "\u{A009}", style: .plain, target: self, action: #selector(self.addBtnPressed))
-        addBtn.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
-        
-        
-        editBtn = UIBarButtonItem(title: "\u{A013}", style: .plain, target: self, action: #selector(self.editBtnPressed))
-        editBtn.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
+        addBtn = UIBarButtonItem.init(image: #imageLiteral(resourceName: "done"), style: .plain, target: self, action: #selector(self.addBtnPressed))
         addBtn.tintColor = darkThemeColor
+        
+        
+        editBtn = UIBarButtonItem.init(image: #imageLiteral(resourceName: "edit"), style: .plain, target: self, action: #selector(self.editBtnPressed))
         editBtn.tintColor = darkThemeColor    
         self.navigationItem.backBarButtonItem?.tintColor = darkThemeColor
         
@@ -94,6 +92,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
+                
                 // currency not available right now
                 if self.isNew {
                     self.transaction = Transaction(transactionId: "", amount: 0.0, categoryId: "", comments: nil, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: Resource.sharedInstance().currentWallet!.currencyID, isExpense: true, walletID: Resource.sharedInstance().currentWalletID!)
@@ -114,6 +113,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                         self.navigationItem.rightBarButtonItem = self.editBtn
                     }
                 }
+                
                 self.selectedCategory = self.transaction!.categoryId
                 self.pSelectedCategory = self.selectedCategory
                 
@@ -143,7 +143,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     var SizeOfKeyboard = CGFloat()
     
     func keyboardWillShow(notification: NSNotification) {
-        
         
         if !isKeyboardOpen {
             

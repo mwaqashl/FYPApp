@@ -41,15 +41,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
             view.layer.shadowOffset = CGSize.zero
             view.layer.shadowOpacity = 0.6
             view.layer.shadowRadius = 2
-            view.layer.shadowColor = themeColorDark.cgColor
+            view.layer.shadowColor = darkThemeColor.cgColor
         }
         
         // Do any additional setup after loading the view, typically from a nib.
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        emailAddress.text = "zee@uit.edu"
-        password.text = "zee123"
     }
 
     override func didReceiveMemoryWarning() {
@@ -153,7 +148,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
         
     }
-    
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         

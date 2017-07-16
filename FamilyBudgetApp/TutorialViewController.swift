@@ -8,8 +8,6 @@
 
 import UIKit
 
-var themeColorDark = UIColor(red: 98/255, green: 141/255, blue: 84/255, alpha: 1)
-
 
 class TutorialViewController: UIViewController {
     
@@ -38,6 +36,7 @@ class TutorialViewController: UIViewController {
                     
                     self.present(cont, animated: true, completion: nil)
                 }
+                self.activity.stopAnimating()
             }
             else {
                 self.activity.stopAnimating()
@@ -61,7 +60,6 @@ class TutorialViewController: UIViewController {
     
     @IBAction func newUserBtnAction(_ sender: Any) {
         
-        
         let cont = UIStoryboard.init(name: "HuzaifaStroyboard", bundle: nil).instantiateViewController(withIdentifier: "register") as! RegisterViewController
         
         self.present(cont, animated: true, completion: nil)
@@ -72,7 +70,7 @@ class TutorialViewController: UIViewController {
         
         alreadyUserBtn.layer.cornerRadius = 10
         registerBtn.layer.cornerRadius = 10
-//        registerBtn.layer.borderColor = themeColorDark.cgColor
+//        registerBtn.layer.borderColor = darkThemeColor.cgColor
 //        registerBtn.layer.borderWidth = 1
 //        registerBtn.layer.shadowRadius = 2
 //        registerBtn.layer.shadowOpacity = 0.5

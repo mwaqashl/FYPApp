@@ -30,7 +30,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
 
         dateformat.dateFormat = "dd-MMM-yyyy"
         
-        Edit = UIBarButtonItem.init(title: "\u{A013}", style: .plain, target: self, action: #selector(self.EditBudget))
+        Edit = UIBarButtonItem.init(image: #imageLiteral(resourceName: "edit"), style: .plain, target: self, action: #selector(self.EditBudget))
         Edit.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
         Edit.tintColor = darkThemeColor
         
@@ -84,10 +84,8 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
     
     func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
         
-        let font = UIFont(name: "untitled-font-25", size: size)!
-        
+        let font = UIFont(name: "untitled-font-25", size: size*0.7)!
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
-        
         
         let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
         let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: size)])

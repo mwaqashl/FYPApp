@@ -543,54 +543,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
                 
             case "User Settings":
-                
+
                 switch userSettingsOptions[indexPath.row] {
                 case "Change Password":
-                    let alert = UIAlertController(title: "", message: "Edit Name", preferredStyle: .alert)
-                    alert.addTextField(configurationHandler: { (textfield) in
-                        textfield.placeholder = "Enter Current Password"
-                    })
-                    alert.addTextField(configurationHandler: { (textfield) in
-                        textfield.placeholder = "Enter New Password"
-                    })
-                    alert.addTextField(configurationHandler: { (textfield) in
-                        textfield.placeholder = "Re-Enter New Password"
-                    })
-                    let Save = UIAlertAction(title: "Save", style: .default, handler: { (action) in
-                        let currentPass = alert.textFields![0]
-                        let newPass = alert.textFields![1]
-                        let retypePass = alert.textFields![2]
-                        var error = ""
-                        if currentPass.text == "" {
-                            error = "Current Password Cannot be empty"
-                        }
-                        else if newPass.text == "" || newPass.text!.characters.count < 6 {
-                            error = "New Password Cannot be less than 6 Characters"
-                        }
-                        else if retypePass.text == "" || retypePass.text!.characters.count < 6 {
-                            error = "Re-type Password Cannot be less than 6 Characters"
-                        }
-                        else if retypePass.text != newPass.text{
-                            error = "New and Re-type Password must be same"
-                        }
-                        if error == "" {
-                            //                        self.currentUser! = currentPass.text!
-                            //                        UserManager.sharedInstance().updateUserState(self.currentUser!)
-                        }
-                        else {
-                            let alert2 = UIAlertController(title: "", message: error, preferredStyle: .alert)
-                            let okAction = UIAlertAction(title: "Ok", style: .default, handler : { (action) in
-                                self.present(alert, animated: true, completion: nil)
-                            })
-                            alert2.addAction(okAction)
-                            self.present(alert2, animated: true, completion: nil)
-                        }
-                    })
-                    let Cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-                    alert.addAction(Save)
-                    alert.addAction(Cancel)
-                    self.present(alert, animated: true, completion: nil)
-                    
+                    self.performSegue(withIdentifier: "changePassword", sender: nil)
                     
                 case "Edit Name":
                     let alert = UIAlertController(title: "Edit Name", message: "Please Enter Your Name", preferredStyle: .alert)

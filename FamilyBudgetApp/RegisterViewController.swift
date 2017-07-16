@@ -68,7 +68,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
             view.layer.shadowOffset = CGSize.zero
             view.layer.shadowOpacity = 0.6
             view.layer.shadowRadius = 2
-            view.layer.shadowColor = themeColorDark.cgColor
+            view.layer.shadowColor = darkThemeColor.cgColor
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -183,8 +183,9 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         if userName.text == "" {
             error = "User Name cannot be empty"
         }
-        else if email.text == "" {
-            error = "Email cannot be empty"
+        else if email.text == "" || !isValidEmail(testStr: email.text!) {
+            error = "Email Error"
+            errorDis = "Please provide valid Email Address"
         }
         else if password.text! == "" || password.text!.characters.count < 6 || repassword.text! == "" || (repassword.text?.characters.count)! < 6 {
             error = "Password error"

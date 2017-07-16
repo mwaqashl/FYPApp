@@ -37,10 +37,10 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
     var wallet : UserWallet?
     var backView = UIView()
     var selectedIcon = ""
-    var selectedColor : UIColor = themeColorDark
+    var selectedColor : UIColor = darkThemeColor
     var pSelectedIcon = ""
-    var pSelectedColor : UIColor = themeColorDark
-    var colors : [UIColor] = [themeColorDark,  .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
+    var pSelectedColor : UIColor = darkThemeColor
+    var colors : [UIColor] = [darkThemeColor,  .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,7 +69,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
             view.layer.shadowOffset = CGSize.zero
             view.layer.shadowOpacity = 0.6
             view.layer.shadowRadius = 2
-            view.layer.shadowColor = themeColorDark.cgColor
+            view.layer.shadowColor = darkThemeColor.cgColor
         }
         
         wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [:], isOpen: true, color: UIColor.blue.stringRepresentation)

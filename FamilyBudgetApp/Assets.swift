@@ -25,3 +25,43 @@ var midThemeColor = UIColor(red: 117/255, green: 171/255, blue: 87/255, alpha: 1
 var ThemeColor = UIColor(red: 149/255, green: 188/255, blue: 117/255, alpha: 1)
 
 
+
+func showAlertWithOkayBtn(title: String, desc: String) {
+    
+    let alert = UIAlertController(title: title, message: desc, preferredStyle: .alert)
+    let okay = UIAlertAction(title: "OK", style: .default, handler: nil)
+    alert.addAction(okay)
+    UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+    
+}
+
+func showAlertForConfirmation(title: String, desc: String, callback: @escaping (Bool) -> Void) {
+    
+    let alert = UIAlertController(title: title, message: desc, preferredStyle: .alert)
+    
+    let okay = UIAlertAction(title: "Confirm", style: .destructive)  { (action) in
+        
+        callback(true)
+        
+    }
+    
+    let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+        
+        callback(false)
+        
+    }
+    alert.addAction(okay)
+    alert.addAction(cancel)
+    
+    UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+    
+}
+
+
+func isValidEmail(testStr:String) -> Bool {
+    // print("validate calendar: \(testStr)")
+    let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+    
+    let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+    return emailTest.evaluate(with: testStr)
+}

@@ -35,10 +35,10 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     var wallet : UserWallet?
     var backView = UIView()
     var selectedIcon = ""
-    var selectedColor : UIColor = themeColorDark
+    var selectedColor : UIColor = darkThemeColor
     var pSelectedIcon = ""
     var pSelectedColor : UIColor = .brown
-    var colors : [UIColor] = [themeColorDark, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
+    var colors : [UIColor] = [darkThemeColor, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
     
     var walletMembers = [String:MemberType]()
     var members = [User]()
@@ -66,7 +66,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         popoverView.layer.shadowRadius = 2
         searchView.isHidden = true
         
-        doneBtn.layer.borderColor = themeColorDark.cgColor
+        doneBtn.layer.borderColor = darkThemeColor.cgColor
         doneBtn.layer.borderWidth = 1
         
         selectedIcon = "\u{A037}"
@@ -83,10 +83,10 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             view.layer.shadowColor = selectedColor.cgColor
         }
         
-        walletName.textColor = themeColorDark
-        balance.textColor = themeColorDark
-        currencyName.textColor = themeColorDark
-        currencyCode.textColor = themeColorDark
+        walletName.textColor = darkThemeColor
+        balance.textColor = darkThemeColor
+        currencyName.textColor = darkThemeColor
+        currencyCode.textColor = darkThemeColor
         
         wallet = UserWallet(id: "new", name: "", icon: "", currencyID: "", creatorID: Resource.sharedInstance().currentUserId!, balance: 0, totInc: 0, totExp: 0, creationDate: Date().timeIntervalSince1970, isPersonal: false, memberTypes: [Resource.sharedInstance().currentUserId! : .owner], isOpen: true, color: UIColor.blue.stringRepresentation)
         
@@ -160,6 +160,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             self.popoverView.transform = CGAffineTransform.identity
             self.backView.alpha = 1
         },completion: { _ in })
+        
         
     }
     

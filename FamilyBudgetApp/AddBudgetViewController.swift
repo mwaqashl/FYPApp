@@ -75,8 +75,8 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         
         categoriesKeys = Array(Resource.sharedInstance().categories.keys)
         
-        Add = UIBarButtonItem.init(title: "\u{A009}", style: .plain, target: self, action: #selector(self.AddBudget))
-        Add.setTitleTextAttributes([NSFontAttributeName : UIFont(name: "untitled-font-7", size: 24)!], for: .normal)
+        Add = UIBarButtonItem.init(image: #imageLiteral(resourceName: "add-icon"), style: .plain, target: self, action: #selector(self.AddBudget))
+        Add.tintColor = darkThemeColor
         
         self.tableview.dataSource = self
         self.tableview.delegate = self

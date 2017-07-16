@@ -28,6 +28,7 @@ import Firebase
             
             return callback(nil)
         }catch let error as NSError{
+            showAlertWithOkayBtn(title: "Error", desc: error.localizedDescription)
             print(error.localizedDescription)
             return callback(error)
         }
@@ -47,6 +48,7 @@ import Firebase
         
         Auth.auth().createUser(withEmail: email, password: password, completion: { (firuser, err) in
             if err != nil {
+                showAlertWithOkayBtn(title: "Error", desc: err?.localizedDescription ?? "Some Error")
                 print(err!.localizedDescription)
                 callback(err!)
                 
@@ -70,7 +72,7 @@ import Firebase
         Auth.auth().signIn(withEmail: email, password: password, completion: { (user, error) in
             
             if error != nil {
-                
+                showAlertWithOkayBtn(title: "Error", desc: error?.localizedDescription ?? "Some Error")
                 print(error?.localizedDescription ?? "Some Garbar ")
                 self.isAuthenticated = false
                 self.authUser = nil
@@ -180,7 +182,7 @@ import Firebase
         
         Auth.auth().sendPasswordReset(withEmail: email) { (err) in
             if err != nil {
-                print(err?.localizedDescription)
+                showAlertWithOkayBtn(title: "Error", desc: err?.localizedDescription ?? "Some Error")
                 callback(false)
                 return
             }
@@ -189,19 +191,57 @@ import Firebase
         
     }
     
-    func updatePassword(newPassword: String, callback: (Bool)->Void) {
+    func resetPasswordofEmail(withVerificationCode code: String, newPassword pass:String, withcallback callback: @escaping (Bool)->Void) {
         
-//        Auth.auth().cred
-//        
-//        if let user = Auth.auth().currentUser {
-//            
-//            user.createProfileChangeRequest()
-//            user.updatePassword(to: newPassword, completion: { (err) in
-//                <#code#>
-//            })
-//            
-//        }
         
+        Auth.auth().confirmPasswordReset(withCode: code, newPassword: pass) { (err) in
+            if err == nil {
+                callback(true)
+                return
+            }
+            else {
+                showAlertWithOkayBtn(title: "Error", desc: err?.localizedDescription ?? "Some Error")
+                print(err?.localizedDescription ?? "some error in ", #function)
+                callback(false)
+            }
+        }
+    }
+    
+    func reAuthenticateUser(with email: String, password: String, with callback: @escaping (Bool)->Void) {
+        
+        let credentials = EmailAuthProvider.credential(withEmail: email, password: password)
+        
+        let user = Auth.auth().currentUser
+        
+        user?.reauthenticate(with: credentials, completion: { (err) in
+            if err == nil {
+                callback(true)
+                return
+            }
+            else {
+                showAlertWithOkayBtn(title: "Error", desc: err?.localizedDescription ?? "Some Error")
+                print(err?.localizedDescription ?? "some error in ", #function)
+                callback(false)
+            }
+        })
+        
+    }
+    
+    func updatePassword(newPassword: String, callback: @escaping (Bool)->Void) {
+        
+        let user = Auth.auth().currentUser
+        
+        user?.updatePassword(to: newPassword, completion: { (err) in
+            if err == nil {
+                callback(true)
+                return
+            }
+            else {
+                showAlertWithOkayBtn(title: "Error", desc: err?.localizedDescription ?? "Some Error")
+                print(err?.localizedDescription ?? "some error in ", #function)
+                callback(false)
+            }
+        })
     }
     
 }
