@@ -136,7 +136,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
         
-        let font = UIFont(name: "untitled-font-25", size: size*0.7)!
+        let font = UIFont(name: "untitled-font-25", size: size)!
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         

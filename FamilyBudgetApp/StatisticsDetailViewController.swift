@@ -9,8 +9,8 @@
 import UIKit
 import Charts
 
-class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource , TransactionDelegate {
-
+class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource , TransactionDelegate, WalletDelegate {
+    
     
     @IBOutlet weak var MonthHeader: UILabel!
     @IBOutlet weak var segmentBtn: UISegmentedControl!
@@ -20,7 +20,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     @IBOutlet weak var previousMonthBtn: UIButton!
     
     var CategoryAndAmount : [String:Double] = [:]
-    
+    var isIcomeTapped = Bool()
     var currentWalletTransactions = [Transaction]()
     var MonthRelatedTransaction = [String:[Transaction]]()
     var dateFormat = DateFormatter()
@@ -45,6 +45,9 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
         
         Delegate.sharedInstance().addTransactionDelegate(self)
+        Delegate.sharedInstance().addWalletDelegate(self)
+        
+        segmentBtn.selectedSegmentIndex = isIcomeTapped ? 1 : 0
         
         for i in 0..<selectedMonthTransactions.count {
             if selectedMonthTransactions[i].isExpense {
@@ -70,7 +73,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         
         // Do any additional setup after loading the view.
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
             ExtractTransactions()
@@ -124,12 +127,17 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         Months.sort { (a, b) -> Bool in
             a.compare(b) == .orderedAscending
         }
-        selectedMonthIndex = Months.count-1
+        selectedMonthIndex = Months.count > 0 ? Months.count-1 : 0
+        nextMonthBtn.isEnabled = Months.count > 0
+        previousMonthBtn.isEnabled = selectedMonthIndex > 0
     }
+    
     //Categories and its amount
     func filterCategoriesAndAmount() {
+        
         CategoryAndAmount = [:]
         let transaction = segmentBtn.selectedSegmentIndex == 0 ? expenseTransaction : incomeTransaction
+        
         for i in 0..<transaction.count {
             if CategoryAndAmount.keys.contains(transaction[i].categoryId) {
                 CategoryAndAmount[transaction[i].categoryId] = CategoryAndAmount[transaction[i].categoryId]! + transaction[i].amount
@@ -147,11 +155,6 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             let dataEntry = PieChartDataEntry(value: data[i]!, label: Resource.sharedInstance().categories[i]!.name, data: nil)
             dataEntries.append(dataEntry)
         }
-        let ChartDataSet = PieChartDataSet(values: dataEntries, label: "")
-        
-        let chartData = PieChartData(dataSet: ChartDataSet)
-        
-        PieChart.data = chartData
         
         var colors: [UIColor] = []
         
@@ -160,16 +163,25 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             colors.append(color)
         }
         
-        ChartDataSet.colors = colors
         PieChart.animate(xAxisDuration: 0.4)
         PieChart.holeRadiusPercent = 0.3
         PieChart.transparentCircleColor = UIColor.clear
+        
+        let ChartDataSet = PieChartDataSet(values: dataEntries, label: "")
+        ChartDataSet.colors = colors
+        ChartDataSet.sliceSpace = 1.0
+        ChartDataSet.drawValuesEnabled = false
+        
+        let chartData = PieChartData(dataSet: ChartDataSet)
+        
+        PieChart.data = chartData
+        PieChart.drawEntryLabelsEnabled = false
         
     }
     
     func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
         
-        let font = UIFont(name: "untitled-font-25", size: size*0.7)!
+        let font = UIFont(name: "untitled-font-25", size: size)!
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
@@ -204,11 +216,11 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch cells[indexPath.section] {
-
+            
         case "Transactions":
             let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell") as!     TimelineTableViewCell
             let transaction = self.selectedMonthTransactions[indexPath.row]
-        
+            
             cell.categoryIcon.text = transaction.category.icon
             cell.category.text = transaction.category.name
             
@@ -223,7 +235,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             cell.selectionStyle = .none
             
             return cell
- 
+            
         case "NoTransaction":
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoTransactionCell") as! TaskTitleTableViewCell
             cell.taskTitle.text = "No Transactions Available"
@@ -236,17 +248,19 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "statsCell") as! BudgetStatsTableViewCell
             self.filterCategoriesAndAmount()
-            if CategoryAndAmount.count != 0 {
-                self.DrawPieChart(data: CategoryAndAmount, PieChart: cell.PieChartView)
+            cell.PieChartView.legend.resetCustom()
+            if CategoryAndAmount.isEmpty {
+                cell.PieChartView.data?.clearValues()
+                cell.PieChartView.noDataText = "No transaction Available"
             }
             else {
-                cell.PieChartView.data = nil
+                self.DrawPieChart(data: CategoryAndAmount, PieChart: cell.PieChartView)
             }
             cell.PieChartView.chartDescription?.text = ""
-            cell.PieChartView.noDataText = "No Transaction In This Budget"
+            cell.PieChartView.noDataText = "No transaction Available"
+            
             cell.selectionStyle = .none
-            return cell
-        }
+            return cell        }
     }
     
     @IBAction func segmentBtnAction(_ sender: Any) {
@@ -276,7 +290,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         }
         tableView.reloadData()
     }
-
+    
     // tag 1 for previous  tag 2 for next
     @IBAction func changeMonth(_ sender: UIButton) {
         if sender.tag == 1 {
@@ -366,14 +380,32 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         }
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    //    Wallet Delegates
+    func walletAdded(_ wallet: UserWallet) {
+        
     }
-    */
-
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        // close wallet view
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        if wallet.id == Resource.sharedInstance().currentWalletID! {
+            Resource.sharedInstance().currentWalletID! = Resource.sharedInstance().currentUserId!
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    
+    
+    /*
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }

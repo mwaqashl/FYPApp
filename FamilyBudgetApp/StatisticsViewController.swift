@@ -9,8 +9,8 @@
 import UIKit
 import Charts
 
-class StatisticsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TransactionDelegate {
-
+class StatisticsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TransactionDelegate, WalletDelegate {
+    
     var isDataAvailable = false
     var isIncomeTapped = false
     var CategoryAndAmount : [String:Double] = [:]
@@ -23,7 +23,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var previousMonthBtn: UIButton!
     @IBOutlet weak var MonthHeader: UILabel!
     var allWalletsBtn = UIBarButtonItem()
-
+    var SettingsBtn = UIBarButtonItem()
     var cells = ["BalanceAmount","AvgIncomeExpense","Stats","IncomeExpense","AvgDailyExpenseIncome"]
     
     var selectedMonthIndex = Int()
@@ -37,12 +37,17 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         dateFormat.dateFormat = "MMMM-yyyy"
         MonthHeader.text = dateFormat.string(from: Date())
         
-        
         allWalletsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "allWallets"), style: .plain, target: self, action: #selector(self.allWalletsBtnTapped))
         allWalletsBtn.tintColor = darkThemeColor
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         
+        SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "settings"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
+        SettingsBtn.tintColor = darkThemeColor
+        
+        self.navigationItem.rightBarButtonItem = SettingsBtn
+        
         Delegate.sharedInstance().addTransactionDelegate(self)
+        Delegate.sharedInstance().addWalletDelegate(self)
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
@@ -55,9 +60,9 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
                 self.isDataAvailable = true
                 self.ExtractTransactions()
-                self.filterCategoriesAndAmount()
                 self.sortMonths()
                 self.MonthHeader.text = self.dateFormat.string(from: self.Months[self.selectedMonthIndex])
+                
                 if self.selectedMonthIndex == 0 {
                     self.previousMonthBtn.isEnabled = false
                 }
@@ -73,36 +78,45 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
-            self.viewDidLoad()
+            
             self.previousMonthBtn.isEnabled = true
             self.nextMonthBtn.isEnabled = true
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
             self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
+            
             self.ExtractTransactions()
-            self.filterCategoriesAndAmount()
             self.sortMonths()
+            
             MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
+            
             if self.selectedMonthIndex == 0 {
                 self.previousMonthBtn.isEnabled = false
             }
             else if selectedMonthIndex == Months.count-1 {
                 self.nextMonthBtn.isEnabled = false
             }
+            
             self.tableView.reloadData()
         }
+    }
+    
+    func SettingsBtnTapped() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let cont = storyboard.instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
+        self.present(cont, animated: true, completion: nil)
     }
     
     func allWalletsBtnTapped() {
         let cont = self.storyboard?.instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
         self.present(cont, animated: true, completion: nil)
     }
-
+    
     
     func ExtractTransactions() {
         currentWalletTransactions = Resource.sharedInstance().currentWallet!.transactions
         MonthRelatedTransaction = [:]
-        Months = []
+        Months = [Date()]
         
         for i in 0..<currentWalletTransactions.count {
             
@@ -123,18 +137,26 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         Months.sort { (a, b) -> Bool in
             a.compare(b) == .orderedAscending
         }
-        selectedMonthIndex = selectedMonthIndex != 0 ? Months.count-1 : 0
+        selectedMonthIndex = Months.count > 0 ? Months.count-1 : 0
+        nextMonthBtn.isEnabled = Months.count > 0
+        previousMonthBtn.isEnabled = selectedMonthIndex > 0
     }
+    
     //Categories and its amount
     func filterCategoriesAndAmount() {
-        CategoryAndAmount = [:]
-        let transaction = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])]
-        for i in 0..<transaction!.count {
-            if CategoryAndAmount.keys.contains(transaction![i].categoryId) {
-                CategoryAndAmount[transaction![i].categoryId] = CategoryAndAmount[transaction![i].categoryId]! + transaction![i].amount
+        CategoryAndAmount = ["Income":0.0 , "Expense":0.0]
+        
+        guard let transaction = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])] else {
+            CategoryAndAmount = [:]
+            return
+        }
+        
+        for i in 0..<transaction.count {
+            if (transaction[i].isExpense) {
+                CategoryAndAmount["Expense"] = CategoryAndAmount["Expense"]! + transaction[i].amount
             }
             else {
-                CategoryAndAmount[transaction![i].categoryId] = transaction![i].amount
+                CategoryAndAmount["Income"] = CategoryAndAmount["Income"]! + transaction[i].amount
             }
         }
     }
@@ -143,32 +165,34 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         
         var dataEntries : [PieChartDataEntry] = []
         for i in data.keys {
-            let dataEntry = PieChartDataEntry(value: data[i]!, label: Resource.sharedInstance().categories[i]!.name, data: nil)
+            let dataEntry = PieChartDataEntry(value: data[i]!, label: i, data: nil)
             dataEntries.append(dataEntry)
         }
-        let ChartDataSet = PieChartDataSet(values: dataEntries, label: "")
-        
-        let chartData = PieChartData(dataSet: ChartDataSet)
-        
-        PieChart.data = chartData
         
         var colors: [UIColor] = []
         
         for i in data.keys {
-            let color = Resource.sharedInstance().categories[i]!.color
+            let color = i == "Income" ? darkThemeColor : UIColor.red
             colors.append(color)
         }
         
-        ChartDataSet.colors = colors
         PieChart.animate(xAxisDuration: 0.4)
         PieChart.holeRadiusPercent = 0.3
         PieChart.transparentCircleColor = UIColor.clear
         
+        let ChartDataSet = PieChartDataSet(values: dataEntries, label: "")
+        ChartDataSet.colors = colors
+        ChartDataSet.sliceSpace = 1.0
+        ChartDataSet.drawValuesEnabled = false
+        
+        let chartData = PieChartData(dataSet: ChartDataSet)
+        PieChart.data = chartData
+        PieChart.drawEntryLabelsEnabled = false
     }
     
     func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
         
-        let font = UIFont(name: "untitled-font-25", size: size*0.7)!
+        let font = UIFont(name: "untitled-font-25", size: size)!
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
@@ -195,8 +219,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return cells[indexPath.row] == "Stats" ? 300 : 60
     }
-//    var cells = ["BalanceAmount","AvgIncomeExpense","Stats","IncomeExpense","AvgDailyExpenseIncome"]
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch cells[indexPath.row] {
             
@@ -208,7 +231,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             cell.backgroundColor? = .white
             cell.selectionStyle = .none
             return cell
-        
+            
         case "AvgIncomeExpense":
             let cell = tableView.dequeueReusableCell(withIdentifier: "IncomeExpenceCell") as! ExpenseAndIncomeTableViewCell
             cell.ExpenseBtn.isHidden = true
@@ -230,7 +253,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             cell.ExpenseAmount.textColor = .red
             cell.IncomeHeader.text = "Avg. Monthly Income"
             cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income/Double(Months.count), of: cell.ExpenseAmount.font.pointSize)
-            cell.IncomeAmunt.textColor = .green
+            cell.IncomeAmunt.textColor = darkThemeColor
             cell.backgroundColor? = .clear
             cell.selectionStyle = .none
             return cell
@@ -240,27 +263,42 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             cell.ExpenseBtn.tag = 2
             cell.IncomeExpandBtn.tag = 1
             
-            cell.ExpenseBtn.addTarget(self, action: #selector(self.statsDetails(_:)), for: .touchUpInside)
-            cell.IncomeExpandBtn.addTarget(self, action: #selector(self.statsDetails(_:)), for: .touchUpInside)
+            cell.ExpenseBtn.addTarget(self, action: #selector(self.statsDetails), for: .touchUpInside)
+            cell.IncomeExpandBtn.addTarget(self, action: #selector(self.statsDetails), for: .touchUpInside)
             
             var income = 0.0
             var expense = 0.0
-            let transactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])]
-            for i in 0..<transactions!.count {
-                if transactions![i].isExpense {
-                    expense += transactions![i].amount
+            
+            cell.ExpenseHeader.text = "Total Expense (This Month)"
+            cell.IncomeHeader.text = "Total Income (This Month)"
+            cell.selectionStyle = .none
+            
+            guard let transactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])] else {
+                
+                cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font.pointSize)
+                cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font.pointSize)
+                cell.ExpenseBtn.isHidden = true
+                cell.IncomeExpandBtn.isHidden = true
+                
+                return cell
+            }
+            
+            cell.ExpenseBtn.isHidden = false
+            cell.IncomeExpandBtn.isHidden = false
+            
+            for i in 0..<transactions.count {
+                if transactions[i].isExpense {
+                    expense += transactions[i].amount
                 }
                 else {
-                    income += transactions![i].amount
+                    income += transactions[i].amount
                 }
             }
             
-            cell.ExpenseHeader.text = "Total Expense (This Month)"
             cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font.pointSize)
             
-            cell.IncomeHeader.text = "Total Income (This Month)"
             cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font.pointSize)
-            cell.selectionStyle = .none
+            
             return cell
             
         case "AvgDailyExpenseIncome":
@@ -271,38 +309,46 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             
             var income = 0.0
             var expense = 0.0
-            let transactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])]
-            for i in 0..<transactions!.count {
-                if transactions![i].isExpense {
-                    expense += transactions![i].amount
+            
+            cell.ExpenseHeader.text = "Avg. Daily Expense"
+            cell.IncomeHeader.text = "Avg. Daily Income"
+            cell.selectionStyle = .none
+            
+            guard let transactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])] else {
+                
+                cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font.pointSize)
+                cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font.pointSize)
+                return cell
+            }
+            
+            for i in 0..<transactions.count {
+                if transactions[i].isExpense {
+                    expense += transactions[i].amount
                 }
                 else {
-                    income += transactions![i].amount
+                    income += transactions[i].amount
                 }
             }
-
-            cell.ExpenseHeader.text = "Avg. Daily Expense"
+            
+            
             cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font.pointSize)
             
-            cell.IncomeHeader.text = "Avg. Daily Income"
             cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income , of: cell.ExpenseAmount.font.pointSize)
-            cell.selectionStyle = .none
-            cell.backgroundColor? = .lightGray
-            cell.backgroundColor?.withAlphaComponent(0.3)
+            
             return cell
             
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "statsCell") as! BudgetStatsTableViewCell
             self.filterCategoriesAndAmount()
             cell.PieChartView.legend.resetCustom()
-            if CategoryAndAmount.count != 0 {
-                self.DrawPieChart(data: CategoryAndAmount, PieChart: cell.PieChartView)
+            if CategoryAndAmount.isEmpty {
+                cell.PieChartView.data = nil
+                cell.PieChartView.noDataText = "No transaction Available"
             }
             else {
-                cell.PieChartView.data = nil
+                self.DrawPieChart(data: CategoryAndAmount, PieChart: cell.PieChartView)
             }
             cell.PieChartView.chartDescription?.text = ""
-            cell.PieChartView.noDataText = "No Transaction In This Budget"
             cell.selectionStyle = .none
             return cell
         }
@@ -343,7 +389,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-    func statsDetails(_ sender : UIButton){
+    func statsDetails(sender : UIButton){
         if sender.tag == 1 {
             isIncomeTapped = true
         }
@@ -356,14 +402,13 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "StatsDescription" {
             let destination = segue.destination as! StatisticsDetailViewController
-            destination.CategoryAndAmount = self.CategoryAndAmount
+            
             destination.selectedMonthTransactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])]!
             destination.MonthRelatedTransaction = self.MonthRelatedTransaction
             destination.currentWalletTransactions = self.currentWalletTransactions
             destination.selectedMonthIndex = self.selectedMonthIndex
             destination.Months = self.Months
-            
-            
+            destination.isIcomeTapped = self.isIncomeTapped
         }
     }
     
@@ -409,17 +454,53 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
+    //Wallet Delegates
+    func walletUpdated(_ wallet: UserWallet) {
+        
+    }
     
+    func WalletDeleted(_ wallet: UserWallet) {
+        if isDataAvailable {
+            if wallet.id == Resource.sharedInstance().currentWalletID {
+                
+                Resource.sharedInstance().currentWalletID! = Resource.sharedInstance().currentUserId!
+                
+                self.previousMonthBtn.isEnabled = true
+                self.nextMonthBtn.isEnabled = true
+                
+                self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
+                self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
+                self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
+                
+                self.ExtractTransactions()
+                self.sortMonths()
+                
+                MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
+                
+                if self.selectedMonthIndex == 0 {
+                    self.previousMonthBtn.isEnabled = false
+                }
+                else if selectedMonthIndex == Months.count-1 {
+                    self.nextMonthBtn.isEnabled = false
+                }
+                
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    func walletAdded(_ wallet: UserWallet) {
+    }
     
     
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }
