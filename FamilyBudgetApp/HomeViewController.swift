@@ -107,9 +107,13 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             view.backgroundColor = this!.color
         }
         cell.ownerName.text = this?.creator.userName
-        this?.creator.getImage({ (data) in
-            cell.ownerImage.image = UIImage(data: data) ?? #imageLiteral(resourceName: "dp-male")
-        })
+        cell.ownerImage.image = this?.creator.image ?? (this?.creator.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+
+        this?.creator.imageCallback = {
+            image in
+            cell.ownerImage.image = image
+            
+        }
         
         if this!.isPersonal {
             cell.membersCollectionView.isHidden = true

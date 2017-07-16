@@ -11,6 +11,7 @@ import UIKit
 class TimelineTableViewCell: UITableViewCell {
 
     
+    @IBOutlet weak var personImage: UIImageView!
     @IBOutlet weak var category: UILabel!
     @IBOutlet weak var amount: UILabel!
     @IBOutlet weak var categoryIcon: UILabel!

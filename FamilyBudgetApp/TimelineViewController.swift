@@ -230,11 +230,14 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         let category = trans![indexPath.row].category
         
         cell.amount.attributedText = getAmountwithCurrency(Amount: trans![indexPath.row].amount, of: cell.amount.font.pointSize)
-//        cell.amount.textColor = trans![indexPath.row].isExpense ? .red : .green
         
         cell.category.text = category.name
         cell.categoryIcon.text = category.icon
-    
+        cell.personImage.image = trans![indexPath.row].transactionBy.image
+        trans![indexPath.row].transactionBy.imageCallback = {
+            img in
+            cell.personImage.image = img
+        }
         cell.categoryIcon.textColor = category.color
         cell.categoryIcon.backgroundColor = .white
         cell.categoryIcon.layer.borderColor = category.color.cgColor
@@ -245,18 +248,10 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
 
         return cell
     }
-    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if filteredTransactions.count == 0 {
-            return "No transactions to show. Add a new one."
-        }
-        return ""
-    }
-
+    
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
         return filteredDates[section] == dateformat.string(from: Date()) ? "Today" : filteredDates[section] == dateformat.string(from: Date(timeIntervalSinceNow : Double(-24*3600))) ? "Yesterday" : filteredDates[section]
     }
-    
     
     @IBAction func addTransaction(_ sender: Any) {
         if (Resource.sharedInstance().currentWallet!.isOpen) {
@@ -264,7 +259,10 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 35
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedrow = indexPath
         performSegue(withIdentifier: "TransactionDetail", sender: nil)
@@ -329,8 +327,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         sortDates()
         tableview.reloadData()
     }
-    
-    
     
 //    Transaction Delegates
     func transactionAdded(_ transaction: Transaction) {

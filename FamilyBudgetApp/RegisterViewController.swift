@@ -97,33 +97,6 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     
-//    func addView() {
-//        self.backView.addGestureRecognizer(tap)
-//        view.addSubview(backView)
-//        if isDateView {
-//            datePicker.isHidden = false
-//            genderPicker.isHidden = true
-//        }
-//        else {
-//            datePicker.isHidden = true
-//            genderPicker.isHidden = false
-//        }
-//        self.view.bringSubview(toFront: viewForDateAndGender)
-//        UIView.animate(withDuration: 0.3, animations: {
-//            self.viewForDateAndGender.frame.origin.y -= self.viewForDateAndGender.frame.height
-//        })
-//        
-//    }
-//    
-//    func removeView() {
-//        UIView.animate(withDuration: 0.3, animations: {
-//            self.viewForDateAndGender.frame.origin.y += self.viewForDateAndGender.frame.height
-//        }) { (Success) in
-//            self.backView.removeFromSuperview()
-//        }
-//    }
-    
-    
     @IBAction func CancelButton(_ sender: Any) {
         if isDateView {
             dateofbirth.text = dateofbirth.text
@@ -206,7 +179,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         if error == "" {
             let User = CurrentUser.init(id: "", email: email.text!, userName: userName.text!, imageURL: "", birthdate: date! , deviceID: "", gender: previous!)
             
-            Authentication.sharedInstance().createUser(email: email.text!, password: password.text!, user: User, callback: { (_error) in
+            Authentication.sharedInstance().createUser(email: self.email.text!, password: self.password.text!, user: User, callback: { (_error) in
                 if _error != nil {
                     error = "Error"
                     errorDis = _error!.localizedDescription
@@ -218,9 +191,20 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     self.present(alert, animated: true, completion: nil)
                 }
                 else {
-                    self.performSegue(withIdentifier: "walletsetup", sender: nil)
+                    
+                    User.uploadImage(image: self.userImage.image!, with: { (success) in
+                        if success {
+                            self.performSegue(withIdentifier: "walletsetup", sender: nil)
+                        }
+                        
+                    })
+                    
                 }
             })
+            
+            
+            
+            
             
         }
         else {

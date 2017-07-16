@@ -8,6 +8,7 @@
 //
 
 import UIKit
+import ALCameraViewController
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, UICollectionViewDelegateFlowLayout, UserDelegate, WalletDelegate, WalletMemberDelegate {
 
@@ -267,22 +268,22 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.icon.layer.cornerRadius = cell.icon.layer.frame.height/2
                 cell.icon.layer.borderWidth = 1
                 cell.icon.layer.borderColor = cell.icon.textColor.cgColor
-                
                 for view in cell.borderLine {
                     view.backgroundColor = cell.icon.textColor
                 }
-                
                 cell.selectionStyle = .none
                 return cell
                 
             case "User":
                 let cell = tableView.dequeueReusableCell(withIdentifier: "user") as! UserInfoTableViewCell
-                
-                cell.userdp.image = Resource.sharedInstance().currentUser?.image ?? #imageLiteral(resourceName: "dp-male")
+                cell.userdp.image = Resource.sharedInstance().currentUser?.image ?? (Resource.sharedInstance().currentUser!.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+                Resource.sharedInstance().currentUser?.imageCallback = {
+                    image in
+                    cell.userdp.image = image
+                }
                 cell.userName.text = Resource.sharedInstance().currentUser?.userName
                 cell.userEmail.text = Resource.sharedInstance().currentUser?.getUserEmail()
                 cell.selectionStyle = .none
-
                 return cell
                 
             case "Wallet Settings":
@@ -351,10 +352,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     cell.selectionStyle = .none
                     let this = searchedUsers[indexPath.row]
                     cell.memberType.text = memberTypes[this.getUserID()] == .owner ? "Owner" : memberTypes[this.getUserID()] == .admin ? "Admin" : "\(cell.memberType.isHidden = true)"
+                    
+                    cell.userImage.image = this.image ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
 
-                    this.getImage({ (data) in
-                        cell.userImage.image = UIImage(data: data) ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
-                    })
+                    this.imageCallback = {
+                        image in
+                        cell.userImage.image = image
+                    }
+                    
                     cell.accessoryType = .none
                     cell.userName.text = this.userName
                     cell.userEmail.text = this.getUserEmail()
@@ -373,9 +378,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 cell.selectionStyle = .none
                 let this = walletMembers[indexPath.row]
                 
-                this.getImage({ (data) in
-                    cell.userImage.image = UIImage(data: data) ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
-                })
+                cell.userImage.image = this.image ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+                
+                this.imageCallback = {
+                    image in
+                    cell.userImage.image = image
+                }
+                
+                
                 cell.memberTypeBtn.isEnabled = true
 //                if SearchMemberViewTitle.text == "Add Members" {
                 if memberTypes[this.getUserID()] == .owner {
@@ -577,6 +587,25 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     alert.addAction(Save)
                     alert.addAction(Cancel)
                     self.present(alert, animated: true, completion: nil)
+                    
+                case "Edit Display Picture" :
+                    let croppingEnabled = true
+                    let cameraViewController = CameraViewController(croppingEnabled: croppingEnabled) { [weak self] image, asset in
+                        
+                        if image != nil {
+                            
+                            Resource.sharedInstance().currentUser!.uploadImage(image: image!, with: { (success) in
+                                
+                                
+                                
+                            })
+                            
+                        }
+                        
+                        self?.dismiss(animated: true, completion: nil)
+                    }
+                    
+                    present(cameraViewController, animated: true, completion: nil)
                     
                 default:
                     print(userSettingsOptions[indexPath.section])

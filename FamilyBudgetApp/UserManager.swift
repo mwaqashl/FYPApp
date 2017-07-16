@@ -63,15 +63,15 @@ class UserManager {
         
         let userInfo = ref.child("Users/\(user.getUserID())")
         
-        let data : NSDictionary = [
+        var data : Dictionary<String,Any> = [
             "userName": user.userName,
             "image": user.imageURL,
             "gender" : user.gender
         ]
+        data["lastSeen"] = ServerValue.timestamp()
         
-        //data.setValue(ServerValue.timestamp(), forKey: "lastSeen")
         
-        userInfo.updateChildValues(data as! [AnyHashable:Any])
+        userInfo.updateChildValues(data)
 
     }
     

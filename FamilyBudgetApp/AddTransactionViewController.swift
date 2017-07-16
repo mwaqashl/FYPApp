@@ -337,7 +337,13 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             cell.name.text = transaction?.transactionBy.userName
             let type = Resource.sharedInstance().currentWallet!.memberTypes[(transaction!.transactionById)]
             
-            cell.personimage.image = #imageLiteral(resourceName: "dp-male")
+            cell.personimage.image = transaction?.transactionBy.image
+            cell.personimage.layer.cornerRadius = cell.personimage.frame.height/2
+            cell.personimage.clipsToBounds = true
+            transaction?.transactionBy.imageCallback = {
+                image in
+                cell.personimage.image = image
+            }
             
             if type == .admin {
                 cell.type.text = "Admin"

@@ -89,7 +89,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
-        Add = UIBarButtonItem.init(image: #imageLiteral(resourceName: "add-icon"), style: .plain, target: self, action: #selector(self.AddTask))
+        Add = UIBarButtonItem.init(image: #imageLiteral(resourceName: "done"), style: .plain, target: self, action: #selector(self.AddTask))
         Add.tintColor = darkThemeColor
         
         Edit = UIBarButtonItem.init(image: #imageLiteral(resourceName: "edit"), style: .plain, target: self, action: #selector(self.EditTask))

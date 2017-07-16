@@ -1,6 +1,7 @@
 
 import Foundation
 import Firebase
+import UIKit
 
 enum SubscriptionType {
     case none, monthly, yearly
@@ -11,8 +12,49 @@ class User {
     fileprivate var email : String
     var userName : String
     var imageURL : String
-    var image  : UIImage?
+    var image  : UIImage? {
+        
+        if self.imageURL == "dp-male" || self.imageURL == "dp-female" {
+            return self.imageURL == "dp-male" ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female")
+        }
+        let fileManager = FileManager.default
+        let imageNSURL = url.appendingPathComponent("images/userImages/\(self.id)/\(self.imageURL)")
+        print("url", url.absoluteString)
+        if fileManager.fileExists(atPath: imageNSURL.path) {
+            let data = try? Data(contentsOf: imageNSURL)
+            
+            guard let image = UIImage(data: data!) else {
+                return nil
+            }
+            
+            return image
+        }else{
+            let imageRef = Storage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("userImages").child(self.id).child(self.imageURL)
+            
+            imageRef.getData(maxSize: 2*1024*1024, completion: { (data, err) in
+                
+                if err != nil {
+                    print("Error", err?.localizedDescription)
+                    return
+                }
+                guard let img = UIImage(data: data!) else {
+                    return
+                }
+                
+                let success = fileManager.createFile(atPath: imageNSURL.path, contents: data, attributes: nil)
+                print(success)
+                self.imageCallback(img)
+                
+            })
+        }
+        return nil
+    }
+    
     var gender : Int
+    
+    var imageCallback : (UIImage)->Void = {
+        image in
+    }
     
     init(id : String, email : String, userName : String, imageURL : String, gender: Int) {
         self.id = id
@@ -30,27 +72,41 @@ class User {
         return email
     }
     
-    func getImage(_ completion : @escaping (Data) -> ()) {
-        if self.imageURL == "dp-male" || self.imageURL == "dp-female" {
-            completion(UIImagePNGRepresentation(UIImage(named: self.imageURL)!)!)
+    func uploadImage(image: UIImage, with callback: @escaping (Bool)->Void) {
+        
+        if image == #imageLiteral(resourceName: "dp-female") || image == #imageLiteral(resourceName: "dp-male") {
+            self.imageURL = image == #imageLiteral(resourceName: "dp-male") ? "dp-male" : "dp-female"
+            callback(true)
             return
         }
-        let fileManager = FileManager.default
-        let imageNSURL = url.appendingPathComponent("images/userImages/\(self.id)/\(self.imageURL)")
-        if fileManager.fileExists(atPath: imageNSURL.absoluteString) {
-            let data = try? Data(contentsOf: imageNSURL)
-            completion(data!)
-        }else{
-            let imageRef = Storage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("userImages").child(self.id).child(self.imageURL)
-            imageRef.write(toFile: imageNSURL, completion: { (url, error) in
-                guard error == nil else {
-                    return
-                }
-                let data = try! Data(contentsOf: url!)
-                completion(data)
-            })
+        
+        var id = UUID.init().uuidString
+        let r = id.startIndex..<id.index(id.startIndex, offsetBy: 5)
+        id = id.substring(with: r)
+        let imageRef = Storage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("userImages").child(Auth.auth().currentUser!.uid).child("\(id).jpg")
+        
+        guard let data = UIImageJPEGRepresentation(image, 0.1) else {
+            callback(false)
+            return
+            
         }
+        
+        imageRef.putData(data, metadata: nil) { (metaData, err) in
+            
+            if err != nil {
+                callback(false)
+                showAlertWithOkayBtn(title: "Error", desc: err?.localizedDescription ?? "Some Error Occurred")
+                return
+            }
+            
+            self.imageURL = "\(id).jpg"
+            UserManager.sharedInstance().updateUserState(self)
+            callback(true)
+            
+        }
+        
     }
+    
 }
 
 class CurrentUser : User {

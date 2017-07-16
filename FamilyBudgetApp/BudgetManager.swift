@@ -23,7 +23,14 @@ class BudgetManager {
         let ref = Database.database().reference()
         let budRef = ref.child("Budgets").child(budget.walletID).childByAutoId()
         
-        let startCom = Calendar.current.dateComponents([.day,.month,.year], from: budget.startDate)
+        var startCom = Calendar.current.dateComponents([.day,.month,.year,.hour,.second,.minute], from: budget.startDate)
+        
+        startCom.timeZone = TimeZone(secondsFromGMT: 0)
+        startCom.minute = 0
+        startCom.hour = 0
+        startCom.second = 0
+        
+        print(Calendar.current.date(from: startCom))
         
         let data : NSMutableDictionary = [
             

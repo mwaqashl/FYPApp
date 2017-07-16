@@ -324,7 +324,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         ChartDataSet.colors = colors
         PieChart.animate(xAxisDuration: 0.4)
         PieChart.holeRadiusPercent = 0.3
-        PieChart.transparentCircleColor = UIColor.clear
+//        PieChart.transparentCircleColor = UIColor.clear
         
     }
 

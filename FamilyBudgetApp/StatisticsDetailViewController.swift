@@ -165,7 +165,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         
         PieChart.animate(xAxisDuration: 0.4)
         PieChart.holeRadiusPercent = 0.3
-        PieChart.transparentCircleColor = UIColor.clear
+//        PieChart.transparentCircleColor = UIColor.clear
         
         let ChartDataSet = PieChartDataSet(values: dataEntries, label: "")
         ChartDataSet.colors = colors

@@ -446,9 +446,12 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             let this = wallet?.members[indexPath.item]
             
-            this?.getImage({ (data) in
-                cell.memberImage.image = UIImage(data: data) ?? (this!.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
-            })
+            cell.memberImage.image = this?.image ?? (this?.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+            
+            this?.imageCallback = {
+                image in
+                cell.memberImage.image = image
+            }
             
             cell.memberName.text = this?.userName.components(separatedBy: " ").first
             cell.memberType.text = wallet?.memberTypes[this!.getUserID()] == .owner ? "Owner" : (wallet?.memberTypes[this!.getUserID()] == .admin ? "Admin" : "Member")
@@ -533,9 +536,13 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 cell.selectionStyle = .none
                 let this = searchedUsers[indexPath.row]
                 
-                this.getImage({ (data) in
-                    cell.userImage.image = UIImage(data: data) ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
-                })
+                cell.userImage.image = this.image ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+                
+                this.imageCallback = {
+                    image in
+                    cell.userImage.image = image
+                }
+                
                 cell.accessoryType = .none
                 cell.userName.text = this.userName
                 cell.userEmail.text = this.getUserEmail()
@@ -546,7 +553,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 
             }
             
-            
         }
         else if indexPath.section == 1 {
             
@@ -554,9 +560,13 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             cell.selectionStyle = .none
             let this = members[indexPath.row]
             
-            this.getImage({ (data) in
-                cell.userImage.image = UIImage(data: data) ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
-            })
+            cell.userImage.image = this.image ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+            
+            this.imageCallback = {
+                image in
+                cell.userImage.image = image
+            }
+            
             cell.memberTypeBtn.isEnabled = true
             if walletMembers[this.getUserID()] == .owner {
                 cell.accessoryType = .none

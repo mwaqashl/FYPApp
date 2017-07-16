@@ -210,7 +210,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         if error == "" {
             
-            let personalWallet = UserWallet(id: "", name: walletname!.text!, icon: selectedIcon, currencyID: wallet!.currencyID, creatorID: Authentication.sharedInstance().authUser!.getUserID(), balance: Double(initialamount.text!)!, totInc: 0.0, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [(Authentication.sharedInstance().authUser?.getUserID())! : .owner], isOpen: true, color: selectedColor.stringRepresentation)
+            let personalWallet = UserWallet(id: "", name: walletname!.text!, icon: selectedIcon, currencyID: wallet!.currencyID, creatorID: Authentication.sharedInstance().authUser!.getUserID(), balance: Double(initialamount.text!)!, totInc: Double(initialamount.text!)!, totExp: 0.0, creationDate: Date().timeIntervalSince1970, isPersonal: true, memberTypes: [(Authentication.sharedInstance().authUser?.getUserID())! : .owner], isOpen: true, color: selectedColor.stringRepresentation)
             
             let walletid = WalletManager.sharedInstance().addWallet(personalWallet)
             if walletid != "" {
@@ -411,7 +411,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         if !isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y -= keyboardSize.height
+                self.view.frame.origin.y -= keyboardSize.height/2
                 isKeyboardOpen = true
             }
         }
@@ -423,7 +423,7 @@ class WalletSetupViewController: UIViewController, UIPickerViewDelegate, UIPicke
         if isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y += keyboardSize.height
+                self.view.frame.origin.y += keyboardSize.height/2
                 isKeyboardOpen = false
             }
         }
