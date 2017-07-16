@@ -41,7 +41,17 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     var colors : [UIColor] = [darkThemeColor, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
     
     var walletMembers = [String:MemberType]()
-    var members = [User]()
+    var members : [User] {
+        
+        var users : [User] = []
+        
+        self.walletMembers.forEach { (member) in
+            users.append(Resource.sharedInstance().users[member.key]!)
+        }
+        
+        return users
+        
+    }
     var label = UILabel()
     
     var tap = UITapGestureRecognizer()
@@ -196,7 +206,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         self.view.bringSubview(toFront: searchView)
         
         walletMembers = wallet!.memberTypes
-        members = wallet!.members
+
         if searchTable.delegate == nil {
             searchTable.delegate = self
             searchTable.dataSource = self
@@ -520,7 +530,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         if indexPath.section == 0 {
             self.view.endEditing(true)
             walletMembers[searchedUsers[indexPath.row].getUserID()] = .member
-            members.append(searchedUsers[indexPath.row])
             searchedUsers.remove(at: indexPath.row)
             searchBar.text = ""
             tableView.reloadSections([0,1], with: .top)
@@ -584,18 +593,17 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             }
             else if type == .admin {
                 cell.memberType.text = "Admin"
+                cell.adminBtn.setImage(#imageLiteral(resourceName: "removeAdmin"), for: .normal)
             }
             else {
                 cell.memberType.text = "Member"
+                cell.adminBtn.setImage(#imageLiteral(resourceName: "makeAdmin"), for: .normal)
             }
             
             cell.adminBtnAction = {
-                print(this.userName)
-                print(self.walletMembers[this.getUserID()])
                 self.walletMembers[this.getUserID()] = self.walletMembers[this.getUserID()] == .admin ? .member : .admin
                 
                 cell.memberType.text = self.walletMembers[this.getUserID()] == .admin ? "Admin" : "Member"
-//                tableView.reloadSections([1], with: .fade)
             }
             cell.removeMemberAction = {
                 self.walletMembers[this.getUserID()] = nil

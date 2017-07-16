@@ -1,5 +1,4 @@
 
-//
 //  SettingsViewController.swift
 //  FamilyBudgetApp
 //
@@ -11,26 +10,39 @@ import UIKit
 import ALCameraViewController
 
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, UICollectionViewDelegateFlowLayout, UserDelegate, WalletDelegate, WalletMemberDelegate {
-
     
     @IBOutlet weak var SearchMemberViewTitle: UILabel!
-    
     @IBOutlet weak var searchTableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
-    
-    
+    @IBOutlet weak var doneBtn: UIButton!
     @IBOutlet weak var SearchMemberView: UIView!
     @IBOutlet weak var SettingsTableView: UITableView!
+    @IBOutlet weak var popoverView: UIView!
+    @IBOutlet weak var iconsCollectionView: UICollectionView!
+    @IBOutlet weak var colorsCollectionView: UICollectionView!
     
     var backView = UIView()
     var searchedUsers = [User]()
-    var walletMembers = [User]()
+    var walletMembers : [User] {
+        
+        var users :[User] = []
+        
+        for member in memberTypes {
+            users.append(Resource.sharedInstance().users[member.key]!)
+        }
+        
+        return users
+    }
     var memberTypes = [String:MemberType]()
     var selectedWallet : UserWallet?
+    var selectedIcon = ""
+    var selectedColor : UIColor = darkThemeColor
+    var pSelectedIcon = ""
+    var pSelectedColor : UIColor = .brown
+    var colors : [UIColor] = [darkThemeColor, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
     
     var isKeyboardOpen = false
     var isUserSearch = false
-    
     var tap = UITapGestureRecognizer()
     
     var sections = ["Wallet","Wallet Settings","Members","leaveBtn"]
@@ -43,6 +55,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        popoverView.isHidden = true
         backView = UIView(frame: self.view.frame)
         backView.isUserInteractionEnabled = true
         tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
@@ -61,6 +74,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         SearchMemberView.frame.origin.y += self.SearchMemberView.frame.height
         searchBar.autocapitalizationType = .none
 
+        selectedColor = Resource.sharedInstance().currentWallet!.color
+        selectedIcon = Resource.sharedInstance().currentWallet!.icon
+        
         searchBar.delegate = self
         Delegate.sharedInstance().addUserDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)
@@ -70,7 +86,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
-                
                 if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
                     self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
                     self.settingsSetionCells = ["Change Name", "Change Icon", "Notification"]
@@ -81,7 +96,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     let thisWallet = Resource.sharedInstance().currentWallet!
                     self.selectedWallet = UserWallet(id: thisWallet.id, name: thisWallet.name, icon: thisWallet.icon, currencyID: thisWallet.currencyID, creatorID: thisWallet.creatorID, balance: thisWallet.balance, totInc: thisWallet.totalIncome, totExp: thisWallet.totalExpense, creationDate: thisWallet.creationDate.timeIntervalSince1970, isPersonal: thisWallet.isPersonal, memberTypes: thisWallet.memberTypes, isOpen: thisWallet.isOpen, color: thisWallet.color.stringRepresentation)
                     
-                    self.walletMembers = self.selectedWallet!.members
                     self.memberTypes = self.selectedWallet!.memberTypes
 
                     if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
@@ -97,8 +111,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     }
                     self.sections += ["User","User Settings","SignOut"]
                 }
-                
-
             }
         }
         
@@ -106,13 +118,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func ViewTap() {
-        if isKeyboardOpen {
-            isKeyboardOpen = false
-            self.view.endEditing(true)
-        }
-        else {
-            removeView()
-        }
+        self.view.endEditing(true)
     }
     
     func updateSettingCells(){
@@ -123,7 +129,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         else {
             self.sections = ["Wallet","Wallet Settings", "Members"]
-            self.walletMembers = Resource.sharedInstance().currentWallet!.members
             self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
             self.selectedWallet = Resource.sharedInstance().userWallets[Resource.sharedInstance().currentWalletID!]
             
@@ -152,15 +157,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         self.dismiss(animated: true, completion: nil)
     }
     
-    var SizeOfKeyboard = CGFloat()
-    
     func keyboardWillShow(notification: NSNotification) {
         
         if !isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                SizeOfKeyboard = keyboardSize.height
-                SearchMemberView.frame.origin.y -= SizeOfKeyboard/2
+                SearchMemberView.frame.origin.y -= keyboardSize.height/2
                 isKeyboardOpen = true
             }
         }
@@ -172,9 +174,15 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         if isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                SizeOfKeyboard = keyboardSize.height
+                SearchMemberView.frame.origin.y += keyboardSize.height/2
                 isKeyboardOpen = false
             }
+            else {
+                print("keyboard size not found")
+            }
+        }
+        else {
+            print("masla ho gya ")
         }
         
     }
@@ -208,7 +216,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             return sections[section] == "Wallet Settings" ? settingsSetionCells.count : sections[section] == "User Settings" ? userSettingsOptions.count : 1
         }
         else {
-            return searchtableSection[section] == "searchUsers" ? searchedUsers.count : walletMembers.count
+            return searchtableSection[section] == "searchUsers" ? searchedUsers.count : memberTypes.count
         }
     }
     
@@ -243,7 +251,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         if tableView == searchTableView {
-            if section == 0 {
+            if section == 0 && SearchMemberViewTitle.text == "Add Members" {
                 let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 50))
                 let label = UILabel(frame: view.frame)
                 label.text = searchedUsers.count == 0 ? "No users to show." : ""
@@ -384,7 +392,38 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
                 cell.userName.text = this.userName
                 cell.userEmail.text = this.getUserEmail()
-
+                
+                cell.actionsStackView.isHidden = false
+                let type = self.memberTypes[this.getUserID()]
+                
+                if type == .owner {
+                    cell.memberType.text = "Owner"
+                    cell.actionsStackView.isHidden = true
+                }
+                else if type == .admin {
+                    cell.memberType.text = "Admin"
+                    cell.adminBtn.setImage(#imageLiteral(resourceName: "removeAdmin"), for: .normal)
+                }
+                else {
+                    cell.memberType.text = "Member"
+                    cell.adminBtn.setImage(#imageLiteral(resourceName: "makeAdmin"), for: .normal)
+                }
+                
+                if SearchMemberViewTitle.text == "Transfer OwnerShip" {
+                    cell.actionsStackView.isHidden = true
+                }
+                
+                cell.adminBtnAction = {
+                    
+                    self.memberTypes[this.getUserID()] = self.memberTypes[this.getUserID()] == .admin ? .member : .admin
+                    
+                    cell.memberType.text = self.memberTypes[this.getUserID()] == .admin ? "Admin" : "Member"
+                }
+                cell.removeMemberAction = {
+                    self.memberTypes[this.getUserID()] = nil
+                    tableView.reloadSections([1], with: .fade)
+                }
+                
                 
                 return cell
             }
@@ -399,9 +438,33 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
             if searchtableSection[indexPath.section] == "searchUsers" {
                 memberTypes[searchedUsers[indexPath.row].getUserID()] = .member
-                walletMembers.append(searchedUsers[indexPath.row])
                 searchedUsers.remove(at: indexPath.row)
-                searchTableView.reloadSections([0,1], with: .top)
+                searchTableView.reloadSections([0,1], with: .fade)
+            }
+            
+            if SearchMemberViewTitle.text == "Transfer OwnerShip" {
+                
+                let alert = UIAlertController(title: "Confirm", message: "Please confirm, you want to leave ownership of this wallet", preferredStyle: .actionSheet)
+                
+                let confirm = UIAlertAction(title: "Transfer Ownership", style: .destructive, handler: { (action) in
+                    
+                    self.memberTypes[Resource.sharedInstance().currentUserId!] = .member
+                    self.memberTypes[self.walletMembers[indexPath.row].getUserID()] = .owner
+                    
+                    self.closeSearchView(self.doneBtn)
+                    
+                    self.SettingsTableView.reloadData()
+                    
+                })
+                
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                
+                alert.addAction(confirm)
+                alert.addAction(cancel)
+                
+                self.present(alert, animated: true, completion: nil)
+                
+                
             }
             
         }
@@ -411,6 +474,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             case "Wallet Settings":
                 
                 switch settingsSetionCells[indexPath.row] {
+                    
+                    case "Change Icon":
+                    showPopUp()
+                    
+                    
                 case "Add Member":
                     searchtableSection = ["searchUsers","Members"]
                     isUserSearch = true
@@ -583,13 +651,66 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        if collectionView.tag == 1 {
+            return 29
+        }
+        else if collectionView.tag == 2 {
+            return colors.count
+        }
+        
         return Resource.sharedInstance().currentWallet!.members.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if collectionView.tag == 1 {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "icon", for: indexPath) as! DefaultCollectionViewCell
+            
+            cell.icon.text = "\(UnicodeScalar(indexPath.item + 41011)!)"
+            cell.layer.borderWidth = 1
+            cell.layer.cornerRadius = cell.frame.width/2
+            
+            if "\(UnicodeScalar(indexPath.item + 41011)!)" == selectedIcon {
+                cell.layer.borderColor = selectedColor.cgColor
+                cell.icon.textColor = selectedColor
+            }
+            else {
+                cell.layer.borderColor = UIColor.lightGray.cgColor
+                cell.icon.textColor = UIColor.lightGray
+            }
+            
+            return cell
+        }
+        else if collectionView.tag == 2 {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "color", for: indexPath)
+            
+            cell.layer.cornerRadius = 12
+            cell.backgroundColor = colors[indexPath.item]
+            
+            if cell.backgroundColor == selectedColor {
+                
+                cell.layer.borderColor = selectedColor.cgColor
+                cell.layer.borderWidth = 1
+                
+            }
+            else {
+                cell.layer.borderWidth = 1
+                cell.layer.borderColor = UIColor.white.cgColor
+            }
+            
+            return cell
+        }
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "members", for: indexPath) as! MembersCollectionViewCell
         let member = Resource.sharedInstance().currentWallet!.members[indexPath.item]
-        cell.memberImage.image = member.image ?? #imageLiteral(resourceName: "dp-male")
+        cell.memberImage.image = member.image ?? (member.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+        member.imageCallback = {
+            image in
+            cell.memberImage.image = image
+        }
         cell.memberName.text = member.userName
         cell.memberType.layer.cornerRadius = cell.memberType.layer.frame.height/2
         if Resource.sharedInstance().currentWallet!.memberTypes[member.getUserID()] == .admin {
@@ -610,7 +731,60 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        if collectionView.tag == 1{
+            return CGSize(width: Int(collectionView.frame.height/2)-20, height: Int(collectionView.frame.height/2)-20)
+        }
+        else if collectionView.tag == 2{
+            return CGSize(width: 24, height: 24)
+        }
+        
         return CGSize(width: 50, height: 70)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        
+        if collectionView.tag == 1 {
+            
+            let index = selectedIcon.unicodeScalars.first!.value - 41011
+            
+            if let prev = collectionView.cellForItem(at: IndexPath.init(item: Int(index), section: 0)) as? DefaultCollectionViewCell {
+                
+                prev.layer.borderColor = UIColor.lightGray.cgColor
+                prev.icon.textColor = UIColor.lightGray
+            }
+            
+            
+            let cell = collectionView.cellForItem(at: indexPath) as! DefaultCollectionViewCell
+            //            pSelectedIcon = selectedIcon
+            selectedIcon = "\(UnicodeScalar(indexPath.item + 41011)!)"
+            cell.layer.borderColor = selectedColor.cgColor
+            cell.icon.textColor = selectedColor
+            
+            
+            
+        }
+        else if collectionView.tag == 2 {
+            
+            let index = selectedIcon.unicodeScalars.first!.value - 41011
+            
+            if let prev = collectionView.cellForItem(at: IndexPath.init(item: colors.index(of: selectedColor)!, section: 0)) {
+                prev.layer.borderColor = UIColor.white.cgColor
+                //            pSelectedColor = selectedColor
+                selectedColor = colors[indexPath.item]
+            }
+            
+            let new = collectionView.cellForItem(at: indexPath)
+            new?.layer.borderColor = selectedColor.cgColor
+            
+            let iconCell = iconsCollectionView.cellForItem(at: IndexPath.init(item: Int(index), section: 0)) as! DefaultCollectionViewCell
+            
+            iconCell.layer.borderColor = selectedColor.cgColor
+            iconCell.icon.textColor = selectedColor
+            
+        }
+        
     }
     
     func AddView(showView : UIView) {
@@ -641,55 +815,60 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
     }
     
+    func showPopUp() {
+//        self.view.removeGestureRecognizer(tap)
+//        backView.addGestureRecognizer(tap)
+        self.view.addSubview(backView)
+        
+        backView.alpha = 0
+        popoverView.isHidden = false
+        self.view.bringSubview(toFront: popoverView)
+        popoverView.transform = CGAffineTransform(scaleX: 0, y: 0)
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: .curveEaseInOut, animations: {() -> Void in
+            self.popoverView.transform = CGAffineTransform.identity
+            self.backView.alpha = 1
+        },completion: { _ in })
+        
+        
+    }
+    
+    func hidePopUp() {
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: .curveEaseInOut, animations: {() -> Void in
+            self.popoverView.transform = CGAffineTransform(scaleX: 0, y: 0)
+            self.backView.alpha = 0
+        },completion: { _ in
+            
+            self.popoverView.isHidden = true
+            self.backView.removeFromSuperview()
+            
+//            self.backView.removeGestureRecognizer(self.tap)
+//            self.view.addGestureRecognizer(self.tap)
+            
+        })
+        
+    }
+    
+    @IBAction func closePopupView(_ sender: UIButton) {
+        
+        if sender.tag == 0 || (selectedIcon == Resource.sharedInstance().currentWallet!.icon && selectedColor == Resource.sharedInstance().currentWallet!.color) {
+            hidePopUp()
+        }
+        else {
+            
+            let wallet = Resource.sharedInstance().currentWallet!
+            wallet.icon = selectedIcon
+            wallet.color = selectedColor
+            
+            WalletManager.sharedInstance().updateWallet(wallet)
+            
+        }
+    }
+    
     // Notification Switch
     func NotificationSwitchBtn(_sender : Any) {
 
-    }
-    
-    func memberTypeChanged(sender: UIButton) {
-        
-        let thisUser = walletMembers[sender.tag]
-        
-        if sender.currentTitle == "Make Admin" {
-            
-            memberTypes[thisUser.getUserID()] = .admin
-            sender.setTitle("Remove from Admin", for: .normal)
-        }
-        else if sender.currentTitle == "Remove from Admin" {
-            
-            memberTypes[thisUser.getUserID()] = .member
-            sender.setTitle("Make Admin", for: .normal)
-        }
-    }
-    
-    func TransferOwnerShip(sender: UIButton) {
-        
-        print("Transfer Owner Ship")
-        let thisUser = walletMembers[sender.tag]
-        
-        if sender.currentTitle == "Make Owner" {
-            
-            memberTypes[thisUser.getUserID()] = .owner
-            sender.setTitle("Remove from Owner", for: .normal)
-        }
-        else if sender.currentTitle == "Remove from Owner" {
-            
-            memberTypes[thisUser.getUserID()] = .member
-            sender.setTitle("Make Owner", for: .normal)
-        }
-    }
-    
-    func removeMember(sender: UIButton) {
-        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to remove this member", preferredStyle: .alert)
-        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { (success) in
-            self.memberTypes.removeValue(forKey: self.walletMembers[sender.tag].getUserID())
-            self.walletMembers.remove(at: sender.tag)
-            self.searchTableView.reloadData()
-        }
-        let noAction = UIAlertAction(title: "No", style: .cancel, handler: nil)
-        alert.addAction(yesAction)
-        alert.addAction(noAction)
-        self.present(alert, animated: true, completion: nil)
     }
     
     // Search Delegate
@@ -698,30 +877,68 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         searchedUsers = []
         
-        let results = Resource.sharedInstance().users.filter { (user) -> Bool in
+        if SearchMemberViewTitle.text == "Add Members" {
+            let results = Resource.sharedInstance().users.filter { (user) -> Bool in
+                
+                return user.value.getUserEmail().contains(searchText) && !(memberTypes.contains(where: { (_user) -> Bool in
+                    return _user.key == user.key
+                }))
+            }
             
-            return user.value.getUserEmail().contains(searchText) && !(memberTypes.contains(where: { (_user) -> Bool in
-                return _user.key == user.key
-            }))
+            print("search results = ", results.count)
+            for i in 0..<results.count {
+                searchedUsers.append(results[i].value)
+            }
+        }
+        else {
+            let results = Resource.sharedInstance().currentWallet!.members.filter { (user) -> Bool in
+                return user.getUserEmail().contains(searchText)
+            }
+            
+            memberTypes = [:]
+            
+            for result in results {
+                memberTypes[result.getUserID()] = Resource.sharedInstance().currentWallet!.memberTypes[result.getUserID()]
+            }
+        
         }
         
-        print("search results = ", results.count)
-        for i in 0..<results.count {
-            searchedUsers.append(results[i].value)
-        }
         searchTableView.reloadSections([0], with: .left)
     }
     
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-//        SearchMemberView.frame.origin.y -= SizeOfKeyboard
-    }
-    
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        SearchMemberView.center.y += SizeOfKeyboard/2
+    @IBAction func closeSearchView(_ sender: UIButton) {
+        
+        if sender.tag == 0 {
+            
+            
+            let alert = UIAlertController(title: "Discard Changes", message: "Do you want to discard your recent changes?", preferredStyle: .alert)
+            
+            let Confirm = UIAlertAction(title: "Confirm", style: .destructive, handler: { (ac) in
+                self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
+                self.removeView()
+            })
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            
+            alert.addAction(Confirm)
+            alert.addAction(cancel)
+            self.present(alert, animated: true, completion: nil)
+            
+        }
+        else {
+            
+            let wallet = Resource.sharedInstance().currentWallet!
+            wallet.memberTypes = self.memberTypes
+            
+            WalletManager.sharedInstance().updateWallet(wallet)
+            
+            self.removeView()
+            
+            
+        }
+        
     }
     
 // Wallet Delegate
-    
     
     func walletAdded(_ wallet: UserWallet) {
         

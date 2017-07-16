@@ -147,7 +147,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         if !isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                SizeOfKeyboard = keyboardSize.height
+                SizeOfKeyboard = keyboardSize.height/2
                 self.view.addGestureRecognizer(tap)
                 isKeyboardOpen = true
             }
@@ -161,7 +161,8 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         if isKeyboardOpen {
             
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-                SizeOfKeyboard = keyboardSize.height
+                SizeOfKeyboard = keyboardSize.height/2
+                self.view.removeGestureRecognizer(tap)
                 isKeyboardOpen = false
             }
         }
@@ -268,6 +269,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isEdit {
             if cells[indexPath.row] == "Category" {
+                
                 addView(CategoryView)
             }
             else if cells[indexPath.row] == "Date" {
@@ -431,7 +433,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         if textView.tag == 4 {
             textView.text = textView.text == "Write here" ? "" : textView.text
 //            self.view.frame.origin.y -= SizeOfKeyboard
-            UIView.animate(withDuration: 0.6) {
+            UIView.animate(withDuration: 0.3) {
                 self.view.frame.origin.y -= self.SizeOfKeyboard
             }
         }
@@ -457,7 +459,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             textView.text = textView.text == "" ? "Write here" : textView.text
             transaction?.comments = textView.text
 //            self.view.frame.origin.y += SizeOfKeyboard
-            UIView.animate(withDuration: 0.6) {
+            UIView.animate(withDuration: 0.3) {
                 self.view.frame.origin.y += self.SizeOfKeyboard
             }
         }
@@ -550,7 +552,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         
         let cell = collectionView.cellForItem(at: indexPath) as! CategorySelectionCollectionViewCell
         cell.icon.layer.borderWidth = 1
-//        cell.icon.layer.borderColor = Resource.sharedInstance().categories[selectedCategory]!.color.cgColor
+        cell.icon.layer.borderColor = Resource.sharedInstance().categories[selectedCategory]!.color.cgColor
         
     }
     
@@ -594,6 +596,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
 
     func addView(_ showView : UIView) {
         CategoryCollectionView.reloadData()
+        self.view.removeGestureRecognizer(tap)
         backView?.addGestureRecognizer(tap)
         self.view.addSubview(backView!)
         showView.alpha = 0
@@ -605,8 +608,8 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     }
     
     func removeView() {
-        self.view.removeGestureRecognizer(tap)
         backView?.removeGestureRecognizer(tap)
+        self.view.addGestureRecognizer(tap)
         UIView.animate(withDuration: 0.6, animations: {
             self.CategoryView.alpha = 0
             self.DatePickerView.alpha = 0
