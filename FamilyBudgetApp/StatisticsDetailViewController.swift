@@ -178,16 +178,14 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         PieChart.drawEntryLabelsEnabled = false
         
     }
-    
-    func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
-        
-        let font = UIFont(name: "untitled-font-25", size: size)!
+    func getAmountwithCurrency(Amount : Double , of font : UIFont, withSize size: CGFloat) -> NSMutableAttributedString {
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
+        let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
         
-        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
-        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: size)])
+        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
+        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
         let str = NSMutableAttributedString()
         str.append(CurrIcon)
@@ -224,7 +222,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             cell.categoryIcon.text = transaction.category.icon
             cell.category.text = transaction.category.name
             
-            cell.amount.attributedText = getAmountwithCurrency(Amount: transaction.amount, of: cell.amount.font.pointSize)
+            cell.amount.attributedText = getAmountwithCurrency(Amount: transaction.amount, of: cell.amount.font, withSize: 20)
 
             cell.personImage.image = transaction.transactionBy.image
             

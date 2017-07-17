@@ -75,12 +75,13 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
     }
     
-    func getAmountwithCurrency(Amount : Double , of font : UIFont) -> NSMutableAttributedString {
+    func getAmountwithCurrency(Amount : Double , of font : UIFont, withSize size: CGFloat) -> NSMutableAttributedString {
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
+        let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
         
-        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font.withSize(font.pointSize*0.7)])
+        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
         let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
         let str = NSMutableAttributedString()
@@ -267,9 +268,9 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.BudgetTitle.text = budget.title
         cell.Icon.text = budget.categories.first?.icon ?? ""
         
-        cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount, of: cell.TotalAmount.font)
+        cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount, of: cell.TotalAmount.font, withSize: 13)
         
-        cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget), of: cell.usedAmount.font)
+        cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget), of: cell.usedAmount.font, withSize: 13)
         
         cell.StartDate.text = dateformat.string(from: budget.startDate)
         cell.EndDate.text = dateformat.string(from: budget.startDate.addingTimeInterval(Double(24*60*60*budget.daysInbudget())))
@@ -278,7 +279,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.Icon.layer.borderColor = budget.categories.first?.color.cgColor
         cell.Icon.textColor = budget.categories.first?.color
         
-        cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), of: cell.BalanceAmount.font)
+        cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), of: cell.BalanceAmount.font, withSize: 21)
 
         cell.budgetUsed.constant = CGFloat(BudgetRelatedTransaction(budget)/budget.allocAmount)*(tableview.frame.width-40)
         cell.Status.backgroundColor = BudgetRelatedTransaction(budget)/budget.allocAmount >= 0.75 ? .red : darkThemeColor

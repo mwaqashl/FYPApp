@@ -58,9 +58,9 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 self.tabBarController?.tabBar.unselectedItemTintColor = UIColor.lightGray
                 self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
                 
-                self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
-                self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
-                self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
+                self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font, withSize: 24)
+                self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font, withSize: 24)
+                self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font, withSize: 24)
                 
                 self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
                 if !(Resource.sharedInstance().currentWallet?.isOpen)! {
@@ -96,9 +96,9 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         if isDataAvailable {
-            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
-            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
-            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font, withSize: 24)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font, withSize: 24)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font, withSize: 24)
             
             self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
             if !(Resource.sharedInstance().currentWallet?.isOpen)! {
@@ -133,16 +133,14 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         }
         transDates = Array(transactions.keys)
     }
-    
-    func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
-        
-        let font = UIFont(name: "untitled-font-25", size: size)!
+    func getAmountwithCurrency(Amount : Double , of font : UIFont, withSize size: CGFloat) -> NSMutableAttributedString {
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
+        let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
         
-        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
-        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: size)])
+        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
+        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
         let str = NSMutableAttributedString()
         str.append(CurrIcon)
@@ -150,7 +148,6 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
         return str
     }
-    
     
     func sortDates() {
         
@@ -229,7 +226,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         var trans = filteredTransactions[filteredDates[indexPath.section]]
         let category = trans![indexPath.row].category
         
-        cell.amount.attributedText = getAmountwithCurrency(Amount: trans![indexPath.row].amount, of: cell.amount.font.pointSize)
+        cell.amount.attributedText = getAmountwithCurrency(Amount: trans![indexPath.row].amount, of: cell.amount.font, withSize: 24)
         
         cell.category.text = category.name
         cell.categoryIcon.text = category.icon
@@ -347,9 +344,9 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 transDates.append(date)
                 transactions[date] = [transaction]
             }
-            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
-            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
-            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font, withSize: 24)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font, withSize: 24)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font, withSize: 24)
             
             if (transaction.isExpense && Segmentbtn.selectedSegmentIndex == 1) || (!transaction.isExpense && Segmentbtn.selectedSegmentIndex == 2) || Segmentbtn.selectedSegmentIndex == 0 {
                 SegmentbtnAction(Segmentbtn)
@@ -402,9 +399,9 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 tableview.reloadData()
             }
             
-            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
-            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
-            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font, withSize: 24)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font, withSize: 24)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font, withSize: 24)
         }
         }
     }
@@ -421,9 +418,9 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 tableview.reloadData()
             }
             
-            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
-            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
-            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font, withSize: 24)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font, withSize: 24)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font, withSize: 24)
         }
     }
     
@@ -438,9 +435,11 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
         if isDataAvailable {
         if Resource.sharedInstance().currentWalletID == wallet.id { //hide add transaction btn if wallet is closed
-            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font.pointSize)
-            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font.pointSize)
-            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font.pointSize)
+            
+            self.IncomeAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalIncome, of: self.IncomeAmount.font, withSize: 24)
+            self.ExpenseAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.totalExpense, of: self.IncomeAmount.font, withSize: 24)
+            self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: self.IncomeAmount.font, withSize: 24)
+            
             if !wallet.isOpen {
                 self.AddTransactionBtn.isHidden = true
             }

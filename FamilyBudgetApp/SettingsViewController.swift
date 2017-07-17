@@ -990,6 +990,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
         if Resource.sharedInstance().currentWalletID == wallet.id {
+            
+            
             self.SettingsTableView.reloadSections([sections.index(of: "Members")!], with: .fade)
         }
     }

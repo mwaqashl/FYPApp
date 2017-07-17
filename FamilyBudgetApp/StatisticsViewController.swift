@@ -194,16 +194,14 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         PieChart.data = chartData
         PieChart.drawEntryLabelsEnabled = false
     }
-    
-    func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
-        
-        let font = UIFont(name: "untitled-font-25", size: size)!
+    func getAmountwithCurrency(Amount : Double , of font : UIFont, withSize size: CGFloat) -> NSMutableAttributedString {
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
+        let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
         
-        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
-        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: size)])
+        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
+        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
         let str = NSMutableAttributedString()
         str.append(CurrIcon)
@@ -231,7 +229,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         case "BalanceAmount":
             let cell = tableView.dequeueReusableCell(withIdentifier: "BalanceCell") as! BalanceAmountTableViewCell
             cell.BalanceHeader.text = "Remaining Balance"
-            cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: cell.BalanceAmount.font.pointSize)
+            cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, of: cell.BalanceAmount.font, withSize: 20)
             cell.BalanceAmount.textColor = .blue
             cell.selectionStyle = .none
             return cell
@@ -256,10 +254,10 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
             }
             cell.ExpenseHeader.text = "Avg. Monthly Expense"
-            cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense/Double(Months.count), of: cell.ExpenseAmount.font.pointSize)
+            cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense/Double(Months.count), of: cell.ExpenseAmount.font, withSize: 17)
             cell.ExpenseAmount.textColor = .red
             cell.IncomeHeader.text = "Avg. Monthly Income"
-            cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income/Double(Months.count), of: cell.ExpenseAmount.font.pointSize)
+            cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income/Double(Months.count), of: cell.ExpenseAmount.font, withSize: 17)
             cell.IncomeAmunt.textColor = darkThemeColor
             cell.backgroundColor? = .clear
             cell.selectionStyle = .none
@@ -282,8 +280,8 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             
             guard let transactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])] else {
                 
-                cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font.pointSize)
-                cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font.pointSize)
+                cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font, withSize: 17)
+                cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font, withSize: 17)
                 cell.ExpenseBtn.isHidden = true
                 cell.IncomeExpandBtn.isHidden = true
                 
@@ -308,9 +306,9 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
             }
             
-            cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font.pointSize)
+            cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font, withSize: 17)
             
-            cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font.pointSize)
+            cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font, withSize: 17)
             
             return cell
             
@@ -332,8 +330,8 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             
             guard let transactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])] else {
                 
-                cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font.pointSize)
-                cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font.pointSize)
+                cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font, withSize: 17)
+                cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income, of: cell.ExpenseAmount.font, withSize: 17)
                 return cell
             }
             
@@ -347,9 +345,9 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             }
             
             
-            cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font.pointSize)
+            cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, of: cell.ExpenseAmount.font, withSize: 17)
             
-            cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income , of: cell.ExpenseAmount.font.pointSize)
+            cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income , of: cell.ExpenseAmount.font, withSize: 17)
             
             return cell
             

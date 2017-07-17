@@ -10,7 +10,7 @@ import UIKit
 
 
 
-class AddTransactionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate, UICollectionViewDelegateFlowLayout {
+class AddTransactionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, WalletDelegate, TransactionDelegate, UICollectionViewDelegateFlowLayout , UserDelegate {
     
     var backView : UIView?
     
@@ -70,7 +70,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         addBtn = UIBarButtonItem.init(image: #imageLiteral(resourceName: "done"), style: .plain, target: self, action: #selector(self.addBtnPressed))
         addBtn.tintColor = darkThemeColor
         
-        
         editBtn = UIBarButtonItem.init(image: #imageLiteral(resourceName: "edit"), style: .plain, target: self, action: #selector(self.editBtnPressed))
         editBtn.tintColor = darkThemeColor    
         self.navigationItem.backBarButtonItem?.tintColor = darkThemeColor
@@ -86,7 +85,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                 IncomeCategories.append(key)
             }
         }
-        
+        Delegate.sharedInstance().addUserDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)
         Delegate.sharedInstance().addTransactionDelegate(self)
         
@@ -556,8 +555,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         
     }
     
-    
-    
     @IBAction func doneBtnAction(_ sender: UIButton) {
         if sender.tag == 0 {
             pSelectedCategory = selectedCategory
@@ -692,6 +689,25 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         }
     }
 
+    func userAdded(_ user: User) {
+        
+    }
+    
+    func userUpdated(_ user: User) {
+        if Resource.sharedInstance().currentWallet!.memberTypes[user.getUserID()] != nil {
+            self.tableView.reloadSections([0], with: .fade)
+        }
+    }
+    
+    func userDetailsAdded(_ user: CurrentUser) {
+        
+    }
+    
+    func userDetailsUpdated(_ user: CurrentUser) {
+        if Resource.sharedInstance().currentWallet!.memberTypes[user.getUserID()] != nil {
+            self.tableView.reloadSections([0], with: .fade)
+        }
+    }
 
 
     /*
