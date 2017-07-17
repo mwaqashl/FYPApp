@@ -66,6 +66,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         backView!.backgroundColor = .lightGray
         backView!.alpha = 0.5
         backView!.isUserInteractionEnabled = true
+        backView!.addGestureRecognizer(tap)
         
         addBtn = UIBarButtonItem.init(image: #imageLiteral(resourceName: "done"), style: .plain, target: self, action: #selector(self.addBtnPressed))
         addBtn.tintColor = darkThemeColor
@@ -338,7 +339,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             cell.name.text = transaction?.transactionBy.userName
             let type = Resource.sharedInstance().currentWallet!.memberTypes[(transaction!.transactionById)]
             
-            cell.personimage.image = transaction?.transactionBy.image
+            cell.personimage.image = transaction?.transactionBy.image ?? (transaction?.transactionBy.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
             cell.personimage.layer.cornerRadius = cell.personimage.frame.height/2
             cell.personimage.clipsToBounds = true
             transaction?.transactionBy.imageCallback = {
@@ -387,19 +388,20 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func DeleteTransaction() {
         
         let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive) { (success) in
+            TransactionManager.sharedInstance().removeTransactionInWallet(self.transaction!, wallet: Resource.sharedInstance().currentWallet!)
+        }
         let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
-        alert.addAction(action)
+        alert.addAction(yesAction)
         alert.addAction(noAction)
         self.present(alert, animated: true, completion: nil)
     }
     
-    func YesPressed(action : UIAlertAction) {
-        TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
-    }
+//    func YesPressed(action : UIAlertAction) {
+//        TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
+//    }
     
     func NoPressed(action : UIAlertAction) {
-
     }
     
     func textViewDidChange(_ textView: UITextView) {
@@ -431,7 +433,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.tag == 4 {
             textView.text = textView.text == "Write here" ? "" : textView.text
-//            self.view.frame.origin.y -= SizeOfKeyboard
             UIView.animate(withDuration: 0.3) {
                 self.view.frame.origin.y -= self.SizeOfKeyboard
             }
@@ -469,10 +470,12 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         if isEdit {
             if segmentbtn.selectedSegmentIndex == 0 {
                 transaction!.isExpense = true
+                
             }
             else if segmentbtn.selectedSegmentIndex == 1 {
                 transaction!.isExpense = false
             }
+            transaction!.categoryId = ""
             selectedCategory = ""
             tableView.reloadData()
         }
@@ -523,11 +526,11 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         if segmentbtn.selectedSegmentIndex == 0 {
             
             if selectedCategory != "" {
-                guard let pCell = collectionView.cellForItem(at: IndexPath(item: ExpenseCategories.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell else {
-                    return
+                if let pCell = collectionView.cellForItem(at: IndexPath(item: ExpenseCategories.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell {
+                    
+                    pCell.icon.layer.borderWidth = 0
                 }
                 
-                pCell.icon.layer.borderWidth = 0
             }
             
             selectedCategory = ExpenseCategories[indexPath.item]
@@ -539,11 +542,11 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             
             
             if selectedCategory != "" {
-                guard let pCell = collectionView.cellForItem(at: IndexPath(item: IncomeCategories.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell else {
-                    return
+                if let pCell = collectionView.cellForItem(at: IndexPath(item: IncomeCategories.index(of: selectedCategory)!, section: 0)) as? CategorySelectionCollectionViewCell {
+                    
+                    pCell.icon.layer.borderWidth = 0
                 }
                 
-                pCell.icon.layer.borderWidth = 0
             }
             selectedCategory = IncomeCategories[indexPath.item]
         }
@@ -585,15 +588,18 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     }
     
     func ViewTap() {
-        removeView()
-        self.view.endEditing(true)
+        if isKeyboardOpen {
+            self.view.endEditing(true)
+        }
+        else {
+            removeView()
+        }
     }
     
     // Adding Category View
 
     func addView(_ showView : UIView) {
         CategoryCollectionView.reloadData()
-        self.view.removeGestureRecognizer(tap)
         backView?.addGestureRecognizer(tap)
         self.view.addSubview(backView!)
         showView.alpha = 0
@@ -605,14 +611,13 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     }
     
     func removeView() {
-        backView?.removeGestureRecognizer(tap)
-        self.view.addGestureRecognizer(tap)
         UIView.animate(withDuration: 0.6, animations: {
             self.CategoryView.alpha = 0
             self.DatePickerView.alpha = 0
         }) { (Success) in
             self.CategoryView.isHidden = true
             self.DatePickerView.isHidden = true
+            self.backView?.removeGestureRecognizer(self.tap)
             self.backView!.removeFromSuperview()
         }
     }
@@ -639,7 +644,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             if !(wallet.isOpen) {
                 let alert = UIAlertController(title: "Alert", message: "This Wallet Has been closed", preferredStyle: .alert)
                 let action = UIAlertAction(title: "Ok", style: .default, handler: { flag in
-                    if self.isNew {
+                    if self.isEdit {
                         self.navigationController?.popViewController(animated: true)
                     }
                     else {
@@ -647,7 +652,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                             self.cells.remove(at: self.cells.index(of: "Delete")!)
                             self.navigationItem.rightBarButtonItem = nil
                         }
-                        self.tableView.reloadData()
                     }
                 })
                 alert.addAction(action)

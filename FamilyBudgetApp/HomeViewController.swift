@@ -48,6 +48,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Do any additional setup after loading the view.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        if Resource.sharedInstance().currentWalletID == nil {
+            tableView.delegate = nil
+            tableView.dataSource = nil
+        }
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

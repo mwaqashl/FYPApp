@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UITextViewDelegate,UIPickerViewDelegate, UIPickerViewDataSource, BudgetDelegate, WalletMemberDelegate {
+class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UITextViewDelegate,UIPickerViewDelegate, UIPickerViewDataSource, BudgetDelegate, WalletMemberDelegate, WalletDelegate, UserDelegate {
 
     
     @IBOutlet weak var CategoryAndMembercollectionview: UICollectionView!
@@ -78,8 +78,6 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         Add = UIBarButtonItem.init(image: #imageLiteral(resourceName: "done"), style: .plain, target: self, action: #selector(self.AddBudget))
         Add.tintColor = darkThemeColor
         
-        self.tableview.dataSource = self
-        self.tableview.delegate = self
         
         self.DaysPicker.dataSource = self
         self.DaysPicker.delegate = self
@@ -89,6 +87,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         CategoryAndMembercollectionview.delegate = self
         
         Delegate.sharedInstance().addBudgetDelegate(self)
+        Delegate.sharedInstance().addUserDelegate(self)
+        Delegate.sharedInstance().addWalletMemberDelegate(self)
+        Delegate.sharedInstance().addWalletDelegate(self)
         
         self.navigationItem.rightBarButtonItem = self.Add
         
@@ -121,6 +122,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.selectedCategories = self.budget!.getCategoryIDs()
                     self.pselectedCategories = self.selectedCategories
                 }
+                
+                self.tableview.dataSource = self
+                self.tableview.delegate = self
             }
         }
     }
@@ -240,18 +244,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 for i in 0..<selectedCategories.count {
                     budget!.addCategory(selectedCategories[i])
                 }
-//                let bCategories = budget!.getCategoryIDs()
-//                if selectedCategories.contains(where: { (_category) -> Bool in
-//                    return _category
-//                })
-//                
-                for i in 0..<budget!.getCategoryIDs().count {
-                    if i < budget!.getCategoryIDs().count {
-                        if !selectedCategories.contains(where: { (_category) -> Bool in
-                            return _category == budget!.categories[i].id
-                        }){
-                            budget!.removeCategory(budget!.categories[i].id)
-                        }
+                for category in budget!.getCategoryIDs() {
+                    if !selectedCategories.contains(category) {
+                        budget?.removeCategory(category)
                     }
                 }
             }
@@ -359,10 +354,10 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             
                 let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
             
-                cell.name.text = selectedCategories == [] ? "None" : budget!.categories[0].name
-                cell.icon.text = selectedCategories == [] ? "" : budget!.categories[0].icon
+                cell.name.text = selectedCategories.count == 0 ? "None" : budget?.categories.first?.name ?? "None"
+                cell.icon.text = selectedCategories.count == 0 ? "" : budget?.categories.first?.icon ?? ""
             
-                cell.icon.textColor = selectedCategories == [] ? .black : budget!.categories[0].color
+                cell.icon.textColor = selectedCategories == [] ? .black : budget?.categories.first?.color ?? .black
                 cell.icon.layer.borderColor = cell.icon.textColor.cgColor
                 cell.icon.layer.borderWidth = 1
                 cell.icon.layer.cornerRadius = cell.icon.frame.width/2
@@ -598,7 +593,6 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         self.view.bringSubview(toFront: showView)
         
         if showView == DateAndDaysView {
-//            showView.fra -= showView.frame.size.width
             UIView.animate(withDuration: 0.6, animations: {
                 showView.frame.origin.y -= showView.frame.size.width
             })
@@ -702,6 +696,60 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                         break
                     }
                 }
+                if !isCategoryView {
+                    CategoryAndMembercollectionview.reloadData()
+                }
+            }
+        }
+    }
+    
+    // Wallet Delegate
+    func walletAdded(_ wallet: UserWallet) {
+    }
+    
+    func walletUpdated(_ wallet: UserWallet) {
+        if isDataAvailable {
+            if wallet.id == Resource.sharedInstance().currentWalletID! {
+                if !wallet.isOpen {
+                    self.navigationController?.popViewController(animated: true)
+                }
+                self.navigationItem.backBarButtonItem?.title = wallet.name
+            }
+        }
+    }
+    
+    func WalletDeleted(_ wallet: UserWallet) {
+        if isDataAvailable {
+            if wallet.id == Resource.sharedInstance().currentWalletID! {
+                Resource.sharedInstance().currentWalletID = Resource.sharedInstance().currentUserId!
+                self.navigationController?.popToRootViewController(animated: true)
+            }
+        }
+    }
+    
+    //User Delegates
+    func userAdded(_ user: User) {
+    }
+    
+    func userUpdated(_ user: User) {
+        if isDataAvailable {
+            if Resource.sharedInstance().currentWallet!.memberTypes[user.getUserID()] != nil {
+                walletmembers = Resource.sharedInstance().currentWallet!.members
+                if !isCategoryView {
+                    CategoryAndMembercollectionview.reloadData()
+                }
+            }
+        }
+    }
+    
+    func userDetailsAdded(_ user: CurrentUser) {
+        
+    }
+    
+    func userDetailsUpdated(_ user: CurrentUser) {
+        if isDataAvailable {
+            if Resource.sharedInstance().currentWallet!.memberTypes[user.getUserID()] != nil {
+                walletmembers = Resource.sharedInstance().currentWallet!.members
                 if !isCategoryView {
                     CategoryAndMembercollectionview.reloadData()
                 }

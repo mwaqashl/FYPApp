@@ -47,6 +47,8 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     var taskEdited = false
     var task : Task?
     
+    @IBOutlet weak var completeBtn: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -61,23 +63,22 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         
         dateformatter.dateFormat = "dd-MMM-yyyy"
         datepicker.minimumDate = Date()
-        
         tableview.delegate = self
         tableview.dataSource = self
-        
         collectionview.dataSource = self
         collectionview.delegate = self
         
         categoriesKeys = Array(Resource.sharedInstance().categories.keys)
-        
         acceptBtn.layer.cornerRadius = acceptBtn.layer.frame.height/2
         rejectBtn.layer.cornerRadius = rejectBtn.layer.frame.height/2
-        
         acceptBtn.layer.borderWidth = 1
-        rejectBtn.layer.borderWidth = 1
+        completeBtn.layer.cornerRadius = rejectBtn.layer.frame.height/2
+        completeBtn.layer.borderWidth = 1
         
+        rejectBtn.layer.borderWidth = 1
         acceptBtn.layer.borderColor = acceptBtn.titleLabel!.textColor.cgColor
         rejectBtn.layer.borderColor = rejectBtn.titleLabel!.textColor.cgColor
+        completeBtn.layer.borderColor = completeBtn.titleLabel!.textColor.cgColor
         
         self.acceptBtnView.isHidden = true
         self.acceptRejectBtnView.isHidden = true
@@ -93,7 +94,9 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         Add.tintColor = darkThemeColor
         
         Edit = UIBarButtonItem.init(image: #imageLiteral(resourceName: "edit"), style: .plain, target: self, action: #selector(self.EditTask))
-
+        Edit.tintColor = darkThemeColor
+        
+        
         Delegate.sharedInstance().addTaskDelegate(self)
         Delegate.sharedInstance().addTaskMemberDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)
@@ -152,29 +155,23 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     
     func keyboardWillShow(notification: NSNotification) {
         
-        
         if !isKeyboardOpen {
-            
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
                 SizeOfKeyboard = keyboardSize.height
                 self.view.addGestureRecognizer(tap)
                 isKeyboardOpen = true
             }
         }
-        
     }
     
     func keyboardWillHide(notification: NSNotification) {
         
-        
         if isKeyboardOpen {
-            
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
                 SizeOfKeyboard = keyboardSize.height
                 isKeyboardOpen = false
             }
         }
-        
     }
     
     func ViewTap() {
@@ -248,6 +245,17 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             
             if error == "" {
                 TaskManager.sharedInstance().updateTask(newTask!)
+                
+                for member in task!.memberIDs {
+                    if !newTask!.memberIDs.contains((member)) {
+                        TaskManager.sharedInstance().removeMemberFromTask(newTask!.id, member: member)
+                    }
+                }
+                for member in newTask!.memberIDs {
+                    if !task!.memberIDs.contains(member) {
+                        TaskManager.sharedInstance().addMemberToTask(newTask!.id, member: member)
+                    }
+                }
                 self.navigationController!.popViewController(animated: true)
             }
             else {
@@ -261,8 +269,8 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
 //     title,Amount, category, assign to / inprogess by / completed by, assign by, date, comments
         else {
             isEdit = true
-            Edit.title = "\u{A009}"
-            self.TitleForPage.text = "EDITING TASK"
+            Edit.image = #imageLiteral(resourceName: "done")
+            self.TitleForPage.text = "EDIT TASK"
             cells.remove(at: 4)
             if cells[cells.count-1] == "Delete" {
                 cells.remove(at: cells.count-1)
@@ -469,7 +477,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             return 70
         }
         else {
-            return 45
+            return 50
         }
     }
     
@@ -667,20 +675,22 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         }
         
     }
-    
-    
-    
+        
     
     @IBAction func AcceptBtnPressed(_ sender: Any) {
-        if acceptBtn.titleLabel!.text == "ACCEPT" {
+        if acceptBtn.titleLabel!.text == "Accept" {
             newTask!.doneByID = Resource.sharedInstance().currentUserId
+            
+            TaskManager.sharedInstance().taskStatusChanged(newTask!)
         }
-        else if acceptBtn.titleLabel!.text == "COMPLETED" {
+        else if acceptBtn.titleLabel!.text == "Completed" {
             newTask!.status = .completed
+            let transaction = Transaction(transactionId: "", amount: newTask!.amount, categoryId: newTask!.categoryID, comments: newTask?.comment, date: Date().timeIntervalSince1970, transactionById: Resource.sharedInstance().currentUserId!, currencyId: Resource.sharedInstance().currentWallet!.currencyID, isExpense: newTask!.category!.isExpense, walletID: newTask!.walletID)
+            TransactionManager.sharedInstance().AddTransactionInWallet(transaction)
+            TaskManager.sharedInstance().taskCompleted(task: newTask!)
+            
         }
         updateCells()
-        TaskManager.sharedInstance().taskStatusChanged(newTask!)
-        TaskManager.sharedInstance().updateTask(newTask!)
     }
     
     @IBAction func RejectBtnPressed(_ sender: Any) {
@@ -708,7 +718,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     
     // Delete Task
     func DeleteTask() {
-        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this tansaction", preferredStyle: .alert)
         let action = UIAlertAction(title: "Yes", style: .destructive, handler: YesPressed)
         let noAction = UIAlertAction(title: "No", style: .cancel, handler: NoPressed)
         alert.addAction(action)
@@ -719,7 +729,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     func YesPressed(action : UIAlertAction) {
 //        print("Kar de Delete")
         TaskManager.sharedInstance().deleteTask(newTask!)
-        self.navigationController!.popViewController(animated: true)
+//        self.navigationController!.popViewController(animated: true)
     }
     
     func NoPressed(action : UIAlertAction) {
@@ -847,7 +857,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     func walletUpdated(_ wallet: UserWallet) {
         if wallet.id == Resource.sharedInstance().currentWalletID {
             if !wallet.isOpen {
-                if self.isNew! {
+                if self.isEdit {
                     self.navigationController?.popViewController(animated: true)
                 }
                 else {
@@ -908,15 +918,17 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             }
         }
         if self.newTask!.status == .open && (self.newTask?.doneByID == "" || self.newTask?.doneByID == nil) && self.newTask!.memberIDs.contains(Resource.sharedInstance().currentUserId!) {
-            self.acceptBtn.setTitle("ACCEPT", for: .normal)
-            self.rejectBtn.setTitle("REJECT", for: .normal)
+            self.acceptBtn.setTitle("Accept", for: .normal)
+            self.completeBtn.setTitle("Accept", for: .normal)
+            self.rejectBtn.setTitle("Reject", for: .normal)
             self.acceptRejectBtnView.isHidden = false
             self.acceptBtnView.isHidden = true
             self.actionViewHeight.constant = 70
         }
         if self.newTask!.status == .open && self.newTask!.doneByID == Resource.sharedInstance().currentUserId! {
-            self.acceptBtn.setTitle("COMPLETED", for: .normal)
-            self.rejectBtn.setTitle("NOT DOING", for: .normal)
+            self.acceptBtn.setTitle("Completed", for: .normal)
+            self.completeBtn.setTitle("Completed", for: .normal)
+            self.rejectBtn.setTitle("Not Doing", for: .normal)
             
             if Resource.sharedInstance().currentWallet!.isPersonal {
                 self.acceptBtnView.isHidden = false

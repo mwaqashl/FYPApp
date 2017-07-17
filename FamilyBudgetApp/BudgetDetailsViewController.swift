@@ -48,9 +48,6 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
                 
                 self.GetCurrentWalletTransactins()
 
-                if self.transactions.count == 0 {
-                    self.cells.append("NoTransaction")
-                }
                 if Resource.sharedInstance().currentWallet!.isPersonal && Resource.sharedInstance().currentWallet!.isOpen {
                     self.cells.append("Delete")
                     self.navigationItem.rightBarButtonItem = self.Edit
@@ -82,13 +79,15 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         }
     }
     
-    func getAmountwithCurrency(Amount : Double , of size : CGFloat) -> NSMutableAttributedString {
+    
+    func getAmountwithCurrency(Amount : Double , withSize size: CGFloat) -> NSMutableAttributedString {
         
-        let font = UIFont(name: "untitled-font-25", size: size*0.7)!
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
-        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : font])
-        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: size)])
+        let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
+        let font = UIFont.init(name: "Roboto-Medium", size: size)!
+        let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
+        let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
         let str = NSMutableAttributedString()
         str.append(CurrIcon)
@@ -96,7 +95,6 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         
         return str
     }
-    
     func EditBudget() {
         performSegue(withIdentifier: "EditBudget", sender: nil)
     }
@@ -125,16 +123,6 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
                 transactions.append(currentWalletTransactions[i])
             }
         }
-        if self.transactions.count == 0 {
-            if !cells.contains("NoTransaction"){
-                self.cells.insert("NoTransaction", at: 3)
-            }
-        }
-        else {
-            if cells.contains("NoTransaction"){
-                self.cells.remove(at: 3)
-            }
-        }
     }
     
     func BudgetRelatedTransaction(_ budget: Budget) -> Double {
@@ -158,7 +146,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.section == 0 ? 160 : indexPath.section == 1 ? 300 : cells[indexPath.section] == "Transactions" || cells[indexPath.section] == "NoTransaction" ? 60 : 40
+        return indexPath.section == 0 ? 160 : indexPath.section == 1 ? 300 : cells[indexPath.section] == "Transactions" ? 60 : 40
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -167,7 +155,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cells[section] == "Transactions" ? transactions.count : 1
+        return cells[section] == "Transactions" ? transactions.count == 0 ? 1 : transactions.count : 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -182,14 +170,21 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
                 return cell
             
         case "Transactions":
+            
+            if transactions.count == 0 {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "NoTransactionCell") as! TaskTitleTableViewCell
+                cell.selectionStyle = .none
+                return cell
+            }
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell") as! TimelineTableViewCell
             let transaction = self.transactions[indexPath.row]
             
             cell.categoryIcon.text = transaction.category.icon
             cell.category.text = transaction.category.name
             
-            cell.amount.attributedText = getAmountwithCurrency(Amount: transaction.amount, of: cell.amount.font.pointSize)
-//             cell.imageView!.image = transaction.transactionBy.image != nil ? transaction.transactionBy.image : #imageLiteral(resourceName: "dp-male")
+            cell.amount.attributedText = getAmountwithCurrency(Amount: transaction.amount, withSize: 20)
+             cell.imageView!.image = transaction.transactionBy.image != nil ? transaction.transactionBy.image : #imageLiteral(resourceName: "dp-male")
             
             cell.categoryIcon.textColor = transaction.category.color
             cell.categoryIcon.layer.borderColor = cell.categoryIcon.textColor.cgColor
@@ -204,16 +199,13 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             let cell = tableView.dequeueReusableCell(withIdentifier: "BudgetCell") as! BudgetTableViewCell
             cell.AssignMembersCollectionView.dataSource = self
             cell.AssignMembersCollectionView.delegate = self
-            
-            cell.Status.frame.size.width = 0
             cell.AssignMembersCollectionView.tag = indexPath.row
-            
             cell.BudgetTitle.text = budget!.title
             cell.Icon.text = budget!.categories.first?.icon ?? ""
             
-            cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget!.allocAmount, of: cell.TotalAmount.font.pointSize)
+            cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget!.allocAmount, withSize: 13)
             
-            cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget!), of: cell.usedAmount.font.pointSize)
+            cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget!), withSize: 13)
             
             cell.StartDate.text = dateformat.string(from: budget!.startDate)
             cell.EndDate.text = dateformat.string(from: budget!.startDate.addingTimeInterval(Double(24*60*60*budget!.daysInbudget())))
@@ -222,32 +214,32 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             cell.Icon.layer.borderColor = budget!.categories.first?.color.cgColor
             cell.Icon.textColor = budget!.categories.first?.color
             
-            cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget!.allocAmount - BudgetRelatedTransaction(budget!), of: cell.BalanceAmount.font.pointSize)
+            cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget!.allocAmount - BudgetRelatedTransaction(budget!), withSize: 21)
             
-            let size = CGFloat(BudgetRelatedTransaction(budget!)/budget!.allocAmount)*cell.defaultstatusbar.frame.width
-            cell.Status.frame.size.width = size
+            cell.budgetUsed.constant = CGFloat(BudgetRelatedTransaction(budget!)/budget!.allocAmount)*(tableView.frame.width-40)
+            
+            if cell.budgetUsed.constant > tableView.frame.width-40 {
+                cell.budgetUsed.constant = tableView.frame.width-40
+            }
+            
             cell.Status.backgroundColor = BudgetRelatedTransaction(budget!)/budget!.allocAmount >= 0.75 ? .red : darkThemeColor
             
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
             
-        case "NoTransaction":
-            let cell = tableView.dequeueReusableCell(withIdentifier: "NoTransactionCell") as! TaskTitleTableViewCell
-            cell.taskTitle.text = "No Transactions Available"
-            cell.taskTitle.textColor = .lightGray
-            cell.isUserInteractionEnabled = false
-            cell.taskTitle.isEditable = false
-            cell.selectionStyle = .none
-            return cell
         
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "statsCell") as! BudgetStatsTableViewCell
             self.filterTransaction()
             if CategoriesAndAmount.count != 0 {
+                cell.PieChartView.isHidden = false
                 self.DrawPieChart(data: CategoriesAndAmount, PieChart: cell.PieChartView)
+                cell.noDataLabel.isHidden = true
             }
             else {
                 cell.PieChartView.data = nil
+                cell.PieChartView.isHidden = true
+                cell.noDataLabel.isHidden = false
             }
             cell.PieChartView.chartDescription?.text = ""
             cell.PieChartView.noDataText = "No Transaction In This Budget"
@@ -308,11 +300,6 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             let dataEntry = PieChartDataEntry(value: data[i]!, label: Resource.sharedInstance().categories[i]!.name, data: nil)
             dataEntries.append(dataEntry)
         }
-        let ChartDataSet = PieChartDataSet(values: dataEntries, label: "")
-        
-        let chartData = PieChartData(dataSet: ChartDataSet)
-        
-        PieChart.data = chartData
         
         var colors: [UIColor] = []
         
@@ -321,13 +308,22 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             colors.append(color)
         }
         
-        ChartDataSet.colors = colors
         PieChart.animate(xAxisDuration: 0.4)
         PieChart.holeRadiusPercent = 0.3
-//        PieChart.transparentCircleColor = UIColor.clear
+        //        PieChart.transparentCircleColor = UIColor.clear
+        
+        let ChartDataSet = PieChartDataSet(values: dataEntries, label: "")
+        ChartDataSet.colors = colors
+        ChartDataSet.sliceSpace = 1.0
+        ChartDataSet.drawValuesEnabled = false
+        
+        let chartData = PieChartData(dataSet: ChartDataSet)
+        
+        PieChart.data = chartData
+        PieChart.drawEntryLabelsEnabled = false
         
     }
-
+    
     // BudgetDelegate
     func budgetAdded(_ budget: Budget) {
     }

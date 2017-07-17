@@ -12,6 +12,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     @IBOutlet weak var segmentBtn: UISegmentedControl!
     @IBOutlet weak var tableview: UITableView!
+    @IBOutlet weak var CloseWalletView: UIView!
     
     var allWalletsBtn = UIBarButtonItem()
     var SettingsBtn = UIBarButtonItem()
@@ -66,6 +67,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 else {
                     self.AddBudgetBtn.isHidden = true
                 }
+                self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
                 self.isDataAvailable = true
                 self.ExtractBudget()
                 self.ExtractTransactions()
@@ -75,12 +77,15 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
     }
     
-    func getAmountwithCurrency(Amount : Double , of font : UIFont, withSize size: CGFloat) -> NSMutableAttributedString {
+    func getAmountwithCurrency(Amount : Double , withSize size: CGFloat) -> NSMutableAttributedString {
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
         let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
-        
+        let font = UIFont.init(name: "Roboto-Medium", size: size)!
+        print(size)
+        print(curfont.pointSize)
+        print(font.pointSize)
         let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
         let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
@@ -138,7 +143,12 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let endDate = budget.startDate.addingTimeInterval(Double(budget.daysInbudget()*24*60*60))
         //End date validation not done
 //         && currentWalletTransactions[i].date <= budget.startDate.addTimeInterval(Double(budget.period*24*60*60))
+        
+        print("Budget Start Date : \(dateformat.string(from: budget.startDate))")
+        print("Budget End Date : \(dateformat.string(from: endDate))")
+        
         for i in 0..<currentWalletTransactions.count {
+            print("Transaction Date : \(dateformat.string(from: currentWalletTransactions[i].date))")
                 if categories.contains(currentWalletTransactions[i].categoryId) && currentWalletTransactions[i].date >= budget.startDate && currentWalletTransactions[i].date < endDate && members.contains(currentWalletTransactions[i].transactionById) {
                     total += currentWalletTransactions[i].amount
                     budgetAndRelatedTransactions[budget.id]!.append(currentWalletTransactions[i])
@@ -168,16 +178,16 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             else {
                 self.AddBudgetBtn.isHidden = true
             }
-            
+            self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
             ExtractBudget()
             ExtractTransactions()
             
             if tableview.delegate == nil {
                 tableview.dataSource = self
                 tableview.delegate = self
+                self.tableview.reloadData()
             }
             else {
-                
                 tableview.reloadData()
             }
         }
@@ -268,9 +278,9 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.BudgetTitle.text = budget.title
         cell.Icon.text = budget.categories.first?.icon ?? ""
         
-        cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount, of: cell.TotalAmount.font, withSize: 13)
+        cell.TotalAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount, withSize: 13)
         
-        cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget), of: cell.usedAmount.font, withSize: 13)
+        cell.usedAmount.attributedText = getAmountwithCurrency(Amount: BudgetRelatedTransaction(budget), withSize: 13)
         
         cell.StartDate.text = dateformat.string(from: budget.startDate)
         cell.EndDate.text = dateformat.string(from: budget.startDate.addingTimeInterval(Double(24*60*60*budget.daysInbudget())))
@@ -279,9 +289,14 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.Icon.layer.borderColor = budget.categories.first?.color.cgColor
         cell.Icon.textColor = budget.categories.first?.color
         
-        cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), of: cell.BalanceAmount.font, withSize: 21)
+        cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), withSize: 21)
 
         cell.budgetUsed.constant = CGFloat(BudgetRelatedTransaction(budget)/budget.allocAmount)*(tableview.frame.width-40)
+        
+        if cell.budgetUsed.constant > tableview.frame.width-40 {
+            cell.budgetUsed.constant = tableview.frame.width-40
+        }
+        
         cell.Status.backgroundColor = BudgetRelatedTransaction(budget)/budget.allocAmount >= 0.75 ? .red : darkThemeColor
         
         cell.selectionStyle = UITableViewCellSelectionStyle.none
@@ -343,6 +358,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func walletUpdated(_ wallet: UserWallet) {
         if wallet.id == Resource.sharedInstance().currentWalletID {
+            self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
             if wallet.isOpen {
                 self.AddBudgetBtn.isHidden = false
                 

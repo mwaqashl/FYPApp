@@ -26,13 +26,14 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     var dateFormat = DateFormatter()
     var selectedMonthIndex = Int()
     var Months = [Date]()
-    
+    var calander = NSCalendar.current
     var selectedMonthTransactions = [Transaction]()
     var expenseTransaction = [Transaction]()
     var incomeTransaction = [Transaction]()
-    
+    var walletid = String()
     var cells = ["Statistical view","Transactions"]
     var isDataAvailable = false
+    var selectedMonth : Date?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,6 +61,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
+                self.walletid = Resource.sharedInstance().currentWalletID!
                 if self.selectedMonthIndex == 0 {
                     self.previousMonthBtn.isEnabled = false
                 }
@@ -76,6 +78,10 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
+            if walletid != Resource.sharedInstance().currentWalletID! {
+                self.navigationController?.popViewController(animated: true)
+            }
+            ExtractMonths()
             ExtractTransactions()
             ExtractIncomeExpense()
             sortMonths()
@@ -89,7 +95,9 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     func ExtractIncomeExpense() {
-        selectedMonthTransactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])]!
+        guard let selectedMonthTransactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])] else {
+            return
+        }
         expenseTransaction = []
         incomeTransaction = []
         
@@ -106,7 +114,6 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     func ExtractTransactions() {
         currentWalletTransactions = Resource.sharedInstance().currentWallet!.transactions
         MonthRelatedTransaction = [:]
-        Months = []
         
         for i in 0..<currentWalletTransactions.count {
             
@@ -116,20 +123,44 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             }
             else {
                 MonthRelatedTransaction[date] = [currentWalletTransactions[i]]
-                Months.append(currentWalletTransactions[i].date)
             }
         }
-        sortMonths()
-        tableView.reloadData()
     }
     
     func sortMonths() {
         Months.sort { (a, b) -> Bool in
             a.compare(b) == .orderedAscending
         }
-        selectedMonthIndex = Months.count > 0 ? Months.count-1 : 0
-        nextMonthBtn.isEnabled = Months.count > 0
-        previousMonthBtn.isEnabled = selectedMonthIndex > 0
+    }
+    
+    func ExtractMonths(){
+        guard let transactions = Resource.sharedInstance().currentWallet?.transactions
+            else {
+                return
+        }
+        var dates = [Date]()
+        for i in 0..<transactions.count {
+            dates.append(transactions[i].date)
+        }
+        
+        dates.sort { (a, b) -> Bool in
+            a.compare(b) == .orderedAscending
+        }
+        
+        guard var date = dates.first else {
+            self.Months.append(Date())
+            return
+        }
+        
+        Months = []
+        
+        while date <= Date() {
+            print(self.dateFormat.string(from: date))
+            Months.append(date)
+            date = self.calander.date(byAdding: .month, value: 1, to: date)!
+        }
+        
+        
     }
     
     //Categories and its amount
@@ -178,12 +209,14 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         PieChart.drawEntryLabelsEnabled = false
         
     }
-    func getAmountwithCurrency(Amount : Double , of font : UIFont, withSize size: CGFloat) -> NSMutableAttributedString {
+    
+    
+    func getAmountwithCurrency(Amount : Double , withSize size: CGFloat) -> NSMutableAttributedString {
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
         let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
-        
+        let font = UIFont.init(name: "Roboto-Medium", size: size)!
         let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
         let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
         
@@ -200,10 +233,10 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if segmentBtn.selectedSegmentIndex == 0 {
-            return cells[section] == "Transactions" ? expenseTransaction.count : 1
+            return cells[section] == "Transactions" ? expenseTransaction.count == 0 ? 1 : expenseTransaction.count : 1
         }
         else {
-            return cells[section] == "Transactions" ? incomeTransaction.count : 1
+            return cells[section] == "Transactions" ? incomeTransaction.count == 0 ? 1 : incomeTransaction.count : 1
         }
     }
     
@@ -216,13 +249,29 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         switch cells[indexPath.section] {
             
         case "Transactions":
+            
+            if segmentBtn.selectedSegmentIndex == 0 {
+                if expenseTransaction.count == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "NoTransactionCell") as! TaskTitleTableViewCell
+                    cell.selectionStyle = .none
+                    return cell
+                }
+            }
+            else {
+                if incomeTransaction.count == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "NoTransactionCell") as! TaskTitleTableViewCell
+                    cell.selectionStyle = .none
+                    return cell
+                }
+            }
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell") as!     TimelineTableViewCell
             let transaction = self.selectedMonthTransactions[indexPath.row]
             
             cell.categoryIcon.text = transaction.category.icon
             cell.category.text = transaction.category.name
             
-            cell.amount.attributedText = getAmountwithCurrency(Amount: transaction.amount, of: cell.amount.font, withSize: 20)
+            cell.amount.attributedText = getAmountwithCurrency(Amount: transaction.amount , withSize: 20)
 
             cell.personImage.image = transaction.transactionBy.image
             
@@ -238,11 +287,6 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             
             cell.selectionStyle = .none
             
-            return cell
-            
-        case "NoTransaction":
-            let cell = tableView.dequeueReusableCell(withIdentifier: "NoTransactionCell") as! TaskTitleTableViewCell
-            cell.selectionStyle = .none
             return cell
             
         default:
@@ -272,30 +316,6 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     @IBAction func segmentBtnAction(_ sender: Any) {
-        if segmentBtn.selectedSegmentIndex == 0 {
-            if expenseTransaction.count == 0 {
-                if !cells.contains("NoTransaction") {
-                    cells.append("NoTransaction")
-                }
-            }
-            else {
-                if cells.contains("NoTransaction") {
-                    cells.remove(at: cells.index(of: "NoTransaction")!)
-                }
-            }
-        }
-        else if segmentBtn.selectedSegmentIndex == 1 {
-            if incomeTransaction.count == 0 {
-                if !cells.contains("NoTransaction") {
-                    cells.append("NoTransaction")
-                }
-            }
-            else {
-                if cells.contains("NoTransaction") {
-                    cells.remove(at: cells.index(of: "NoTransaction")!)
-                }
-            }
-        }
         tableView.reloadData()
     }
     
@@ -337,10 +357,28 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         }
     }
     
+    //Transaction Delegates
     func transactionAdded(_ transaction: Transaction) {
         if isDataAvailable {
             if transaction.walletID == Resource.sharedInstance().currentWalletID! {
-                ExtractTransactions()
+                
+                let date = dateFormat.string(from: transaction.date)
+                
+                if MonthRelatedTransaction.keys.contains(date){
+                    MonthRelatedTransaction[date]!.append(transaction)
+                }
+                else {
+                    MonthRelatedTransaction[date] = [transaction]
+                }
+                
+                if !Months.contains(where: { (dates) -> Bool in
+                    return dateFormat.string(from: dates) == date
+                }){
+                    selectedMonth = Months[selectedMonthIndex]
+                    Months.append(transaction.date)
+                    sortMonths()
+                    selectedMonthIndex = Months.index(of: selectedMonth!)!
+                }
                 if transaction.date == Months[selectedMonthIndex] {
                     ExtractIncomeExpense()
                     if transaction.isExpense && segmentBtn.selectedSegmentIndex == 0 {
@@ -357,8 +395,24 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     func transactionDeleted(_ transaction: Transaction) {
         if isDataAvailable {
             if transaction.walletID == Resource.sharedInstance().currentWalletID! {
-                ExtractTransactions()
-                if transaction.date == Months[selectedMonthIndex] {
+                
+                let date = dateFormat.string(from: transaction.date)
+                
+                guard let transactions = MonthRelatedTransaction[date] else {
+                    return
+                }
+                
+                for i in 0..<transactions.count {
+                    if transactions[i].id == transaction.id {
+                        MonthRelatedTransaction[date]!.remove(at: i)
+                        if MonthRelatedTransaction[date]?.count == 0 {
+                            MonthRelatedTransaction.removeValue(forKey: date)
+                        }
+                        break
+                    }
+                }
+                
+                if dateFormat.string(from: Months[selectedMonthIndex]) == date {
                     ExtractIncomeExpense()
                     if transaction.isExpense && segmentBtn.selectedSegmentIndex == 0 {
                         tableView.reloadData()
@@ -374,16 +428,13 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     func transactionUpdated(_ transaction: Transaction) {
         if isDataAvailable {
             if transaction.walletID == Resource.sharedInstance().currentWalletID! {
+                selectedMonth = Months[selectedMonthIndex]
                 ExtractTransactions()
-                if transaction.date == Months[selectedMonthIndex] {
-                    ExtractIncomeExpense()
-                    if transaction.isExpense && segmentBtn.selectedSegmentIndex == 0 {
-                        tableView.reloadData()
-                    }
-                    else if !transaction.isExpense && segmentBtn.selectedSegmentIndex == 1 {
-                        tableView.reloadData()
-                    }
-                }
+                ExtractMonths()
+                sortMonths()
+                selectedMonthIndex = Months.index(of: selectedMonth!)!
+                ExtractIncomeExpense()
+                tableView.reloadData()
             }
         }
     }

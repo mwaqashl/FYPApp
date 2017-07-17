@@ -30,14 +30,14 @@ class BudgetManager {
         startCom.hour = 0
         startCom.second = 0
         
-        print(Calendar.current.date(from: startCom))
+        let budgetDate = Calendar.current.date(from: startCom)
         
         let data : NSMutableDictionary = [
             
             "allocAmount": budget.allocAmount,
             "title": budget.title,
             "period": budget.period,
-            "startDate": startCom.date!.timeIntervalSince1970,
+            "startDate": budgetDate!.timeIntervalSince1970,
             "isOpen": budget.isOpen,
             "walletID": budget.walletID
         ]

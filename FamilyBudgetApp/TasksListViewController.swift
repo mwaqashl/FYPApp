@@ -11,8 +11,8 @@ import UIKit
 class TasksListViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource,TaskDelegate , WalletMemberDelegate, TaskMemberDelegate, WalletDelegate{
     
     @IBOutlet weak var SegmentBtn: UISegmentedControl!
-    @IBOutlet weak var addBtn: UIBarButtonItem!
     @IBOutlet weak var tableview: UITableView!
+    @IBOutlet weak var CloseWalletView: UIView!
     
     var dateformat = DateFormatter()
     var selectedrow : IndexPath?
@@ -58,6 +58,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
                 self.tabBarController!.tabBar.selectedImageTintColor = darkThemeColor
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 self.isDataAvailable = true
+                self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
                 self.TaskExtraction()
             }
             
@@ -76,14 +77,15 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
             self.tabBarController!.tabBar.unselectedItemTintColor = .gray
             self.tabBarController!.tabBar.selectedImageTintColor = darkThemeColor
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
+            self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
             TaskExtraction()
-            for key in Resource.sharedInstance().tasks.keys {
-                let task = Resource.sharedInstance().tasks[key]
-                if task!.walletID == Resource.sharedInstance().currentWalletID {
-                    print(task!.id)
-                    print(task!.amount)
-                }
-            }
+//            for key in Resource.sharedInstance().tasks.keys {
+//                let task = Resource.sharedInstance().tasks[key]
+//                if task!.walletID == Resource.sharedInstance().currentWalletID {
+//                    print(task!.id)
+//                    print(task!.amount)
+//                }
+//            }
             tableview.reloadData()
         }
     }
@@ -359,6 +361,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     
     func walletUpdated(_ wallet: UserWallet) {
         if wallet.id == Resource.sharedInstance().currentWalletID {
+            self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
             if wallet.isOpen {
                 AddTaskBtn.isHidden = false
             }
