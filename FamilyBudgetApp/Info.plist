@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Family Budget Requires to access your photolibrary to access your photo for profile image.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,6 +20,8 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Family Budget Requires to access your photolibrary to access your photo for profile image.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Family Budget Requires to access your photolibrary to access your photo for profile image.</string>
 	<key>UIAppFonts</key>
