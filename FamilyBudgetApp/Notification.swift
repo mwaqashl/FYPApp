@@ -6,13 +6,13 @@ class Notification {
     
     var notifID: String
     var module: String
-    var type: String
+    var type: NotificationType
     var details: [String: AnyObject]
     var isPush : Bool
     var users : [String]
     var message : String
     
-    init(id: String, module: String, type: String, details: [String:AnyObject], isPush: Bool, users: [String], message: String) {
+    init(id: String, module: String, type: NotificationType, details: [String:AnyObject], isPush: Bool, users: [String], message: String) {
         
         self.notifID = id
         self.details = details

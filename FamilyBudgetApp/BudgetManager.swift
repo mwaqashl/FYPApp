@@ -82,7 +82,7 @@ class BudgetManager {
             "allocAmount": budget.allocAmount,
             "title": budget.title,
             "period": budget.period,
-            "startDate": budget.startDate.timeIntervalSince1970*1000,
+            "startDate": budget.startDate.timeIntervalSince1970,
             "isOpen": budget.isOpen,
         ]
         

@@ -9,8 +9,9 @@ target 'FamilyBudgetApp' do
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
   pod 'Firebase'
-  pod 'Firebase/Storage’
+  pod 'Firebase/Storage'
   pod 'ALCameraViewController'
+  pod 'Alamofire’, '~> 4.4'
 
   # Pods for FamilyBudgetApp
 

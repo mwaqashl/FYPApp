@@ -13,6 +13,7 @@ import Firebase
             try Auth.auth().signOut()
             isAuthenticated = false
             
+            UserManager.sharedInstance().userLoggedOut(Resource.sharedInstance().currentUserId!)
             for wallet in Resource.sharedInstance().userWallets {
                 
                 BudgetObserver.sharedInstance().stopObserving(BudgetsOf: wallet.value)
@@ -116,6 +117,7 @@ import Firebase
                         
                         Resource.sharedInstance().currentUserId = user!.uid
                         HelperObservers.sharedInstance().startObserving()
+                        UserManager.sharedInstance().userLoggedIn(thisUser.getUserID())
                         HelperObservers.sharedInstance().getUserAndWallet({ (success) in
                             if success {
                                 
@@ -156,6 +158,7 @@ import Firebase
                 Resource.sharedInstance().currentUserId = thisUser.getUserID()
                 Resource.sharedInstance().currentWalletID = thisUser.getUserID()
                 HelperObservers.sharedInstance().startObserving()
+                UserManager.sharedInstance().userLoggedIn(thisUser.getUserID())
                 HelperObservers.sharedInstance().getUserAndWallet({ (success) in
                     if success {
                         var users = (defaultSettings.value(forKey: "lastUserIDs") as? [String:String]) ?? [:]

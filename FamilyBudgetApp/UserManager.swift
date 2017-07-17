@@ -51,7 +51,7 @@ class UserManager {
         if user.birthdate != nil {
             data["birthDate"] = user.birthdate!.timeIntervalSince1970*1000
         }
-        data["deviceID"] = user.deviceID
+        data["deviceID"] = defaultSettings.string(forKey: "deviceToken") ?? " "
         data["lastSeen"] = ServerValue.timestamp()
         
         userInfo.setValue(data)
@@ -69,7 +69,7 @@ class UserManager {
             "gender" : user.gender
         ]
         data["lastSeen"] = ServerValue.timestamp()
-        
+        data["deviceID"] = defaultSettings.string(forKey: "deviceToken") ?? " "
         
         userInfo.updateChildValues(data)
 
