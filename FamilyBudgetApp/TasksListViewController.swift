@@ -218,6 +218,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         cell.taskMembers.delegate = self
         cell.taskMembers.dataSource = self
         cell.taskMembers.tag = indexPath.row
+        (cell.taskMembers.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
         cell.taskMembers.reloadData()
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell

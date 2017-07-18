@@ -74,7 +74,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         editBtn = UIBarButtonItem.init(image: #imageLiteral(resourceName: "edit"), style: .plain, target: self, action: #selector(self.editBtnPressed))
         editBtn.tintColor = darkThemeColor    
         self.navigationItem.backBarButtonItem?.tintColor = darkThemeColor
-        
+        self.navigationItem.backBarButtonItem?.tintColor = darkThemeColor
         dateformatter.dateFormat = "dd-MMM-yyyy"
         
         for key in Resource.sharedInstance().categories.keys {

@@ -50,6 +50,21 @@ class BudgetManager {
         addMembersToBudget(budRef.key, members: budget.getMemberIDs())
         addCategoriesToBudget(budRef.key, categories: budget.getCategoryIDs())
         
+        for member in budget.getMemberIDs() {
+            print("Loop")
+            if member != Resource.sharedInstance().currentUserId {
+                guard let notifUser = Resource.sharedInstance().users[member] as? CurrentUser else {
+                    continue
+                }
+                if let deviceID = notifUser.deviceID {
+                    NotificationManager.sharedInstance().sendNotification(toDevicewith: deviceID, of: .budgetAdded, for: budget.walletID, withCallback: { (flag) in
+                        print("Notification sent", flag ? "Success" : "Failed")
+                        
+                    })
+                }
+            }
+        }
+        
     }
     
     

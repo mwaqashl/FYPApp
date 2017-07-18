@@ -361,6 +361,8 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             cell.addmemberBtn.addTarget(self, action: #selector(self.assignToaddBtnPressed(_:)), for: .touchUpInside)
             cell.membersCollection.dataSource = self
             cell.membersCollection.dataSource = self
+            (cell.membersCollection.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
+
             cell.membersCollection.reloadData()
             cell.addmemberBtn.isHidden = !isEdit
             cell.selectionStyle = UITableViewCellSelectionStyle.none
@@ -628,8 +630,13 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
                 user = newTask!.members[indexPath.item]
             }
             cell.name.text = user!.userName
-            cell.image.image = #imageLiteral(resourceName: "dp-male")
-            cell.selectedmember.layer.cornerRadius = 5
+            cell.image.image = user?.image ?? (user?.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+            user?.imageCallback = {
+                img in
+                cell.image.image = img
+            }
+            
+            
             if newTask!.memberIDs.contains(walletmembers![indexPath.item].getUserID()) && collectionView == self.collectionview {
                 cell.selectedmember.isHidden = false
             }

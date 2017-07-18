@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UITextFieldDelegate {
 
     @IBOutlet weak var currencyView: UIView!
     @IBOutlet weak var currencyPicker: UIPickerView!
@@ -63,8 +63,9 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         searchBar.autocapitalizationType = .none
         currencyPicker.dataSource = self
         currencyPicker.delegate = self
-        currencyName.inputView = currencyView
-        currencyCode.inputView = currencyView
+        walletName.autocorrectionType = .no
+//        currencyName.inputView = currencyView
+//        currencyCode.inputView = currencyView
         
         searchBar.delegate = self
         backView = UIView(frame: self.view.frame)
@@ -315,8 +316,17 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             wallet?.currencyID = this
             currencyCode.text = wallet!.currency.code
             currencyName.text = wallet!.currency.name
-            self.view.endEditing(true)
-//            removeView()
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                self.currencyView.center.y += self.currencyView.frame.height
+                self.currencyView.alpha = 0
+                self.backView.alpha = 0
+                
+            }, completion: { (flag) in
+                self.currencyView.isHidden = true
+                self.backView.removeFromSuperview()
+            })
+
         }
     }
     
@@ -341,7 +351,15 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 currencyCode.text = wallet!.currency.code
                 currencyName.text = wallet!.currency.name
             }
-            self.view.endEditing(true)
+            UIView.animate(withDuration: 0.3, animations: {
+                self.currencyView.center.y += self.currencyView.frame.height
+                self.currencyView.alpha = 0
+                self.backView.alpha = 0
+                
+            }, completion: { (flag) in
+                self.currencyView.isHidden = true
+                self.backView.removeFromSuperview()
+            })
 //            removeView()
         }
         
@@ -661,6 +679,28 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             }
         }
     }
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        if textField == currencyName || textField == currencyCode {
+            self.view.endEditing(true)
+            currencyView.isHidden = false
+            currencyView.alpha = 0
+            self.view.addSubview(backView)
+            self.view.bringSubview(toFront: currencyView)
+            self.backView.alpha = 0
+            
+            self.currencyView.center.y += self.currencyView.frame.height
+            UIView.animate(withDuration: 0.3, animations: {
+                self.currencyView.center.y -= self.currencyView.frame.height
+                self.currencyView.alpha = 1
+                self.backView.alpha = 1
+            })
+            
+            return false
+        }
+        return true
+    }
+    
 }
 
 extension AddwalletViewController: WalletDelegate {

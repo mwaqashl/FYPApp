@@ -20,35 +20,43 @@ class User {
         let fileManager = FileManager.default
         let imageNSURL = url.appendingPathComponent("images/userImages/\(self.id)/\(self.imageURL)")
         print("url", url.absoluteString)
-        if fileManager.fileExists(atPath: imageNSURL.path) {
-            let data = try? Data(contentsOf: imageNSURL)
-            
-            guard let image = UIImage(data: data!) else {
-                return nil
+        
+        let dirUrl = url.appendingPathComponent("images/userImages/\(self.id)")
+        if !FileManager.default.fileExists(atPath: dirUrl.appendingPathComponent("\(self.imageURL)").path, isDirectory: nil) {
+            do {
+                try FileManager.default.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
+                
+                let imageRef = Storage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("userImages").child(self.id).child(self.imageURL)
+                
+                imageRef.getData(maxSize: 2*1024*1024, completion: { (data, err) in
+                    
+                    if err != nil {
+                        print("Error", err?.localizedDescription)
+                        return
+                    }
+                    guard let img = UIImage(data: data!) else {
+                        return
+                    }
+                    let success = fileManager.createFile(atPath: imageNSURL.path, contents: data, attributes: nil)
+                    print(success)
+                    self.imageCallback(img)
+                })
             }
-            
-            return image
-        }else{
-            let imageRef = Storage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("userImages").child(self.id).child(self.imageURL)
-            
-            imageRef.getData(maxSize: 2*1024*1024, completion: { (data, err) in
-                
-                if err != nil {
-                    print("Error", err?.localizedDescription)
-                    return
+            catch let error {
+                print(error.localizedDescription)
+            }
+        }
+        else {
+            if let data = try? Data(contentsOf: imageNSURL) {
+                guard let image = UIImage(data: data) else {
+                    return nil
                 }
-                guard let img = UIImage(data: data!) else {
-                    return
-                }
-                
-                let success = fileManager.createFile(atPath: imageNSURL.path, contents: data, attributes: nil)
-                print(success)
-                self.imageCallback(img)
-                
-            })
+                return image
+            }
         }
         return nil
     }
+    
     
     var gender : Int
     
@@ -85,7 +93,7 @@ class User {
         id = id.substring(with: r)
         let imageRef = Storage.storage().reference(forURL: "gs://familybudgetapp-6f637.appspot.com").child("images").child("userImages").child(Auth.auth().currentUser!.uid).child("\(id).jpg")
         
-        guard let data = UIImageJPEGRepresentation(image, 0.1) else {
+        guard let data = UIImageJPEGRepresentation(image, 0.05) else {
             callback(false)
             return
             

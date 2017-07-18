@@ -625,7 +625,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                             
                             Resource.sharedInstance().currentUser!.uploadImage(image: image!, with: { (success) in
                                 
-                                
+                                print(success ? "Success" : "Failed")
                                 
                             })
                             
@@ -946,6 +946,37 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func walletUpdated(_ wallet: UserWallet) {
         if wallet.id == Resource.sharedInstance().currentWalletID {
+            
+            self.sections = []
+            self.settingsSetionCells = []
+            
+            if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
+                self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
+                self.settingsSetionCells = ["Change Name", "Change Icon", "Notification"]
+            }
+            else {
+                self.sections = ["Wallet","Wallet Settings", "Members"]
+                
+                self.memberTypes = self.selectedWallet!.memberTypes
+                
+                if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
+                    if Resource.sharedInstance().currentWallet!.isOpen {
+                        self.settingsSetionCells = ["Add Member"]
+                    }
+                    self.settingsSetionCells += ["Change Name", "Change Icon","Notification"]
+                    self.sections.append("leaveBtn")
+                }
+                else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
+                    self.settingsSetionCells = ["Notification"]
+                    self.sections.append("leaveBtn")
+                }
+                else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
+                    self.settingsSetionCells += ["Change Name", "Change Icon", "Delete Wallet"]
+                }
+                self.sections += ["User","User Settings","SignOut"]
+            }
+
+            
             self.SettingsTableView.reloadSections([sections.index(of: "Wallet")!], with: .fade)
             
         }
@@ -998,6 +1029,35 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
         if Resource.sharedInstance().currentWalletID == wallet.id {
+            self.sections = []
+            self.settingsSetionCells = []
+            
+            if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
+                self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
+                self.settingsSetionCells = ["Change Name", "Change Icon", "Notification"]
+            }
+            else {
+                self.sections = ["Wallet","Wallet Settings", "Members"]
+                
+                self.memberTypes = self.selectedWallet!.memberTypes
+                
+                if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
+                    if Resource.sharedInstance().currentWallet!.isOpen {
+                        self.settingsSetionCells = ["Add Member"]
+                    }
+                    self.settingsSetionCells += ["Change Name", "Change Icon","Notification"]
+                    self.sections.append("leaveBtn")
+                }
+                else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
+                    self.settingsSetionCells = ["Notification"]
+                    self.sections.append("leaveBtn")
+                }
+                else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
+                    self.settingsSetionCells += ["Change Name", "Change Icon", "Delete Wallet"]
+                }
+                self.sections += ["User","User Settings","SignOut"]
+            }
+
             self.SettingsTableView.reloadSections([sections.index(of: "Members")!], with: .fade)
         }
     }

@@ -23,7 +23,6 @@ import Firebase
                 WalletObserver.sharedInstance().stopObserving()
                 UserObserver.sharedInstance().stopObserving()
             }
-            
             Resource.sharedInstance().reset()
             Database.database().reference().removeAllObservers()
             
@@ -61,6 +60,7 @@ import Firebase
                 self.authUser = newUser
                 UserManager.sharedInstance().addNewUser(newUser)
                 Resource.sharedInstance().currentUserId = newUser.getUserID()
+                HelperObservers.sharedInstance().startObserving()
                 self.isAuthenticated = true
                 callback(nil)
             }
@@ -87,7 +87,6 @@ import Firebase
                     guard let data = snap.value as? NSDictionary else {
                         self.isAuthenticated = false
                         self.authUser = nil
-                        
                         return
                         
                     }
@@ -142,7 +141,6 @@ import Firebase
         })
     }
     
-    
     func signInSiliently(callback: @escaping (Bool, Bool)->Void) {
         
         if let user = Auth.auth().currentUser {
@@ -150,6 +148,7 @@ import Firebase
                 guard let data = snap.value as? NSDictionary else {
                     self.isAuthenticated = false
                     self.authUser = nil
+                    callback(false,false)
                     return
                 }
                 let thisUser = CurrentUser(id: user.uid, email: data["email"] as! String, userName: data["userName"] as! String, imageURL: data["image"] as! String, birthdate: data["birthDate"] as? Double, deviceID: data["deviceID"] as? String, gender: data["gender"] as! Int)

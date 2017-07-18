@@ -177,6 +177,11 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         
 
         if error == "" {
+            let view = UIActivityIndicatorView()
+            view.hidesWhenStopped = true
+            self.view.addSubview(view)
+            view.startAnimating()
+            
             let User = CurrentUser.init(id: "", email: email.text!, userName: userName.text!, imageURL: "", birthdate: date! , deviceID: "", gender: previous!)
             
             Authentication.sharedInstance().createUser(email: self.email.text!, password: self.password.text!, user: User, callback: { (_error) in
@@ -184,7 +189,7 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     error = "Error"
                     errorDis = _error!.localizedDescription
                     let alert = UIAlertController(title: error ,message: errorDis, preferredStyle: .alert)
-                    
+                    view.stopAnimating()
                     let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
                     
                     alert.addAction(action)
@@ -195,17 +200,21 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     User.uploadImage(image: self.userImage.image!, with: { (success) in
                         if success {
                             self.performSegue(withIdentifier: "walletsetup", sender: nil)
+                            view.stopAnimating()
                         }
                         
+                        view.stopAnimating()
+                        let alert = UIAlertController(title: "Error", message: "Image cannout be uploaded, You can set your image from settings", preferredStyle: .alert)
+                        
+                        let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                        
+                        alert.addAction(action)
+                        self.present(alert, animated: true, completion: nil)
                     })
                     
                 }
             })
-            
-            
-            
-            
-            
+                        
         }
         else {
             let alert = UIAlertController(title: error, message: errorDis, preferredStyle: .alert)
@@ -217,6 +226,8 @@ class RegisterViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
         }
     
     }
+    
+    
     
     @IBAction func backBtnAction(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)

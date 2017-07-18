@@ -230,7 +230,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
         cell.category.text = category.name
         cell.categoryIcon.text = category.icon
-        cell.personImage.image = trans![indexPath.row].transactionBy.image
+        cell.personImage.image = trans![indexPath.row].transactionBy.image ?? (trans![indexPath.row].transactionBy.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
         trans![indexPath.row].transactionBy.imageCallback = {
             img in
             cell.personImage.image = img

@@ -51,7 +51,6 @@
 		7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C51E8717D80074CD60 /* iconFont.ttf */; };
 		7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */; };
 		7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */; };
-		770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */; };
 		773CC7031E92CD3F0046E90F /* UserSearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773CC7021E92CD3F0046E90F /* UserSearchResultTableViewCell.swift */; };
 		773CC7051E92F9F60046E90F /* MembersCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773CC7041E92F9F60046E90F /* MembersCollectionViewCell.swift */; };
 		7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7742C7B51E57231C006A25AF /* AppDelegate.swift */; };
@@ -91,6 +90,7 @@
 		7765A5841ED76F6C00EA42BB /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5831ED76F6C00EA42BB /* ChatMessage.swift */; };
 		7765A5861ED7717A00EA42BB /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5851ED7717A00EA42BB /* ChatManager.swift */; };
 		7765A5881ED7738C00EA42BB /* ChatObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7765A5871ED7738C00EA42BB /* ChatObserver.swift */; };
+		7766B38D1F1DED10008231C4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7766B38C1F1DED10008231C4 /* GoogleService-Info.plist */; };
 		776EE5521F156A0B0044B4B8 /* UserInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 776EE5511F156A0B0044B4B8 /* UserInfoTableViewCell.swift */; };
 		777D02991E8A860000C682F2 /* WalletTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777D02981E8A860000C682F2 /* WalletTableViewCell.swift */; };
 		7796D62D1F17E5FD00FAC5A7 /* ImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7796D62C1F17E5FD00FAC5A7 /* ImageCollectionViewCell.swift */; };
@@ -141,7 +141,6 @@
 		7706A6C51E8717D80074CD60 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = SOURCE_ROOT; };
 		7706A6C61E8717D80074CD60 /* untitled-font-18.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-18.ttf"; sourceTree = SOURCE_ROOT; };
 		7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "untitled-font-25.ttf"; sourceTree = SOURCE_ROOT; };
-		770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		773CC7021E92CD3F0046E90F /* UserSearchResultTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		773CC7041E92F9F60046E90F /* MembersCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MembersCollectionViewCell.swift; sourceTree = "<group>"; };
 		7742C7B21E57231C006A25AF /* FamilyBudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyBudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,6 +183,7 @@
 		7765A5831ED76F6C00EA42BB /* ChatMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = SOURCE_ROOT; };
 		7765A5851ED7717A00EA42BB /* ChatManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = SOURCE_ROOT; };
 		7765A5871ED7738C00EA42BB /* ChatObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatObserver.swift; sourceTree = SOURCE_ROOT; };
+		7766B38C1F1DED10008231C4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		776EE5511F156A0B0044B4B8 /* UserInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfoTableViewCell.swift; sourceTree = "<group>"; };
 		777D02981E8A860000C682F2 /* WalletTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletTableViewCell.swift; sourceTree = "<group>"; };
 		7796D62C1F17E5FD00FAC5A7 /* ImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -353,6 +353,7 @@
 			children = (
 				774529431F1D64EA005C0A05 /* FamilyBudgetApp.entitlements */,
 				7742C7B51E57231C006A25AF /* AppDelegate.swift */,
+				7766B38C1F1DED10008231C4 /* GoogleService-Info.plist */,
 				773859551E906777004BFBF2 /* UISubClasses */,
 				773859521E90673D004BFBF2 /* ViewControllers */,
 				773859511E90672A004BFBF2 /* StoryBoards */,
@@ -364,7 +365,6 @@
 				7706A6C71E8717D80074CD60 /* untitled-font-25.ttf */,
 				774B0FE21E8D30E800417457 /* Tutorials */,
 				7742C7BC1E57231C006A25AF /* Assets.xcassets */,
-				770B9DE91E5C687A005BCE46 /* GoogleService-Info.plist */,
 				7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */,
 				7742C7E01E57236A006A25AF /* API */,
 				7742C7C11E57231C006A25AF /* Info.plist */,
@@ -518,12 +518,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7766B38D1F1DED10008231C4 /* GoogleService-Info.plist in Resources */,
 				04A2DBA71F12CBD900C18D45 /* Zeeshan.storyboard in Resources */,
 				7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */,
 				7706A6CA1E8717D80074CD60 /* untitled-font-25.ttf in Resources */,
 				77AE2F431F06EA5F00814AF4 /* Roboto-Light.ttf in Resources */,
 				774B0FDF1E8D2EBE00417457 /* Tutorials.storyboard in Resources */,
-				770B9DEA1E5C687A005BCE46 /* GoogleService-Info.plist in Resources */,
 				7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */,
 				77AE2F451F06EA5F00814AF4 /* Roboto-Regular.ttf in Resources */,
 				7706A6C91E8717D80074CD60 /* untitled-font-18.ttf in Resources */,

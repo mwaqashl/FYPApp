@@ -27,6 +27,22 @@ class ChatManager {
         
         msgRef.setValue(data)
         
+        for member in msg.wallet.members {
+            print("Loop")
+            if member.getUserID() != Resource.sharedInstance().currentUserId {
+                guard let notifUser = Resource.sharedInstance().users[member.getUserID()] as? CurrentUser else {
+                    continue
+                }
+                if let deviceID = notifUser.deviceID {
+                    
+                    NotificationManager.sharedInstance().sendChatNotification(toDevicewith: deviceID, forGeneric: msg.walletID, withTitle: "Message From \(Resource.sharedInstance().users[msg.sender]!.userName)", forMessage: msg.message, withCallback: { (flag) in
+                        print("Notification sent", flag ? "Success" : "Failed")
+                        
+                    })
+                }
+            }
+        }
+        
     }
     
     

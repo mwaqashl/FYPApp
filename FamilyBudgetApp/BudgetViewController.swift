@@ -269,6 +269,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let cell = tableview.dequeueReusableCell(withIdentifier: "BudgetCell") as! BudgetTableViewCell
         cell.AssignMembersCollectionView.dataSource = self
         cell.AssignMembersCollectionView.delegate = self
+        (cell.AssignMembersCollectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
         
         let budget = filterBudget[indexPath.row]
         cell.AssignMembersCollectionView.tag = indexPath.row
@@ -318,7 +319,6 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let member = filterBudget[collectionView.tag].members[indexPath.item]
         cell.image.image = member.image != nil ? member.image : #imageLiteral(resourceName: "dp-male")
         cell.name.text = member.userName
-        cell.selectedmember.isHidden = true
         cell.isUserInteractionEnabled = false
         return cell
     }

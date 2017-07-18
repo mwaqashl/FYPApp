@@ -30,6 +30,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]){ (granted, error) in }
         application.registerForRemoteNotifications()
         
+        if let deviceID = defaultSettings.string(forKey: "deviceToken") {
+            NotificationManager.sharedInstance().setBadgeAppIcontoDefault(ofDevice: deviceID)
+        }
+        
+        
         return true
     }
 
@@ -70,6 +75,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification data: [AnyHashable : Any]) {
         // Print notification payload data
         print("Push notification received: \(data)")
+        
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
+        if let deviceID = defaultSettings.string(forKey: "deviceToken") {
+            NotificationManager.sharedInstance().setBadgeAppIcontoDefault(ofDevice: deviceID)
+        }
     }
 
 }

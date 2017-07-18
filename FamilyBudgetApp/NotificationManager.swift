@@ -45,6 +45,36 @@ class NotificationManager {
 //        
 //    }
     
+    
+    
+    func sendChatNotification(toDevicewith deviceID:String, forGeneric genericID:String, withTitle title: String, forMessage message: String, withCallback callback: @escaping (Bool)->Void) {
+        
+        let params : Parameters = ["APIKey":apiKey,"title":title,"body":message,"genericId":genericID,"bundleId":bundleID,"deviceId":deviceID]
+        
+        Alamofire.request(notificationRequestURL, method: .post, parameters: params).responseJSON { (res) in
+            
+            if res.error != nil {
+                print("Network Error", res.error?.localizedDescription)
+                callback(false)
+                return
+            }
+            
+            guard let data = res.result.value as? Dictionary<String,Any> else {
+                print("Data is not dictionary")
+                callback(false)
+                return
+            }
+            
+            if data["status"] as! String == "Success" {
+                callback(true)
+                return
+            }
+            callback(false)
+            print(data["message"])
+            
+        }
+    }
+    
     func sendNotification(toDevicewith deviceID:String, of type: NotificationType, for genericID:String, withCallback callback: @escaping (Bool)->Void) {
         var title = ""
         var body = ""
@@ -99,10 +129,10 @@ class NotificationManager {
         
         let params : Parameters = ["APIKey":apiKey,"title":title,"body":body,"genericId":genericID,"bundleId":bundleID,"deviceId":deviceID]
         
-        Alamofire.request(notificationRequestURL, method: .post, parameters: params).responseJSON { (res) in
+        Alamofire.request(notificationRequestURL + "sendNotification", method: .post, parameters: params).responseJSON { (res) in
             
             if res.error != nil {
-                print("Network Error")
+                print("Network Error", res.error?.localizedDescription)
                 callback(false)
                 return
             }
@@ -119,6 +149,16 @@ class NotificationManager {
             }
             callback(false)
             print(data["message"])
+            
+        }
+        
+    }
+    
+    func setBadgeAppIcontoDefault(ofDevice deviceID : String) {
+        
+        let params : Parameters = ["APIKey":apiKey,"deviceId":deviceID]
+        
+        Alamofire.request(notificationRequestURL + "makeBadgeZero", method: .post, parameters: params).responseJSON { (res) in
             
         }
         

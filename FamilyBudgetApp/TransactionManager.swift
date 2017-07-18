@@ -40,22 +40,20 @@ class TransactionManager {
         transaction.id = transRef.key
         updateWalletFromTransaction(transaction)
         
-//        for member in transaction.wallet.members {
-//            print("Loop")
-//            if member.getUserID() != Resource.sharedInstance().currentUserId {
-//                guard let notifUser = Resource.sharedInstance().users[member.getUserID()] as? CurrentUser else {
-//                    continue
-//                    
-//                }
-//                if let deviceID = notifUser.deviceID {
-//                    NotificationManager.sharedInstance().sendNotification(toDevicewith: deviceID, of: .transactionAdded, for: transaction.id, withCallback: { (flag) in
-//                        
-//                        print("Notification sent", flag ? "Success" : "Failed")
-//                        
-//                    })
-//                }
-//            }
-//        }
+        for member in transaction.wallet.members {
+            print("Loop")
+            if member.getUserID() != Resource.sharedInstance().currentUserId {
+                guard let notifUser = Resource.sharedInstance().users[member.getUserID()] as? CurrentUser else {
+                    continue
+                }
+                if let deviceID = notifUser.deviceID {
+                    NotificationManager.sharedInstance().sendNotification(toDevicewith: deviceID, of: .transactionAdded, for: transaction.id, withCallback: { (flag) in
+                        print("Notification sent", flag ? "Success" : "Failed")
+                        
+                    })
+                }
+            }
+        }
     }
     
     /**
