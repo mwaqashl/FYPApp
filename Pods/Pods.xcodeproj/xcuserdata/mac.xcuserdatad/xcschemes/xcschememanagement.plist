@@ -4,6 +4,16 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>ALCameraViewController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Alamofire.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Charts.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -27,7 +37,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>07C004EE9675A950E771D1109A09AE79</key>
+		<key>0F052284BD0696F8FBA14AE6698BB0EB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -37,22 +47,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>1A3C1A6FEDE2E71B69AB0A24F918EBBB</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>23BA9083ED0D2392A167A8AFA04427FA</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>591DBA81BAD8F4EE0CC506F85D2CF92A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>7D04535608058A2FABC0D16935868FB9</key>
+		<key>88E9EC28B8B46C3631E6B242B50F4442</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -63,11 +58,6 @@
 			<true/>
 		</dict>
 		<key>D7FAEFEAF68AE19EB2D22369766AF24E</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>E6568F648480DB1634462A71DB83AD8E</key>
 		<dict>
 			<key>primary</key>
 			<true/>

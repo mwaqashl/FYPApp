@@ -34,7 +34,14 @@ class UserObserver {
             Delegate.sharedInstance().getUserDelegates().forEach({ (userDelegate) in
                 userDelegate.userAdded(user)
             })
-            
+            guard let birthDate = dict["birthDate"] as? Double else{
+                return
+            }
+            let currentUser = CurrentUser(id: user.getUserID(), email: user.getUserEmail(), userName: user.userName, imageURL: user.imageURL, birthdate: birthDate/1000, deviceID: dict["deviceID"] as? String, gender: user.gender)
+            Resource.sharedInstance().users[snapshot.key] = currentUser
+            Delegate.sharedInstance().getUserDelegates().forEach({ (userDel) in
+                userDel.userDetailsAdded(currentUser)
+            })
         })
     }
     fileprivate func observeUserUpdated(){
@@ -53,7 +60,6 @@ class UserObserver {
                 return
             }
             let currentUser = CurrentUser(id: user.getUserID(), email: user.getUserEmail(), userName: user.userName, imageURL: user.imageURL, birthdate: birthDate/1000, deviceID: dict["deviceID"] as? String, gender: user.gender)
-//            Resource.sharedInstance().currentUserId = snapshot.key
             Resource.sharedInstance().users[snapshot.key] = currentUser
             Delegate.sharedInstance().getUserDelegates().forEach({ (userDel) in
                 userDel.userDetailsUpdated(currentUser)

@@ -45,6 +45,7 @@
 		04C2BD6E1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */; };
 		04D3C3301EBF03C600EB1488 /* AddBudgetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D3C32F1EBF03C600EB1488 /* AddBudgetViewController.swift */; };
 		04D3C3321EBF096600EB1488 /* BudgetStatsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D3C3311EBF096600EB1488 /* BudgetStatsTableViewCell.swift */; };
+		04FFEF5B1F1D98AD00E8ECD5 /* ForecastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFEF5A1F1D98AD00E8ECD5 /* ForecastManager.swift */; };
 		04FFF4581ED60C7E005E95E1 /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFF4571ED60C7E005E95E1 /* StatisticsViewController.swift */; };
 		543F485DAE600F08C8532E77 /* Pods_FamilyBudgetApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9318B11D07A064C5C75FCD97 /* Pods_FamilyBudgetApp.framework */; };
 		7706A6C81E8717D80074CD60 /* iconFont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7706A6C51E8717D80074CD60 /* iconFont.ttf */; };
@@ -134,6 +135,7 @@
 		04C2BD6D1E924C0A0064AADB /* CategorySelectionCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategorySelectionCollectionViewCell.swift; sourceTree = "<group>"; };
 		04D3C32F1EBF03C600EB1488 /* AddBudgetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddBudgetViewController.swift; sourceTree = "<group>"; };
 		04D3C3311EBF096600EB1488 /* BudgetStatsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BudgetStatsTableViewCell.swift; sourceTree = "<group>"; };
+		04FFEF5A1F1D98AD00E8ECD5 /* ForecastManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForecastManager.swift; sourceTree = SOURCE_ROOT; };
 		04FFF4571ED60C7E005E95E1 /* StatisticsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatisticsViewController.swift; sourceTree = "<group>"; };
 		2934FE7678E40F3CE3E45B2F /* Pods-FamilyBudgetApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyBudgetApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyBudgetApp/Pods-FamilyBudgetApp.debug.xcconfig"; sourceTree = "<group>"; };
 		7706A6C51E8717D80074CD60 /* iconFont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconFont.ttf; sourceTree = SOURCE_ROOT; };
@@ -391,6 +393,7 @@
 			isa = PBXGroup;
 			children = (
 				775C2A011E5B11AD00E409B6 /* NotificationManager.swift */,
+				04FFEF5A1F1D98AD00E8ECD5 /* ForecastManager.swift */,
 				775C2A051E5B11AD00E409B6 /* TaskManager.swift */,
 				775C2A081E5B11AD00E409B6 /* TransactionManager.swift */,
 				7765A5851ED7717A00EA42BB /* ChatManager.swift */,
@@ -481,7 +484,7 @@
 				TargetAttributes = {
 					7742C7B11E57231C006A25AF = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 4947Y2A6XF;
+						DevelopmentTeam = JU5HQDSMA5;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -612,6 +615,7 @@
 				775C2A221E5B11AD00E409B6 /* Wallet.swift in Sources */,
 				04C2BD631E9247BF0064AADB /* (null) in Sources */,
 				775C2A1C1E5B11AD00E409B6 /* Transaction.swift in Sources */,
+				04FFEF5B1F1D98AD00E8ECD5 /* ForecastManager.swift in Sources */,
 				04B0939A1E82801D003E26DE /* CommentsTableViewCell.swift in Sources */,
 				04B093961E827F81003E26DE /* DefaultTableViewCell.swift in Sources */,
 				775C2A101E5B11AD00E409B6 /* Auth.swift in Sources */,
@@ -784,10 +788,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = FamilyBudgetApp/FamilyBudgetApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 4947Y2A6XF;
+				DEVELOPMENT_TEAM = JU5HQDSMA5;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppHuzaifa;
+				PRODUCT_BUNDLE_IDENTIFIER = com.teamOfThree.FamilyBudgetAppios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
@@ -801,10 +805,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = FamilyBudgetApp/FamilyBudgetApp.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 4947Y2A6XF;
+				DEVELOPMENT_TEAM = JU5HQDSMA5;
 				INFOPLIST_FILE = FamilyBudgetApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.uitfyp.FamilyBudgetAppHuzaifa;
+				PRODUCT_BUNDLE_IDENTIFIER = com.teamOfThree.FamilyBudgetAppios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;

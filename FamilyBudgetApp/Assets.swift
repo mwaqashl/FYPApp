@@ -24,7 +24,7 @@ var darkThemeColor = UIColor(red: 98/255, green: 141/255, blue: 84/255, alpha: 1
 var midThemeColor = UIColor(red: 117/255, green: 171/255, blue: 87/255, alpha: 1)
 var ThemeColor = UIColor(red: 149/255, green: 188/255, blue: 117/255, alpha: 1)
 let apiKey = "DB7EGHF7348HD89234Y9834Y98F387934TR9"
-let bundleID = "com.uitfyp.FamilyBudgetAppios"
+let bundleID = "com.teamOfThree.FamilyBudgetAppios"
 let notificationRequestURL = "http://penzyserver.herokuapp.com/sendNotification"
 
 

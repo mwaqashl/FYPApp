@@ -45,7 +45,7 @@ class NotificationManager {
 //        
 //    }
     
-    private func sendNotification(toDevicewith deviceID:String, of type: NotificationType, for genericID:String, withCallback callback: @escaping (Bool)->Void) {
+    func sendNotification(toDevicewith deviceID:String, of type: NotificationType, for genericID:String, withCallback callback: @escaping (Bool)->Void) {
         var title = ""
         var body = ""
         

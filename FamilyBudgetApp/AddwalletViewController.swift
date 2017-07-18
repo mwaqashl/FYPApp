@@ -110,7 +110,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        self.currencyView.removeFromSuperview()
+        self.view.endEditing
     }
     
     func viewTapped() {

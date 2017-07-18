@@ -66,16 +66,13 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 self.BalanceAmount.attributedText = self.getAmountwithCurrency(Amount: Resource.sharedInstance().currentWallet!.balance, withSize: 24)
                 
                 self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
-                if !(Resource.sharedInstance().currentWallet?.isOpen)! {
-                    self.AddTransactionBtn.isHidden = true
-                }
+                self.AddTransactionBtn.isHidden = !Resource.sharedInstance().currentWallet!.isOpen
+                
                 self.TransactionFiltering()
                 self.SegmentbtnAction(self.Segmentbtn)
                 self.sortDates()
                 self.tableview.reloadData()
                 
-//                let CurrIcon = NSAttributedString(string: Resource.sharedInstance().currentWallet!.currency.icon, attributes: [NSFontAttributeName : UIFont(name: "untitled-font-25", size: 17)!])
-
             }
         }
         
@@ -87,7 +84,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         SettingsBtn.tintColor = darkThemeColor
         
         self.navigationItem.rightBarButtonItem = SettingsBtn
-        
+
         
         // Do any additional setup after loading the view.
     }
@@ -106,9 +103,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
             self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
 
             self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
-            if !(Resource.sharedInstance().currentWallet?.isOpen)! {
-                self.AddTransactionBtn.isHidden = true
-            }
+            self.AddTransactionBtn.isHidden = !Resource.sharedInstance().currentWallet!.isOpen
+            
             self.TransactionFiltering()
             self.SegmentbtnAction(self.Segmentbtn)
             self.sortDates()
@@ -448,7 +444,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
             if !wallet.isOpen {
                 self.AddTransactionBtn.isHidden = true
             }
-            else if wallet.isOpen {
+            else {
                 self.AddTransactionBtn.isHidden = false
             }
         }
@@ -484,19 +480,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         
     }
     func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
-        if isDataAvailable {
-            if wallet.id == Resource.sharedInstance().currentWalletID {
-                if ofType == .admin || ofType == .owner {
-                    self.AddTransactionBtn.isHidden = false
-                }
-                else {
-                    self.AddTransactionBtn.isHidden = true
-                }
-            }
-        }
         
     }
-    
     
     func userAdded(_ user: User) {
         
