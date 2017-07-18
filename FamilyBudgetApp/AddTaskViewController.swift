@@ -32,7 +32,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     var dateformatter = DateFormatter()
     var date : Double?
     var categoriesKeys = [String]()
-    var walletmembers : [User]?
+    var walletmembers = [User]()
     var cells = ["Title","Amount","Category","Due Date","Comments"]
     var newTask : Task?
     var isNew : Bool?
@@ -176,6 +176,14 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     
     func ViewTap() {
         removeView()
+        if !isKeyboardOpen {
+            if isCategoryView {
+                selectedCategory = pselectedCategory
+            }
+            else {
+                selectedMembers = pselecctedMembers
+            }
+        }
     }
     
     // Bar Button Actions
@@ -285,11 +293,6 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         }
     }
     
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return cells.count
     }
@@ -361,7 +364,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             cell.addmemberBtn.addTarget(self, action: #selector(self.assignToaddBtnPressed(_:)), for: .touchUpInside)
             cell.membersCollection.dataSource = self
             cell.membersCollection.dataSource = self
-            (cell.membersCollection.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
+//            (cell.membersCollection.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
 
             cell.membersCollection.reloadData()
             cell.addmemberBtn.isHidden = !isEdit
@@ -588,14 +591,11 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     
     // Collection View for categories and WalletMembers
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == self.collectionview && isCategoryView {
-            return categoriesKeys.count
-        }
-        else if collectionView == self.collectionview && !isCategoryView {
-            return walletmembers!.count
+        if collectionView == collectionview {
+            return isCategoryView ? categoriesKeys.count : walletmembers.count
         }
         else {
-            return newTask!.members.count
+            return newTask?.members.count ?? 0
         }
     }
     
@@ -624,7 +624,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "memberCell", for: indexPath) as! TaskMembersCollectionViewCell
             var user : User?
             if collectionView == self.collectionview {
-                user = walletmembers![indexPath.item]
+                user = walletmembers[indexPath.item]
             }
             else {
                 user = newTask!.members[indexPath.item]
@@ -635,13 +635,18 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
                 img in
                 cell.image.image = img
             }
-            
-            
-            if newTask!.memberIDs.contains(walletmembers![indexPath.item].getUserID()) && collectionView == self.collectionview {
-                cell.selectedmember.isHidden = false
-            }
-            else {
-                cell.selectedmember.isHidden = true
+
+            if collectionView == self.collectionview {
+                cell.selectedmember.layer.borderWidth = 1
+                cell.selectedmember.layer.borderColor = darkThemeColor.cgColor
+                cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
+                
+                if newTask!.memberIDs.contains(walletmembers[indexPath.item].getUserID()) && collectionView == self.collectionview {
+                    cell.selectedmember.isHidden = false
+                }
+                else {
+                    cell.selectedmember.isHidden = true
+                }
             }
             return cell
         }
@@ -667,16 +672,17 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         }
         
         else {
-            let cell = collectionView.cellForItem(at: indexPath) as? TaskMembersCollectionViewCell
-            if cell!.selectedmember.isHidden {
-                cell!.selectedmember.isHidden = false
-                selectedMembers.append(walletmembers![indexPath.item].getUserID())
-                print("\(walletmembers![indexPath.item].userName)")
+            let cell = collectionView.cellForItem(at: indexPath) as! TaskMembersCollectionViewCell
+            cell.selectedmember.layer.borderWidth = 1
+            cell.selectedmember.layer.borderColor = darkThemeColor.cgColor
+            cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
+            if selectedMembers.contains(walletmembers[indexPath.item].getUserID()) {
+                selectedMembers.remove(at: selectedMembers.index(of: walletmembers[indexPath.item].getUserID())!)
+                cell.selectedmember.isHidden = true
             }
             else {
-                cell!.selectedmember.isHidden = true
-                selectedMembers.remove(at: selectedMembers.index(of: walletmembers![indexPath.item].getUserID())!)
-                print("\(walletmembers![indexPath.item].userName)")
+                selectedMembers.append(walletmembers[indexPath.item].getUserID())
+                cell.selectedmember.isHidden = false
             }
             taskEdited = true
         }
@@ -744,6 +750,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     }
 
     //Collection View And Date Buttons Actions
+    // Tag 1 = Date
     @IBAction func DonePressed(_ sender: UIButton) {
         if sender.tag == 1 {
             let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "Due Date")!, section: 0)) as! DefaultTableViewCell
@@ -758,8 +765,14 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
                 newTask!.categoryID = selectedCategory
             }
             else {
-                pselecctedMembers = selectedMembers
-                newTask!.memberIDs = selectedMembers
+                for i in 0..<selectedMembers.count {
+                    newTask!.addMember(selectedMembers[i])
+                }
+                for member in newTask!.getMemberIDs() {
+                    if !selectedMembers.contains(member) {
+                        newTask?.removeMember(member)
+                    }
+                }
             }
         }
         self.removeView()

@@ -72,8 +72,13 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         
         DateAndDaysView.isHidden = true
         SelectionView.isHidden = true
-        
-        categoriesKeys = Array(Resource.sharedInstance().categories.keys)
+       
+        for key in Resource.sharedInstance().categories.keys {
+            let curr = Resource.sharedInstance().categories[key]
+            if curr!.isExpense {
+                categoriesKeys.append(key)
+            }
+        }
         
         Add = UIBarButtonItem.init(image: #imageLiteral(resourceName: "done"), style: .plain, target: self, action: #selector(self.AddBudget))
         Add.tintColor = darkThemeColor
@@ -165,6 +170,14 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func ViewTap() {
+        if isKeyboardOpen {
+            if isCategoryView {
+                selectedCategories = pselectedCategories
+            }
+            else {
+                selectedMembers = pselectedMembers
+            }
+        }
         removeView()
         self.view.endEditing(true)
     }
@@ -209,7 +222,6 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             error = "Error"
             errorDis = "Select any member to assign this task"
         }
-        
         if error == "" {
             if isNew {
                 BudgetManager.sharedInstance().addNewBudget(budget!)
@@ -254,6 +266,11 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 pselectedMembers = selectedMembers
                 for i in 0..<selectedMembers.count {
                     budget!.addMember(selectedMembers[i])
+                }
+                for member in budget!.getMemberIDs() {
+                    if !selectedMembers.contains(member) {
+                        budget?.removeMember(member)
+                    }
                 }
             }
             removeView()
@@ -451,7 +468,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             return isCategoryView ? categoriesKeys.count : walletmembers.count
         }
         else {
-            return selectedMembers.count
+            return budget?.members.count ?? 0
         }
     }
     
@@ -486,15 +503,22 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 user = budget!.members[indexPath.item]
             }
             cell.name.text = user!.userName
-            cell.image.image = #imageLiteral(resourceName: "dp-male")
-            cell.selectedmember.layer.borderWidth = 1
-            cell.selectedmember.layer.borderColor = darkThemeColor.cgColor
-            cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
-            if budget!.getMemberIDs().contains(walletmembers[indexPath.item].getUserID()) && collectionView == self.CategoryAndMembercollectionview {
-                cell.selectedmember.isHidden = false
+            cell.image.image = user?.image ?? (user?.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+            user?.imageCallback = {
+                img in
+                cell.image.image = img
             }
-            else {
-                cell.selectedmember.isHidden = true
+            
+            if collectionView == self.CategoryAndMembercollectionview {
+                cell.selectedmember.layer.borderWidth = 1
+                cell.selectedmember.layer.borderColor = darkThemeColor.cgColor
+                cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
+                if budget!.getMemberIDs().contains(walletmembers[indexPath.item].getUserID()) &&    collectionView == self.CategoryAndMembercollectionview {
+                    cell.selectedmember.isHidden = false
+                }
+                else {
+                    cell.selectedmember.isHidden = true
+                }
             }
             return cell
         }

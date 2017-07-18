@@ -95,11 +95,11 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     func ExtractIncomeExpense() {
+        expenseTransaction = []
+        incomeTransaction = []
         guard let selectedMonthTransactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])] else {
             return
         }
-        expenseTransaction = []
-        incomeTransaction = []
         
         for i in 0..<selectedMonthTransactions.count {
             if selectedMonthTransactions[i].isExpense {
@@ -266,7 +266,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             }
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "transactionCell") as!     TimelineTableViewCell
-            let transaction = self.selectedMonthTransactions[indexPath.row]
+            let transaction = segmentBtn.selectedSegmentIndex == 0 ? expenseTransaction[indexPath.row] : incomeTransaction[indexPath.row]
             
             cell.categoryIcon.text = transaction.category.icon
             cell.category.text = transaction.category.name
@@ -325,6 +325,8 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             if selectedMonthIndex != 0 {
                 selectedMonthIndex-=1
                 MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
+                ExtractIncomeExpense()
+                tableView.reloadData()
             }
             if selectedMonthIndex == 0 {
                 previousMonthBtn.isEnabled = false
@@ -335,13 +337,13 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             else {
                 nextMonthBtn.isEnabled = true
             }
-            ExtractIncomeExpense()
-            tableView.reloadData()
         }
         else if sender.tag == 2 {
             if selectedMonthIndex != Months.count-1 {
                 selectedMonthIndex+=1
                 MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
+                ExtractIncomeExpense()
+                tableView.reloadData()
             }
             if selectedMonthIndex == Months.count-1 {
                 nextMonthBtn.isEnabled = false
@@ -352,8 +354,6 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             else {
                 previousMonthBtn.isEnabled = true
             }
-            ExtractIncomeExpense()
-            tableView.reloadData()
         }
     }
     
