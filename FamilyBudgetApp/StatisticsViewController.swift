@@ -14,6 +14,9 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     var isDataAvailable = false
     var isIncomeTapped = false
     var CategoryAndAmount : [String:Double] = [:]
+    var foreCast = [statsModel]()
+    var ForeCastIncome = Double()
+    var ForeCastExpense = Double()
     
     var currentWalletTransactions = [Transaction]()
     var MonthRelatedTransaction = [String:[Transaction]]()
@@ -22,6 +25,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var nextMonthBtn: UIButton!
     @IBOutlet weak var previousMonthBtn: UIButton!
     @IBOutlet weak var MonthHeader: UILabel!
+    
     var allWalletsBtn = UIBarButtonItem()
     var SettingsBtn = UIBarButtonItem()
     var cells = ["BalanceAmount","AvgIncomeExpense","Stats","IncomeExpense","AvgDailyExpenseIncome"]
@@ -58,9 +62,6 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.tableView.delegate = self
                 self.tableView.dataSource = self
                 
-                self.previousMonthBtn.isEnabled = true
-                self.nextMonthBtn.isEnabled = true
-                
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
                 self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
@@ -70,15 +71,14 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.ExtractTransactions()
                 self.ExtractMonths()
                 
-                self.nextMonthBtn.isEnabled = false
                 self.selectedMonthIndex = self.Months.count-1
-                
+                self.Months.append(self.calander.date(byAdding: .month, value: 1, to: self.Months.last!)!)
                 self.MonthHeader.text = self.dateFormat.string(from: self.Months[self.selectedMonthIndex])
                 
-                if self.Months.count == 1  {
+                if self.selectedMonthIndex == 0  {
                     self.previousMonthBtn.isEnabled = false
                 }
-                
+    
                 self.tableView.reloadData()
             }
         }
@@ -90,11 +90,11 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         if isDataAvailable {
             
             self.previousMonthBtn.isEnabled = true
-            self.nextMonthBtn.isEnabled = true
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
             self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
-            
+            foreCast = forecastNextMonth()
+
             Months = []
             
             self.ExtractMonths()
@@ -119,11 +119,9 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
 //            if self.Months.count == 1  {
 //                self.previousMonthBtn.isEnabled = false
 //            }
-            self.nextMonthBtn.isEnabled = false
             self.selectedMonthIndex = self.Months.count-1
-            
+            self.Months.append(self.calander.date(byAdding: .month, value: 1, to: self.Months.last!)!)
             MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
-            
             if self.Months.count == 1  {
                 self.previousMonthBtn.isEnabled = false
             }
@@ -316,18 +314,40 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             cell.ExpenseBtn.tag = 2
             cell.IncomeExpandBtn.tag = 1
             
+            cell.selectionStyle = .none
+            
+            cell.IncomeExpandBtn.isHidden = false
+            cell.ExpenseBtn.isHidden = false
+            
+            if Months.count-1 == selectedMonthIndex {
+                ForeCastExpense = 0.0
+                ForeCastIncome = 0.0
+                cell.ExpenseHeader.text = "Expected Total Expense"
+                cell.IncomeHeader.text = "Expected Total Income"
+                for forecast in foreCast {
+                    if Resource.sharedInstance().categories[forecast.CategoryID]!.isExpense {
+                        ForeCastExpense += forecast.weight*forecast.avgTransactionAmount
+                        } else {
+                            ForeCastIncome += forecast.weight*forecast.avgTransactionAmount
+                    }
+                }
+            
+                cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: ForeCastExpense, withSize: 17)
+                
+                cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: ForeCastIncome, withSize: 17)
+                
+                return cell
+            }
+            
+            cell.ExpenseHeader.text = "Total Expense (This Month)"
+            cell.IncomeHeader.text = "Total Income (This Month)"
+            
             cell.ExpenseBtn.addTarget(self, action: #selector(self.statsDetails), for: .touchUpInside)
             cell.IncomeExpandBtn.addTarget(self, action: #selector(self.statsDetails), for: .touchUpInside)
             
             var income = 0.0
             var expense = 0.0
             
-            cell.ExpenseHeader.text = "Total Expense (This Month)"
-            cell.IncomeHeader.text = "Total Income (This Month)"
-            cell.selectionStyle = .none
-            
-            cell.IncomeExpandBtn.isHidden = false
-            cell.ExpenseBtn.isHidden = false
             
             guard let transactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])] else {
                 
@@ -397,7 +417,6 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 }
             }
             
-            
             cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: expense, withSize: 17)
             
             cell.IncomeAmunt.attributedText = getAmountwithCurrency(Amount: income , withSize: 17)
@@ -408,19 +427,30 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             let cell = tableView.dequeueReusableCell(withIdentifier: "statsCell") as! BudgetStatsTableViewCell
             self.filterCategoriesAndAmount()
             cell.PieChartView.legend.resetCustom()
-            if CategoryAndAmount.isEmpty {
-                cell.PieChartView.data = nil
-                cell.PieChartView.noDataText = "No transaction Available"
-                cell.noDataLabel.isHidden = false
-                cell.PieChartView.isHidden = true
+            
+            cell.selectionStyle = .none
+            
+            if selectedMonthIndex == Months.count-1 {
+                let dic = ["Income":ForeCastIncome,"Expense":ForeCastExpense]
+                cell.PieChartView.isHidden = ForeCastIncome == 0 && ForeCastExpense == 0
+                DrawPieChart(data: dic, PieChart: cell.PieChartView)
+                cell.PieChartView.chartDescription?.text = ""
+                return cell
             }
             else {
-                cell.noDataLabel.isHidden = true
-                cell.PieChartView.isHidden = false
-                self.DrawPieChart(data: CategoryAndAmount, PieChart: cell.PieChartView)
+                if CategoryAndAmount.isEmpty {
+                    cell.PieChartView.data = nil
+                    cell.PieChartView.noDataText = "No transaction Available"
+                    cell.noDataLabel.isHidden = false
+                    cell.PieChartView.isHidden = true
+                }
+                else {
+                    cell.noDataLabel.isHidden = true
+                    cell.PieChartView.isHidden = false
+                    self.DrawPieChart(data: CategoryAndAmount, PieChart: cell.PieChartView)
+                }
             }
             cell.PieChartView.chartDescription?.text = ""
-            cell.selectionStyle = .none
             return cell
         }
     }
@@ -445,7 +475,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         else if sender.tag == 2 {
             if selectedMonthIndex != Months.count-1 {
                 selectedMonthIndex+=1
-                MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
+                MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("ForeCast Data \(dateFormat.string(from: Months[selectedMonthIndex]))") : dateFormat.string(from: Months[selectedMonthIndex])
                 tableView.reloadData()
             }
             if selectedMonthIndex == Months.count-1 {
@@ -473,8 +503,12 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "StatsDescription" {
             let destination = segue.destination as! StatisticsDetailViewController
-            
+            if selectedMonthIndex == Months.count-1 {
+                destination.stats = foreCast
+            }
+            else {
             destination.selectedMonthTransactions = MonthRelatedTransaction[dateFormat.string(from: Months[selectedMonthIndex])]!
+            }
             destination.MonthRelatedTransaction = self.MonthRelatedTransaction
             destination.currentWalletTransactions = self.currentWalletTransactions
             destination.selectedMonthIndex = self.selectedMonthIndex

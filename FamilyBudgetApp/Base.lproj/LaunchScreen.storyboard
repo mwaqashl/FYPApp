@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -25,13 +26,28 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" red="0.72687870264053345" green="0.81762605905532837" blue="0.62262600660324097" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </imageView>
+                            <view alpha="0.80000000000000004" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="t1N-Tk-xgp">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" red="0.38280014899999998" green="0.55284925640000004" blue="0.327997133" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </view>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo-light" translatesAutoresizingMaskIntoConstraints="NO" id="Ixk-0b-MF8">
+                                <rect key="frame" x="18.5" y="233" width="337.5" height="200.5"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="Ixk-0b-MF8" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="33Z-bi-Z4Q"/>
                             <constraint firstAttribute="trailing" secondItem="3tQ-oH-OcU" secondAttribute="trailing" id="9Ul-NG-UwM"/>
                             <constraint firstItem="3tQ-oH-OcU" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="BIm-dZ-ejB"/>
+                            <constraint firstItem="t1N-Tk-xgp" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="U3t-EW-q8q"/>
                             <constraint firstItem="3tQ-oH-OcU" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="Wjp-ho-iRw"/>
                             <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="3tQ-oH-OcU" secondAttribute="bottom" id="aK1-vH-yu3"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="t1N-Tk-xgp" secondAttribute="bottom" id="eef-1U-37f"/>
+                            <constraint firstItem="Ixk-0b-MF8" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.9" id="mVP-T4-kkv"/>
+                            <constraint firstItem="Ixk-0b-MF8" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="nbo-aY-RG8"/>
+                            <constraint firstItem="Ixk-0b-MF8" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" multiplier="0.3" id="ra0-j5-IZ6"/>
+                            <constraint firstAttribute="trailing" secondItem="t1N-Tk-xgp" secondAttribute="trailing" id="tEo-aN-CzX"/>
+                            <constraint firstItem="t1N-Tk-xgp" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="wFD-fp-keF"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -42,5 +58,6 @@
     </scenes>
     <resources>
         <image name="into-1" width="375" height="667"/>
+        <image name="logo-light" width="2048" height="1721"/>
     </resources>
 </document>

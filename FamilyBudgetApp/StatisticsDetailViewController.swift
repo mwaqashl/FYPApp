@@ -18,7 +18,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     
     @IBOutlet weak var nextMonthBtn: UIButton!
     @IBOutlet weak var previousMonthBtn: UIButton!
-    
+    var stats : [statsModel] = []
     var CategoryAndAmount : [String:Double] = [:]
     var isIcomeTapped = Bool()
     var currentWalletTransactions = [Transaction]()
@@ -35,6 +35,9 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
     var isDataAvailable = false
     var selectedMonth : Date?
     
+    var foreCastExpences = [String : Double]()
+    var foreCastIncome = [String : Double]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         nextMonthBtn.transform = CGAffineTransform.init(rotationAngle: CGFloat(Double.pi))
@@ -43,22 +46,26 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         
         dateFormat.dateFormat = "MMMM-yyyy"
         
-        MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
+        MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("ForeCast Data \(dateFormat.string(from: Months[selectedMonthIndex]))") : dateFormat.string(from: Months[selectedMonthIndex])
         
         Delegate.sharedInstance().addTransactionDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)
         
         segmentBtn.selectedSegmentIndex = isIcomeTapped ? 1 : 0
         
-        for i in 0..<selectedMonthTransactions.count {
-            if selectedMonthTransactions[i].isExpense {
-                expenseTransaction.append(selectedMonthTransactions[i])
-            }
-            else {
-                incomeTransaction.append(selectedMonthTransactions[i])
+        if selectedMonthIndex == Months.count-1 {
+            statsIncomeExpense()
+        }
+        else {
+            for i in 0..<selectedMonthTransactions.count {
+                if selectedMonthTransactions[i].isExpense {
+                    expenseTransaction.append(selectedMonthTransactions[i])
+                }
+                else {
+                    incomeTransaction.append(selectedMonthTransactions[i])
+                }
             }
         }
-        
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
                 self.walletid = Resource.sharedInstance().currentWalletID!
@@ -76,16 +83,35 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         // Do any additional setup after loading the view.
     }
     
+    func statsIncomeExpense() {
+        for forecast in stats {
+            if Resource.sharedInstance().categories[forecast.CategoryID]!.isExpense {
+                foreCastExpences[forecast.CategoryID] = forecast.weight*forecast.avgTransactionAmount*forecast.avgNoOfTrans
+            } else {
+                foreCastIncome[forecast.CategoryID] = forecast.weight*forecast.avgTransactionAmount*forecast.avgNoOfTrans
+            }
+        }
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         if isDataAvailable {
             if walletid != Resource.sharedInstance().currentWalletID! {
                 self.navigationController?.popViewController(animated: true)
             }
-            ExtractMonths()
-            ExtractTransactions()
-            ExtractIncomeExpense()
-            sortMonths()
-            tableView.reloadData()
+            else {
+                if selectedMonthIndex == Months.count-1 {
+                    
+                }
+                else{
+                    ExtractMonths()
+                    ExtractTransactions()
+                    ExtractIncomeExpense()
+                    sortMonths()
+                    self.Months.append(self.calander.date(byAdding: .month, value: 1, to: self.Months.last!)!)
+                    self.MonthHeader.text = self.dateFormat.string(from: self.Months[self.selectedMonthIndex])
+                }
+                tableView.reloadData()
+            }
         }
     }
     
@@ -291,8 +317,22 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "statsCell") as! BudgetStatsTableViewCell
+            cell.selectionStyle = .none
             self.filterCategoriesAndAmount()
             cell.PieChartView.legend.resetCustom()
+            if selectedMonthIndex == Months.count-1 {
+                cell.PieChartView.isHidden = false
+                cell.noDataLabel.isHidden = true
+                if segmentBtn.selectedSegmentIndex == 0 {
+                    DrawPieChart(data: foreCastExpences, PieChart: cell.PieChartView)
+                }
+                else {
+                    DrawPieChart(data: foreCastIncome, PieChart: cell.PieChartView)
+                }
+                cell.PieChartView.chartDescription?.text = ""
+                return cell
+            }
+            
             if CategoryAndAmount.isEmpty {
                 cell.PieChartView.data?.clearValues()
                 cell.PieChartView.noDataText = "No transaction Available"
@@ -307,8 +347,8 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
             cell.PieChartView.chartDescription?.text = ""
             cell.PieChartView.noDataText = "No transaction Available"
             
-            cell.selectionStyle = .none
-            return cell        }
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -341,7 +381,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         else if sender.tag == 2 {
             if selectedMonthIndex != Months.count-1 {
                 selectedMonthIndex+=1
-                MonthHeader.text = dateFormat.string(from: Months[selectedMonthIndex])
+                MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("ForeCast Data \(dateFormat.string(from: Months[selectedMonthIndex]))") : dateFormat.string(from: Months[selectedMonthIndex])
                 ExtractIncomeExpense()
                 tableView.reloadData()
             }
@@ -429,10 +469,11 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         if isDataAvailable {
             if transaction.walletID == Resource.sharedInstance().currentWalletID! {
                 selectedMonth = Months[selectedMonthIndex]
-                ExtractTransactions()
                 ExtractMonths()
                 sortMonths()
-                selectedMonthIndex = Months.index(of: selectedMonth!)!
+                selectedMonthIndex = Months.index(of: (selectedMonth!)) == nil ? Months.count-1 : Months.index(of: selectedMonth!)!
+                self.Months.append(self.calander.date(byAdding: .month, value: 1, to: self.Months.last!)!)
+                ExtractTransactions()
                 ExtractIncomeExpense()
                 tableView.reloadData()
             }
