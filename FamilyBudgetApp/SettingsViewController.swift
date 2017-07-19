@@ -219,7 +219,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             return sections[section] == "Wallet Settings" ? settingsSetionCells.count : sections[section] == "User Settings" ? userSettingsOptions.count : 1
         }
         else {
-            return searchtableSection[section] == "searchUsers" ? searchedUsers.count : memberTypes.count
+            return searchedUsers.count
         }
     }
     
@@ -377,7 +377,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: "searchedUsers") as! UserSearchResultTableViewCell
                 cell.selectionStyle = .none
-                let this = walletMembers[indexPath.row]
+                let this = searchedUsers[indexPath.row]
                 
                 cell.userImage.image = this.image ?? (this.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
                 
@@ -820,6 +820,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             showView.frame.origin.y -= showView.frame.height
             showView.alpha = 1
         }
+        
+        searchedUsers = Resource.sharedInstance().currentWallet!.members.filter({ (_user) -> Bool in
+            return _user.getUserID() != Resource.sharedInstance().currentUserId!
+        })
+        
+        
+        
         searchTableView.reloadData()
     }
     
