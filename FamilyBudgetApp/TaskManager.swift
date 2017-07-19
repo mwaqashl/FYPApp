@@ -35,7 +35,6 @@ class TaskManager {
             data["comment"] = task.comment
         }
         
-        
         newTask.setValue(data)
         
         for member in task.memberIDs {
@@ -46,6 +45,20 @@ class TaskManager {
             UserManager.sharedInstance().addTaskToUser(member, task: task)
         }
         
+        for member in task.members {
+            print("Loop")
+            if member.getUserID() != Resource.sharedInstance().currentUserId {
+                guard let notifUser = Resource.sharedInstance().users[member.getUserID()] as? CurrentUser else {
+                    continue
+                }
+                if let deviceID = notifUser.deviceID {
+                    NotificationManager.sharedInstance().sendNotification(toDevicewith: deviceID, of: .taskAssigned, for: task.id, withCallback: { (flag) in
+                        print("Notification sent", flag ? "Success" : "Failed")
+                        
+                    })
+                }
+            }
+        }
     }
     
     // Delete task from database // required arg is task object
@@ -59,14 +72,12 @@ class TaskManager {
         }
         ref.child("TasksMemberships/\(task.id)").removeValue()
         
-        
     }
     
     // Update task in database // required arg is task object
     func updateTask(_ task: Task) {
         
         let ref = Database.database().reference()
-        
         
         let taskRef = ref.child("Tasks/\(task.walletID)/\(task.id)")
         
@@ -82,7 +93,6 @@ class TaskManager {
         if task.comment != nil {
             data["comment"] = task.comment
         }
-        
         
         taskRef.updateChildValues(data)
         
@@ -133,6 +143,21 @@ class TaskManager {
         
         if task.status == .completed {
             taskRef.updateChildValues(["status" : 1])
+            for member in task.members {
+                print("Loop")
+                if member.getUserID() != Resource.sharedInstance().currentUserId {
+                    guard let notifUser = Resource.sharedInstance().users[member.getUserID()] as? CurrentUser else {
+                        continue
+                    }
+                    if let deviceID = notifUser.deviceID {
+                        NotificationManager.sharedInstance().sendNotification(toDevicewith: deviceID, of: .taskCompleted, for: task.id, withCallback: { (flag) in
+                            print("Notification sent", flag ? "Success" : "Failed")
+                            
+                        })
+                    }
+                }
+            }
+
         }
     }
     

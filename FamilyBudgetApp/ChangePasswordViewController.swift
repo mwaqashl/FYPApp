@@ -19,6 +19,8 @@ class ChangePasswordViewController: UIViewController {
     @IBOutlet var viewsForShadow: [UIView]!
     
     var isLoginVerified = false
+    var isKeyboardOpen = false
+    var tap = UITapGestureRecognizer()
     
     
     override func viewDidLoad() {
@@ -39,7 +41,11 @@ class ChangePasswordViewController: UIViewController {
         textfield1.keyboardType = .emailAddress
         textFieild2.keyboardType = .default
         actionBtn.setTitle("Login", for: .normal)
-
+        
+        tap = UITapGestureRecognizer(target: self, action: #selector(self.viewTapped))
+        self.view.addGestureRecognizer(tap)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         // Do any additional setup after loading the view.
     }
@@ -49,8 +55,13 @@ class ChangePasswordViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    
+    func viewTapped() {
+        self.view.endEditing(true)
+    }
+    
     @IBAction func action(_ sender: Any) {
-        
+        self.view.endEditing(true)
         if !isLoginVerified {
             
             var error = ""
@@ -72,7 +83,8 @@ class ChangePasswordViewController: UIViewController {
                             self.textfield1.alpha = 0
                             
                         }, completion: { (suc) in
-                            
+                            self.textfield1.text = ""
+                            self.textFieild2.text = ""
                             self.infoLabel.text = "Please Enter new Password"
                             self.textfield1.placeholder = "New Password"
                             self.textFieild2.placeholder = "Re Enter Password"
@@ -91,6 +103,16 @@ class ChangePasswordViewController: UIViewController {
                             })
                             
                         })
+                    }
+                    else {
+                        let alert = UIAlertController(title: "Error", message: "Incorrect combination of Email and Password", preferredStyle: .alert)
+                        
+                        let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) in
+                            self.dismiss(animated: true, completion: nil)
+                        })
+                        alert.addAction(ok)
+                        
+                        self.present(alert, animated: true, completion: nil)
                     }
                 })
                 
@@ -118,11 +140,56 @@ class ChangePasswordViewController: UIViewController {
                 })
                 
             }
+            else {
+                let alert = UIAlertController(title: "Error", message: "Password Not Matched. Please Enter again", preferredStyle: .alert)
+                
+                let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) in
+                })
+                alert.addAction(ok)
+                
+                self.present(alert, animated: true, completion: nil)
+            }
             
         }
         
     }
 
+    
+    func keyboardWillShow(notification: NSNotification) {
+        
+        if !isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                self.view.frame.origin.y -= keyboardSize.height/2
+                isKeyboardOpen = true
+            }
+        }
+        
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        
+        if isKeyboardOpen {
+            
+            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+                self.view.frame.origin.y += keyboardSize.height/2
+                isKeyboardOpen = false
+            }
+        }
+        
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    @IBAction func closeBtnAction(_ sender: UIButton) {
+        
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     /*
     // MARK: - Navigation
 

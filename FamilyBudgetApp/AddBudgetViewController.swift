@@ -120,12 +120,14 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                     if Resource.sharedInstance().currentWallet!.isPersonal {
                         self.budget!.addMember(Resource.sharedInstance().currentUserId!)
                     }
+                    self.pageHeader.text = "ADD NEW BUDGET"
                 }
                 else {
                     self.selectedMembers = self.budget!.getMemberIDs()
                     self.pselectedMembers = self.selectedMembers
                     self.selectedCategories = self.budget!.getCategoryIDs()
                     self.pselectedCategories = self.selectedCategories
+                    self.pageHeader.text = "EDIT BUDGET"
                 }
                 
                 self.tableview.dataSource = self
@@ -372,7 +374,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
             
                 cell.name.text = selectedCategories.count == 0 ? "None" : budget?.categories.first?.name ?? "None"
-                cell.icon.text = selectedCategories.count == 0 ? "" : budget?.categories.first?.icon ?? ""
+                cell.icon.text = selectedCategories.count == 0 ? "" : budget?.categories.first?.icon ?? "" + (selectedCategories.count > 1 ? ", \(selectedCategories.count) more" : "")
             
                 cell.icon.textColor = selectedCategories == [] ? .black : budget?.categories.first?.color ?? .black
                 cell.icon.layer.borderColor = cell.icon.textColor.cgColor
@@ -388,8 +390,14 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 let cell = tableview.dequeueReusableCell(withIdentifier: "assignToCell") as! AssignToTableViewCell
             
                 cell.addmemberBtn.addTarget(self, action: #selector(self.assignToaddBtnPressed(_:)), for: .touchUpInside)
+                
+                cell.membersCollection.collectionViewLayout.invalidateLayout()
                 cell.membersCollection.dataSource = self
                 cell.membersCollection.dataSource = self
+                cell.membersCollection.reloadData()
+                
+                (cell.membersCollection.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
+                
                 cell.membersCollection.reloadData()
                 cell.selectionStyle = UITableViewCellSelectionStyle.none
             
@@ -553,9 +561,34 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         
     }
     
-    func textViewDidChange(_ textView: UITextView) {
-        
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" && textView.tag == 1 {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
     }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.tag == 5 {
+            budget?.comments = textView.text
+            
+            guard let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "Comments")!, section: 0)) as? CommentsTableViewCell else {
+                return
+            }
+            let newTextView = textView
+            let fixedWidth = newTextView.frame.size.width;
+            newTextView.isScrollEnabled = false
+            newTextView.sizeToFit()
+            
+            if newTextView.frame.height + 40 > cell.frame.size.height {
+                cell.frame.size.height = newTextView.frame.height + 40
+                tableview.contentSize.height += 20
+            }
+            
+        }
+    }
+    
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         textView.textColor = .black

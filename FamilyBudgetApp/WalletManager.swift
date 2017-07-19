@@ -106,6 +106,22 @@ class WalletManager {
 
     }
     
+    func updateWalletInTransaction(wallet: UserWallet) {
+        
+        let ref = Database.database().reference()
+        let walletRef = ref.child("Wallets/\(wallet.id)")
+        
+        let data = [
+            "balance" : wallet.balance,
+            "totIncome" : wallet.totalIncome,
+            "totExpense": wallet.totalExpense
+            ] as [String : Any]
+        
+        walletRef.updateChildValues(data)
+        
+    }
+    
+    
     /**
      Add a member to wallet
      Call this method when a new member is added in wallet. this method ask user to add this wallet at his side

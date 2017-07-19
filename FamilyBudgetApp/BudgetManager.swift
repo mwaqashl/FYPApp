@@ -23,12 +23,7 @@ class BudgetManager {
         let ref = Database.database().reference()
         let budRef = ref.child("Budgets").child(budget.walletID).childByAutoId()
         
-        var startCom = Calendar.current.dateComponents([.day,.month,.year,.hour,.second,.minute], from: budget.startDate)
-        
-        startCom.timeZone = TimeZone(secondsFromGMT: 0)
-        startCom.minute = 0
-        startCom.hour = 0
-        startCom.second = 0
+        let startCom = Calendar.current.dateComponents([.day,.month,.year], from: budget.startDate)
         
         let budgetDate = Calendar.current.date(from: startCom)
         
@@ -37,7 +32,7 @@ class BudgetManager {
             "allocAmount": budget.allocAmount,
             "title": budget.title,
             "period": budget.period,
-            "startDate": budgetDate!.timeIntervalSince1970,
+            "startDate": budgetDate!.timeIntervalSince1970*1000,
             "isOpen": budget.isOpen,
             "walletID": budget.walletID
         ]
@@ -97,7 +92,7 @@ class BudgetManager {
             "allocAmount": budget.allocAmount,
             "title": budget.title,
             "period": budget.period,
-            "startDate": budget.startDate.timeIntervalSince1970,
+            "startDate": budget.startDate.timeIntervalSince1970*1000,
             "isOpen": budget.isOpen,
         ]
         

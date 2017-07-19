@@ -84,7 +84,7 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
-        let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
+        let curfont = UIFont(name: "untitled-font-25", size: size*0.8)!
         let font = UIFont.init(name: "Roboto-Medium", size: size)!
         let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
         let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])
@@ -199,6 +199,8 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             let cell = tableView.dequeueReusableCell(withIdentifier: "BudgetCell") as! BudgetTableViewCell
             cell.AssignMembersCollectionView.dataSource = self
             cell.AssignMembersCollectionView.delegate = self
+            (cell.AssignMembersCollectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
+
             cell.AssignMembersCollectionView.tag = indexPath.row
             cell.BudgetTitle.text = budget!.title
             cell.Icon.text = budget!.categories.first?.icon ?? ""
@@ -258,7 +260,6 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
         let member = budget!.members[indexPath.item]
         cell.image.image = member.image != nil ? member.image : #imageLiteral(resourceName: "dp-male")
         cell.name.text = member.userName
-        cell.selectedmember.isHidden = true
         cell.isUserInteractionEnabled = false
         return cell
         

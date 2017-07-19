@@ -115,6 +115,3 @@ protocol TransactionDelegate {
     func transactionUpdated(_ transaction :  Transaction)
     func transactionDeleted(_ transaction :  Transaction)
 }
-protocol TransactionRequestDelegate {
-    func transactionRequestArrived(_ request : TransactionRequest)
-}

@@ -215,7 +215,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
-        let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
+        let curfont = UIFont(name: "untitled-font-25", size: size*0.8)!
         let font = UIFont.init(name: "Roboto-Medium", size: size)!
         let CurrIcon = NSAttributedString(string: wallet, attributes: [NSFontAttributeName : curfont])
         let amount = NSAttributedString(string: "\(Amount)", attributes: [NSFontAttributeName : font])

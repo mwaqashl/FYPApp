@@ -10,12 +10,28 @@ class Delegate {
         }
         return instance
     }
+    
+    func removeAllDelegates() {
+        userDelegates = []
+        walletDelegates = []
+        walletMemberDelegates = []
+        walletCategoryDelegates = []
+        transactionDelegates = []
+        taskDelegates = []
+        taskMemberDelegates = []
+        budgetDelegates = []
+        budgetMemberDelegates = []
+        budgetCategoryDelegates = []
+        categoryDelegates = []
+        currencyDelegates = []
+        chatDelegates = []
+    }
+    
     fileprivate var userDelegates : [UserDelegate] = []
     fileprivate var walletDelegates : [WalletDelegate] = []
     fileprivate var walletMemberDelegates : [WalletMemberDelegate] = []
     fileprivate var walletCategoryDelegates : [WalletCategoryDelegate] = []
     fileprivate var transactionDelegates : [TransactionDelegate] = []
-    fileprivate var transRequestDelegates : [TransactionRequestDelegate] = []
     fileprivate var taskDelegates : [TaskDelegate] = []
     fileprivate var taskMemberDelegates : [TaskMemberDelegate] = []
     fileprivate var budgetDelegates : [BudgetDelegate] = []
@@ -23,7 +39,6 @@ class Delegate {
     fileprivate var budgetCategoryDelegates : [BudgetCategoryDelegate] = []
     fileprivate var categoryDelegates : [CategoryDelegate] = []
     fileprivate var currencyDelegates : [CurrencyDelegate] = []
-    fileprivate var notificationDelegates : [NotificationDelegate] = []
     fileprivate var chatDelegates : [ChatDelegate] = []
     
     func addChatDelegate(_ delegate : ChatDelegate){
@@ -43,9 +58,6 @@ class Delegate {
     }
     func addTransactionDelegate(_ delegate : TransactionDelegate){
         transactionDelegates.append(delegate)
-    }
-    func addTransRequestDelegate(_ delegate : TransactionRequestDelegate){
-        transRequestDelegates.append(delegate)
     }
     func addTaskDelegate(_ delegate : TaskDelegate){
         taskDelegates.append(delegate)
@@ -68,9 +80,6 @@ class Delegate {
     func addCurrencyDelegate(_ delegate  : CurrencyDelegate){
         currencyDelegates.append(delegate)
     }
-    func addNotificationDelegate(_ delegate : NotificationDelegate){
-        notificationDelegates.append(delegate)
-    }
     
     func getUserDelegates() -> [UserDelegate]{
         return userDelegates
@@ -86,9 +95,6 @@ class Delegate {
     }
     func getTransactionDelegates() -> [TransactionDelegate]{
         return transactionDelegates
-    }
-    func getTransactionRequestDelegates() -> [TransactionRequestDelegate] {
-        return transRequestDelegates
     }
     func getTaskDelegates() -> [TaskDelegate]{
         return taskDelegates
@@ -110,9 +116,6 @@ class Delegate {
     }
     func getCurrencyDelegates() -> [CurrencyDelegate]{
         return currencyDelegates
-    }
-    func getNotificationDelegates() -> [NotificationDelegate]{
-        return notificationDelegates
     }
     func getChatDelegates() -> [ChatDelegate]{
         return chatDelegates

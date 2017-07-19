@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddTaskViewController: UIViewController , UITableViewDataSource , UITableViewDelegate , UITextViewDelegate , UICollectionViewDelegate , UICollectionViewDataSource, TaskDelegate, WalletMemberDelegate, TaskMemberDelegate, WalletDelegate{
+class AddTaskViewController: UIViewController , UITableViewDataSource , UITableViewDelegate , UITextViewDelegate , UICollectionViewDelegate , UICollectionViewDataSource, TaskDelegate, WalletMemberDelegate, TaskMemberDelegate, WalletDelegate {
 
     @IBOutlet weak var actionViewHeight: NSLayoutConstraint!
     @IBOutlet weak var collectionviewTitle: UILabel!
@@ -362,11 +362,16 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             let cell = tableview.dequeueReusableCell(withIdentifier: "assignToCell") as! AssignToTableViewCell
             
             cell.addmemberBtn.addTarget(self, action: #selector(self.assignToaddBtnPressed(_:)), for: .touchUpInside)
+            cell.membersCollection.collectionViewLayout.invalidateLayout()
             cell.membersCollection.dataSource = self
             cell.membersCollection.dataSource = self
-//            (cell.membersCollection.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
-
             cell.membersCollection.reloadData()
+            
+            (cell.membersCollection.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
+            
+            cell.membersCollection.reloadData()
+
+            
             cell.addmemberBtn.isHidden = !isEdit
             cell.selectionStyle = UITableViewCellSelectionStyle.none
 
@@ -540,8 +545,32 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
 //    Amount tag == 2
 //    comment tag == 5
     
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" && textView.tag == 1 {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
+    }
+    
     func textViewDidChange(_ textView: UITextView) {
-
+        if textView.tag == 5 {
+            task?.comment = textView.text
+            
+            guard let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "Comments")!, section: 0)) as? CommentsTableViewCell else {
+                return
+            }
+            let newTextView = textView
+            let fixedWidth = newTextView.frame.size.width;
+            newTextView.isScrollEnabled = false
+            newTextView.sizeToFit()
+            
+            if newTextView.frame.height + 40 > cell.frame.size.height {
+                cell.frame.size.height = newTextView.frame.height + 40
+                tableview.contentSize.height += 20
+            }
+            
+        }
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -588,6 +617,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             self.view.frame.origin.y += self.SizeOfKeyboard/2
         }
     }
+    
     
     // Collection View for categories and WalletMembers
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -688,7 +718,8 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         }
         
     }
-        
+    
+    
     
     @IBAction func AcceptBtnPressed(_ sender: Any) {
         if acceptBtn.titleLabel!.text == "Accept" {

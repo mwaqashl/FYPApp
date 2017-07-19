@@ -81,7 +81,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let wallet = Resource.sharedInstance().currentWallet!.currency.icon
         
-        let curfont = UIFont(name: "untitled-font-25", size: size*0.7)!
+        let curfont = UIFont(name: "untitled-font-25", size: size*0.8)!
         let font = UIFont.init(name: "Roboto-Medium", size: size)!
         print(size)
         print(curfont.pointSize)
@@ -237,9 +237,16 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func numberOfSections(in tableView: UITableView) -> Int {
         
         let label = UILabel()
-        let vieww = UIView(frame: CGRect(x: 0, y: 10, width: view.frame.size.width, height: 25))
+        let vieww = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 25))
         if filterBudget.count == 0{
-            label.text = "No Budgets to Show\nPress + Button to Add Budget"
+            label.text = "No Budgets to Show"
+            
+            if let wallet = Resource.sharedInstance().currentWallet {
+                if wallet.memberTypes[Resource.sharedInstance().currentUserId!] != .member {
+                    label.text! += "\nPress '+' to Add new Budget"
+                }
+            }
+            
             label.numberOfLines = 2
             label.lineBreakMode = .byWordWrapping
             label.textAlignment = .center

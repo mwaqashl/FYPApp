@@ -6,13 +6,9 @@ import Alamofire
 enum NotificationType {
     case walletClosed
     case walletOpen
-    case addedToWallet
-    case removeFromWallet
     case transactionAdded
-    case messageRecieved
     case budgetAdded
     case budgetOverflow
-    case budgetClosed
     case taskAssigned
     case taskCompleted
 }
@@ -25,26 +21,6 @@ class NotificationManager {
     static func sharedInstance() -> NotificationManager {
         return singleTonInstance
     }
-    
-    
-//    func addNewNotification(_ notification: Notification) {
-//        
-//        let notRef = ref.child("Notifications").childByAutoId()
-//        
-//        let data : NSMutableDictionary = [
-//            
-//            "module" : notification.module,
-//            "type" : notification.type,
-//            "isPush" : notification.isPush,
-//            "users" : notification.users,
-//            "message" : notification.message,
-//            "details" : notification.details
-//        ]
-//        
-//        notRef.setValue(data)
-//        
-//    }
-    
     
     
     func sendChatNotification(toDevicewith deviceID:String, forGeneric genericID:String, withTitle title: String, forMessage message: String, withCallback callback: @escaping (Bool)->Void) {
@@ -81,29 +57,13 @@ class NotificationManager {
         
         
         switch type {
-        case .addedToWallet:
-            title = "Wallet Update"
-            body = "You have been added to a wallet."
-            
         case .budgetAdded:
             title = "Budget Update"
             body = "A new budget has been added to a wallet."
             
-        case .budgetClosed:
-            title = "Budget Closed"
-            body = "A budget you are added in has been updated."
-            
         case .budgetOverflow:
             title = "Budget Overflowed"
             body = "A budget you are added in is overflowed."
-            
-        case .messageRecieved:
-            title = "New Message Recieved"
-            body = "Your Wallet just recieved a new message."
-            
-        case .removeFromWallet:
-            title = "Wallet Update"
-            body = "You have been removed from a wallet."
             
         case .taskAssigned:
             title = "Task Assigned"

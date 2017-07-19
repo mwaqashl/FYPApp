@@ -23,6 +23,7 @@ import Firebase
                 WalletObserver.sharedInstance().stopObserving()
                 UserObserver.sharedInstance().stopObserving()
             }
+            Delegate.sharedInstance().removeAllDelegates()
             Resource.sharedInstance().reset()
             Database.database().reference().removeAllObservers()
             

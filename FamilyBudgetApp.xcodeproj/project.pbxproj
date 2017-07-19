@@ -58,7 +58,6 @@
 		7742C7BB1E57231C006A25AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7B91E57231C006A25AF /* Main.storyboard */; };
 		7742C7BD1E57231C006A25AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BC1E57231C006A25AF /* Assets.xcassets */; };
 		7742C7C01E57231C006A25AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7742C7BE1E57231C006A25AF /* LaunchScreen.storyboard */; };
-		7746D0D91F1A6B41007EB756 /* ForgetPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7746D0D81F1A6B41007EB756 /* ForgetPasswordViewController.swift */; };
 		7746D0DB1F1A8494007EB756 /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7746D0DA1F1A8494007EB756 /* ChangePasswordViewController.swift */; };
 		774B0FDF1E8D2EBE00417457 /* Tutorials.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 774B0FDE1E8D2EBE00417457 /* Tutorials.storyboard */; };
 		774B0FE11E8D30E000417457 /* TutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774B0FE01E8D30E000417457 /* TutorialViewController.swift */; };
@@ -69,9 +68,7 @@
 		775C2A121E5B11AD00E409B6 /* BudgetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */; };
 		775C2A131E5B11AD00E409B6 /* BudgetObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FE1E5B11AD00E409B6 /* BudgetObserver.swift */; };
 		775C2A141E5B11AD00E409B6 /* Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C29FF1E5B11AD00E409B6 /* Delegate.swift */; };
-		775C2A151E5B11AD00E409B6 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A001E5B11AD00E409B6 /* Notification.swift */; };
 		775C2A161E5B11AD00E409B6 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A011E5B11AD00E409B6 /* NotificationManager.swift */; };
-		775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A021E5B11AD00E409B6 /* NotificationObserver.swift */; };
 		775C2A181E5B11AD00E409B6 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A031E5B11AD00E409B6 /* Resource.swift */; };
 		775C2A191E5B11AD00E409B6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A041E5B11AD00E409B6 /* Task.swift */; };
 		775C2A1A1E5B11AD00E409B6 /* TaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775C2A051E5B11AD00E409B6 /* TaskManager.swift */; };
@@ -151,7 +148,6 @@
 		7742C7BF1E57231C006A25AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7742C7C11E57231C006A25AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		774529431F1D64EA005C0A05 /* FamilyBudgetApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FamilyBudgetApp.entitlements; sourceTree = "<group>"; };
-		7746D0D81F1A6B41007EB756 /* ForgetPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgetPasswordViewController.swift; sourceTree = "<group>"; };
 		7746D0DA1F1A8494007EB756 /* ChangePasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewController.swift; sourceTree = "<group>"; };
 		774B0FDE1E8D2EBE00417457 /* Tutorials.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Tutorials.storyboard; sourceTree = "<group>"; };
 		774B0FE01E8D30E000417457 /* TutorialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialViewController.swift; sourceTree = "<group>"; };
@@ -162,9 +158,7 @@
 		775C29FD1E5B11AD00E409B6 /* BudgetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BudgetManager.swift; path = FamilyBudgetApp/BudgetManager.swift; sourceTree = SOURCE_ROOT; };
 		775C29FE1E5B11AD00E409B6 /* BudgetObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BudgetObserver.swift; path = FamilyBudgetApp/BudgetObserver.swift; sourceTree = SOURCE_ROOT; };
 		775C29FF1E5B11AD00E409B6 /* Delegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Delegate.swift; path = FamilyBudgetApp/Delegate.swift; sourceTree = SOURCE_ROOT; };
-		775C2A001E5B11AD00E409B6 /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Notification.swift; path = FamilyBudgetApp/Notification.swift; sourceTree = SOURCE_ROOT; };
 		775C2A011E5B11AD00E409B6 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationManager.swift; path = FamilyBudgetApp/NotificationManager.swift; sourceTree = SOURCE_ROOT; };
-		775C2A021E5B11AD00E409B6 /* NotificationObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationObserver.swift; path = FamilyBudgetApp/NotificationObserver.swift; sourceTree = SOURCE_ROOT; };
 		775C2A031E5B11AD00E409B6 /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Resource.swift; path = FamilyBudgetApp/Resource.swift; sourceTree = SOURCE_ROOT; };
 		775C2A041E5B11AD00E409B6 /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Task.swift; path = FamilyBudgetApp/Task.swift; sourceTree = SOURCE_ROOT; };
 		775C2A051E5B11AD00E409B6 /* TaskManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TaskManager.swift; path = FamilyBudgetApp/TaskManager.swift; sourceTree = SOURCE_ROOT; };
@@ -286,7 +280,6 @@
 			children = (
 				04343C041E5EBDC800417C91 /* HomeViewController.swift */,
 				04343C021E5EBDB500417C91 /* RegisterViewController.swift */,
-				7746D0D81F1A6B41007EB756 /* ForgetPasswordViewController.swift */,
 				7746D0DA1F1A8494007EB756 /* ChangePasswordViewController.swift */,
 				044B713A1E81618200613ECA /* WalletSetupViewController.swift */,
 				7742C7B71E57231C006A25AF /* ViewController.swift */,
@@ -378,7 +371,6 @@
 			isa = PBXGroup;
 			children = (
 				775C29FE1E5B11AD00E409B6 /* BudgetObserver.swift */,
-				775C2A021E5B11AD00E409B6 /* NotificationObserver.swift */,
 				775C2A061E5B11AD00E409B6 /* TaskObserver.swift */,
 				7765A5871ED7738C00EA42BB /* ChatObserver.swift */,
 				775C2A271E5B37BB00E409B6 /* HelperObserver.swift */,
@@ -407,7 +399,6 @@
 		7742C7DF1E57236A006A25AF /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				775C2A001E5B11AD00E409B6 /* Notification.swift */,
 				775C29FC1E5B11AD00E409B6 /* Budget.swift */,
 				775C2A041E5B11AD00E409B6 /* Task.swift */,
 				775C2A071E5B11AD00E409B6 /* Transaction.swift */,
@@ -606,7 +597,6 @@
 				04A2DBA61F12CBD900C18D45 /* SenderTableViewCell.swift in Sources */,
 				04C2BD661E924B780064AADB /* TaskTitleTableViewCell.swift in Sources */,
 				775C2A281E5B37BB00E409B6 /* HelperObserver.swift in Sources */,
-				775C2A171E5B11AD00E409B6 /* NotificationObserver.swift in Sources */,
 				7746D0DB1F1A8494007EB756 /* ChangePasswordViewController.swift in Sources */,
 				04C2BD611E9247BF0064AADB /* (null) in Sources */,
 				0477D0F61EDA228700E8D358 /* BudgetDetailsViewController.swift in Sources */,
@@ -641,7 +631,6 @@
 				04C2BD6C1E924BF20064AADB /* TransactionByTableViewCell.swift in Sources */,
 				04845D291E93C79C00BDA0FC /* TaskTableViewCell.swift in Sources */,
 				044B713F1E81764200613ECA /* WalletsCollectionViewCell.swift in Sources */,
-				7746D0D91F1A6B41007EB756 /* ForgetPasswordViewController.swift in Sources */,
 				04D3C3321EBF096600EB1488 /* BudgetStatsTableViewCell.swift in Sources */,
 				047710AC1F10E639004F1DAF /* SettingsViewController.swift in Sources */,
 				04A2DBA41F12CBD900C18D45 /* ChatViewController.swift in Sources */,
@@ -656,7 +645,6 @@
 				775C2A161E5B11AD00E409B6 /* NotificationManager.swift in Sources */,
 				7742C7B61E57231C006A25AF /* AppDelegate.swift in Sources */,
 				775C2A111E5B11AD00E409B6 /* Budget.swift in Sources */,
-				775C2A151E5B11AD00E409B6 /* Notification.swift in Sources */,
 				047710AF1F10F591004F1DAF /* SettingMembersTableViewCell.swift in Sources */,
 				04C2BD5B1E9247BF0064AADB /* AddTaskViewController.swift in Sources */,
 				04343C031E5EBDB500417C91 /* RegisterViewController.swift in Sources */,

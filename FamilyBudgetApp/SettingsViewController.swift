@@ -88,7 +88,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             if flag {
                 if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
                     self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
-                    self.settingsSetionCells = ["Change Name", "Change Icon", "Notification"]
+                    self.settingsSetionCells = ["Change Name", "Change Icon"]
                 }
                 else {
                     self.sections = ["Wallet","Wallet Settings", "Members"]
@@ -99,11 +99,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     self.memberTypes = self.selectedWallet!.memberTypes
 
                     if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-                        self.settingsSetionCells = ["Add Member","Notification","Change Name", "Change Icon"]
+                        self.settingsSetionCells = ["Add Member","Change Name", "Change Icon"]
                         self.sections.append("leaveBtn")
                     }
                     else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
-                        self.settingsSetionCells = ["Notification"]
+                        self.sections.remove(at: 1)
                         self.sections.append("leaveBtn")
                     }
                     else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
@@ -122,22 +122,24 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func updateSettingCells(){
-        settingsSetionCells = ["Add Member","Assign Admin","Transfer OwnerShip","Notification","Close Wallet"]
+        
+         sections = ["Wallet","Wallet Settings","Members","leaveBtn"]
+         settingsSetionCells = ["Add Member","Assign Admin","Transfer OwnerShip","Notification","Close Wallet"]
+        
         if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
             self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
-            self.settingsSetionCells = ["Change Name", "Change Icon", "Notification"]
+            self.settingsSetionCells = ["Change Name", "Change Icon"]
         }
         else {
             self.sections = ["Wallet","Wallet Settings", "Members"]
-            self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
-            self.selectedWallet = Resource.sharedInstance().userWallets[Resource.sharedInstance().currentWalletID!]
+            self.memberTypes = self.selectedWallet!.memberTypes
             
             if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-                self.settingsSetionCells = ["Add Member","Notification","Change Name", "Change Icon"]
+                self.settingsSetionCells = ["Add Member","Change Name", "Change Icon"]
                 self.sections.append("leaveBtn")
             }
             else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
-                self.settingsSetionCells = ["Notification"]
+                self.sections.remove(at: 1)
                 self.sections.append("leaveBtn")
             }
             else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
@@ -154,6 +156,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         // Dispose of any resources that can be recreated.
     }
     @IBAction func BackBtnPressed(_ sender: Any) {
+        
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -269,7 +272,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
             switch sections[indexPath.section] {
             case "Wallet":
-                let cell = tableView.dequeueReusableCell(withIdentifier: "walletCell") as! SettingsTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "walletCell") as! WalletInfoCell
                 cell.icon.text = Resource.sharedInstance().currentWallet!.icon
                 cell.icon.textColor = Resource.sharedInstance().currentWallet!.color
                 cell.settingName.text = Resource.sharedInstance().currentWallet!.name
@@ -296,12 +299,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
             case "Wallet Settings":
                 let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCells") as! SettingsTableViewCell
-                cell.icon.text = "A"
                 cell.settingName.text = settingsSetionCells[indexPath.row]
-                if settingsSetionCells[indexPath.row] == "Notification" {
-                    cell.switchBtn.isHidden = false
-                    cell.switchBtn.addTarget(self, action: #selector(self.NotificationSwitchBtn(_sender:)), for: .valueChanged)
-                }
+                cell.switchBtn.isHidden = true
                 if settingsSetionCells[indexPath.row] == "Close Wallet" {
                     cell.settingName.text = Resource.sharedInstance().currentWallet!.isOpen ? "Close Wallet" : "Open Wallet"
                 }
@@ -310,7 +309,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
             case "User Settings":
                 let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCells") as! SettingsTableViewCell
-                cell.icon.text = "A"
                 cell.switchBtn.isHidden = true
                 cell.settingName.text = userSettingsOptions[indexPath.row]
                 cell.selectionStyle = .none
@@ -318,7 +316,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
             case "Change Name":
                 let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCells") as! SettingsTableViewCell
-                cell.icon.text = "A"
                 cell.switchBtn.isHidden = true
                 cell.settingName.text = settingsSetionCells[indexPath.row]
                 cell.selectionStyle = .none
@@ -326,7 +323,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 
             case "Change Icon":
                 let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCells") as! SettingsTableViewCell
-                cell.icon.text = "A"
                 cell.switchBtn.isHidden = true
                 cell.settingName.text = settingsSetionCells[indexPath.row]
                 cell.selectionStyle = .none
@@ -504,6 +500,19 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                     let yes = UIAlertAction(title: "Yes", style: .destructive, handler: { (action) in
                         self.selectedWallet!.isOpen = !self.selectedWallet!.isOpen
                         WalletManager.sharedInstance().updateWallet(self.selectedWallet!)
+                        for member in Resource.sharedInstance().currentWallet!.members {
+                            print("Loop")
+                            if member.getUserID() != Resource.sharedInstance().currentUserId {
+                                guard let notifUser = Resource.sharedInstance().users[member.getUserID()] as? CurrentUser else {
+                                    continue
+                                }
+                                if let deviceID = notifUser.deviceID {
+                                    NotificationManager.sharedInstance().sendNotification(toDevicewith: deviceID, of: self.selectedWallet!.isOpen ? .walletOpen : .walletClosed, for: Resource.sharedInstance().currentWalletID!, withCallback: { (flag) in
+                                        print("Notification sent", flag ? "Success" : "Failed")
+                                    })
+                                }
+                            }
+                        }
                         self.updateSettingCells()
                     })
                     let no = UIAlertAction(title: "No", style: .cancel, handler: nil)
@@ -659,7 +668,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             return colors.count
         }
         
-        return Resource.sharedInstance().currentWallet!.members.count
+        return SearchMemberViewTitle.text! == "Transfer OwnerShip" ? Resource.sharedInstance().currentWallet!.members.count-1 : Resource.sharedInstance().currentWallet!.members.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -705,7 +714,21 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "members", for: indexPath) as! MembersCollectionViewCell
-        let member = Resource.sharedInstance().currentWallet!.members[indexPath.item]
+        
+        var members : [String] = []
+        
+        if SearchMemberViewTitle.text! == "Transfer OwnerShip" {
+            members = (Resource.sharedInstance().currentWallet?.memberTypes.filter({ (member) -> Bool in
+                return member.value != .owner
+            }).map({ (member) -> String in
+                member.key
+            }))!
+        }
+        else {
+            members = Array(Resource.sharedInstance().currentWallet!.memberTypes.keys)
+        }
+        
+        let member = Resource.sharedInstance().users[members[indexPath.item]]!
         cell.memberImage.image = member.image ?? (member.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
         member.imageCallback = {
             image in
@@ -797,7 +820,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             showView.frame.origin.y -= showView.frame.height
             showView.alpha = 1
         }
-        
         searchTableView.reloadData()
     }
     
@@ -866,10 +888,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    // Notification Switch
-    func NotificationSwitchBtn(_sender : Any) {
-
-    }
     
     // Search Delegate
     
@@ -892,6 +910,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         else {
             let results = Resource.sharedInstance().currentWallet!.members.filter { (user) -> Bool in
+                
+                if SearchMemberViewTitle.text! == "Transfer OwnerShip" && Resource.sharedInstance().currentWallet?.memberTypes[user.getUserID()] == .owner {
+                    return false
+                }
+                
                 return user.getUserEmail().contains(searchText)
             }
             
@@ -945,29 +968,26 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func walletUpdated(_ wallet: UserWallet) {
+        
+         sections = ["Wallet","Wallet Settings","Members","leaveBtn"]
+         settingsSetionCells = ["Add Member","Assign Admin","Transfer OwnerShip","Notification","Close Wallet"]
+        
         if wallet.id == Resource.sharedInstance().currentWalletID {
-            
-            self.sections = []
-            self.settingsSetionCells = []
             
             if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
                 self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
-                self.settingsSetionCells = ["Change Name", "Change Icon", "Notification"]
+                self.settingsSetionCells = ["Change Name", "Change Icon"]
             }
             else {
                 self.sections = ["Wallet","Wallet Settings", "Members"]
-                
-                self.memberTypes = self.selectedWallet!.memberTypes
+                self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
                 
                 if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-                    if Resource.sharedInstance().currentWallet!.isOpen {
-                        self.settingsSetionCells = ["Add Member"]
-                    }
-                    self.settingsSetionCells += ["Change Name", "Change Icon","Notification"]
+                    self.settingsSetionCells = ["Add Member","Change Name", "Change Icon"]
                     self.sections.append("leaveBtn")
                 }
                 else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
-                    self.settingsSetionCells = ["Notification"]
+                    self.sections.remove(at: 1)
                     self.sections.append("leaveBtn")
                 }
                 else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
@@ -975,9 +995,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 }
                 self.sections += ["User","User Settings","SignOut"]
             }
+            self.SettingsTableView.reloadData()
 
-            
-            self.SettingsTableView.reloadSections([sections.index(of: "Wallet")!], with: .fade)
             
         }
     }
@@ -995,7 +1014,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func userUpdated(_ user: User) {
         if user.getUserID() == Resource.sharedInstance().currentUserId {
-            self.SettingsTableView.reloadSections([sections.index(of: "User")!], with: .fade)
+            self.SettingsTableView.reloadSections([sections.index(of: "User") ?? 0], with: .fade)
         }
     }
     
@@ -1005,7 +1024,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func userDetailsUpdated(_ user: CurrentUser) {
         if user.getUserID() == Resource.sharedInstance().currentUserId {
-            self.SettingsTableView.reloadSections([sections.index(of: "User")!], with: .fade)
+            self.SettingsTableView.reloadSections([sections.index(of: "User") ?? 0], with: .fade)
         }
     }
     
@@ -1015,15 +1034,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.dismiss(animated: true, completion: nil)
         }
         else if Resource.sharedInstance().currentWalletID == wallet.id {
-            self.SettingsTableView.reloadSections([sections.index(of: "Members")!], with: .fade)
+            self.SettingsTableView.reloadSections([sections.index(of: "Members") ?? 0], with: .fade)
         }
     }
     
     func memberAdded(_ member: User, ofType: MemberType, wallet: Wallet) {
         if Resource.sharedInstance().currentWalletID == wallet.id {
-            
-            
-            self.SettingsTableView.reloadSections([sections.index(of: "Members")!], with: .fade)
+            self.SettingsTableView.reloadSections([sections.index(of: "Members") ?? 0], with: .fade)
         }
     }
     
@@ -1058,7 +1075,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.sections += ["User","User Settings","SignOut"]
             }
 
-            self.SettingsTableView.reloadSections([sections.index(of: "Members")!], with: .fade)
+            self.SettingsTableView.reloadSections([sections.index(of: "Members") ?? 0], with: .fade)
         }
     }
     

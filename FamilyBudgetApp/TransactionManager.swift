@@ -147,9 +147,9 @@ class TransactionManager {
                             walletData["comments"] = transaction.comments
                         }
                         
-                        var balance = walletData["balance"] as! Double
-                        var totExp = walletData["totExpense"] as! Double
-                        var totInc = walletData["totIncome"] as! Double
+                        var balance = transaction.wallet.balance
+                        var totExp = transaction.wallet.totalExpense
+                        var totInc = transaction.wallet.totalIncome
                         
                         balance -= oldTrans.amountnp
                         balance += transaction.amountnp
@@ -168,9 +168,13 @@ class TransactionManager {
                             totInc += transaction.amountnp - oldTrans.amountnp
                         }
                         
-                        walletData["balance"] = balance
-                        walletData["totIncome"] = totInc
-                        walletData["totExpense"] = totExp
+                        transaction.wallet.balance = balance
+                        transaction.wallet.totalIncome = totInc
+                        transaction.wallet.totalExpense = totExp
+                        
+                        currentData.value = walletData
+                        
+                        WalletManager.sharedInstance().updateWalletInTransaction(wallet: transaction.wallet)
                         
                         return TransactionResult.success(withValue: currentData)
                     }

@@ -121,6 +121,42 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
     }
     
+    @IBAction func forgetPasswordAction(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Forget Password", message: "Please Enter Your Email", preferredStyle: .alert)
+        alert.addTextField(configurationHandler: { (textfield) in
+            textfield.placeholder = "Email Address"
+            textfield.keyboardType = .emailAddress
+        })
+        let Save = UIAlertAction(title: "Reset Password", style: .destructive, handler: { (action) in
+            let emailAddress = alert.textFields![0]
+            var error = ""
+            if emailAddress.text == "" || !isValidEmail(testStr: emailAddress.text!) {
+                error = "Please provide valid email address"
+            }
+            if error == "" {
+                Authentication.sharedInstance().sendPasswordResetEmail(email: emailAddress.text!, callback: { (success) in
+                    
+                    if success {
+                        showAlertWithOkayBtn(title: "Success", desc: "Reset password email was successfully sent to your email")
+                    }
+                    
+                })
+            }
+            else {
+                let alert2 = UIAlertController(title: "", message: error, preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "Ok", style: .default, handler : { (action) in
+                    self.present(alert, animated: true, completion: nil)
+                })
+                alert2.addAction(okAction)
+                self.present(alert2, animated: true, completion: nil)
+            }
+        })
+        let Cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(Save)
+        alert.addAction(Cancel)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     func keyboardWillShow(notification: NSNotification) {
         
         backBtn.isHidden = true

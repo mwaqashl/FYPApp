@@ -411,23 +411,25 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             newTransaction?.amount = Double(textView.text!) ?? 0
             
         }
-        else if textView.tag == 4 {
-            guard let cell = tableView.cellForRow(at: IndexPath(row: cells.endIndex-1, section: 0)) as? CommentsTableViewCell else {
+        else if textView.tag == 5 {
+            transaction!.comments = textView.text
+            
+            guard let cell = tableView.cellForRow(at: IndexPath(row: cells.index(of: "Comments")!, section: 0)) as? CommentsTableViewCell else {
                 return
             }
             let newTextView = textView
-            let fixedWidth = newTextView.frame.size.width;
-            let newSize = newTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-            if newSize.height > textView.frame.height + 16 {
-                
-                cell.frame.size.height = newSize.height+18
-                textView.frame.size.height = newSize.height
+            newTextView.isScrollEnabled = false
+            newTextView.sizeToFit()
+            
+            if newTextView.frame.height + 40 > cell.frame.size.height {
+                cell.frame.size.height = newTextView.frame.height + 40
                 tableView.contentSize.height += 20
             }
+            
         }
         
-        
     }
+    
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -714,7 +716,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     }
     
     func userDetailsUpdated(_ user: CurrentUser) {
-        if Resource.sharedInstance().currentWallet!.memberTypes[user.getUserID()] != nil {
+        if Resource.sharedInstance().currentWallet!.memberTypes[user.getUserID()] != nil || user.getUserID() == Resource.sharedInstance().currentUserId! {
             self.tableView.reloadSections([0], with: .fade)
         }
     }
