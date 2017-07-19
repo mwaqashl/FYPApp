@@ -78,6 +78,15 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 if self.selectedMonthIndex == 0  {
                     self.previousMonthBtn.isEnabled = false
                 }
+                self.foreCast = forecastNextMonth()
+                
+                for forecast in self.foreCast {
+                    if Resource.sharedInstance().categories[forecast.CategoryID]!.isExpense {
+                        self.self.ForeCastExpense += forecast.weight*forecast.avgTransactionAmount*forecast.avgNoOfTrans
+                    } else {
+                        self.ForeCastIncome += forecast.weight*forecast.avgTransactionAmount*forecast.avgNoOfTrans
+                    }
+                }
     
                 self.tableView.reloadData()
             }
@@ -95,6 +104,14 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
             foreCast = forecastNextMonth()
 
+            for forecast in foreCast {
+                if Resource.sharedInstance().categories[forecast.CategoryID]!.isExpense {
+                    ForeCastExpense += forecast.weight*forecast.avgTransactionAmount*forecast.avgNoOfTrans
+                } else {
+                    ForeCastIncome += forecast.weight*forecast.avgTransactionAmount*forecast.avgNoOfTrans
+                }
+            }
+            
             Months = []
             
             self.ExtractMonths()
@@ -324,13 +341,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
                 ForeCastIncome = 0.0
                 cell.ExpenseHeader.text = "Expected Total Expense"
                 cell.IncomeHeader.text = "Expected Total Income"
-                for forecast in foreCast {
-                    if Resource.sharedInstance().categories[forecast.CategoryID]!.isExpense {
-                        ForeCastExpense += forecast.weight*forecast.avgTransactionAmount
-                        } else {
-                            ForeCastIncome += forecast.weight*forecast.avgTransactionAmount
-                    }
-                }
+                
             
                 cell.ExpenseAmount.attributedText = getAmountwithCurrency(Amount: ForeCastExpense, withSize: 17)
                 
