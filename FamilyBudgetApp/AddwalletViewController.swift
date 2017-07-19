@@ -207,7 +207,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         self.view.bringSubview(toFront: searchView)
         
         walletMembers = wallet!.memberTypes
-
+        
         if searchTable.delegate == nil {
             searchTable.delegate = self
             searchTable.dataSource = self

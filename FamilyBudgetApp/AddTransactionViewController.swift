@@ -300,7 +300,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
             }
             
             cell.textView.delegate = self
-            cell.textView.tag = 4
+            cell.textView.tag = 5
             cell.textView.isEditable = isEdit
             
             cell.selectionStyle = UITableViewCellSelectionStyle.none
