@@ -32,7 +32,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: darkThemeColor]
+
         dateformat.dateFormat = "dd-MMM-yyyy"
         
         Delegate.sharedInstance().addWalletDelegate(self)

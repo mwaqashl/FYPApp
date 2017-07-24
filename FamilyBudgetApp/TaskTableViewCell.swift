@@ -10,6 +10,7 @@ import UIKit
 
 class TaskTableViewCell: UITableViewCell {
 
+
     @IBOutlet weak var Title: UILabel!
     @IBOutlet weak var icon: UILabel!
     @IBOutlet weak var status: UIView!

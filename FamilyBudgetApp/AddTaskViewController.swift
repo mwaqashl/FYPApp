@@ -34,7 +34,6 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     var categoriesKeys = [String]()
     var walletmembers = [User]()
     var cells = ["Title","Amount","Category","Due Date","Comments"]
-    var newTask : Task?
     var isNew : Bool?
     var isEdit = false
     var isCategoryView = true
@@ -46,12 +45,14 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
     var tap = UITapGestureRecognizer()
     var taskEdited = false
     var task : Task?
-    
+    var newTask : Task?
+
     @IBOutlet weak var completeBtn: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: darkThemeColor]
+
         backView = UIView(frame: self.view.frame)
         backView!.isUserInteractionEnabled = true
         tap = UITapGestureRecognizer(target: self, action: #selector(self.ViewTap))
@@ -60,6 +61,7 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
         backView!.alpha = 0.5
         backView!.isUserInteractionEnabled = true
         
+        self.navigationController?.navigationBar.tintColor = darkThemeColor
         
         dateformatter.dateFormat = "dd-MMM-yyyy"
         datepicker.minimumDate = Date()
@@ -140,8 +142,8 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
                 // Do any additional setup after loading the view.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        if Resource.sharedInstance().currentWalletID != task?.walletID && !isNew! {
+    override func viewWillAppear(_ animated: Bool) {
+        if Resource.sharedInstance().currentWalletID != newTask?.walletID {
             self.navigationController?.popViewController(animated: true)
         }
     }

@@ -72,7 +72,7 @@ func forecastNextMonth() -> [statsModel] {
     }
     
     let dateFormat = DateFormatter()
-    dateFormat.dateFormat = "mmm-yyyy"
+    dateFormat.dateFormat = "MMM-yyyy"
     
     var monthlyTransactions : MonthlyTransactions = [:]
     var categoryBasedMonthly : CategoryBasedMonthlyTransactions = [:]
@@ -84,6 +84,7 @@ func forecastNextMonth() -> [statsModel] {
         
         if var transes = monthlyTransactions[date] {
             transes.append(trans)
+            monthlyTransactions[date] = transes
         }
         else {
             monthlyTransactions[date] = [trans]

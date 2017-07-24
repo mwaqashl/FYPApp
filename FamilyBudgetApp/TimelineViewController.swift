@@ -38,7 +38,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
         
         Segmentbtn.selectedSegmentIndex = 0
-        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: darkThemeColor]
+
         dateformat.dateFormat = "dd-MMM-yyyy"
         
         

@@ -44,7 +44,8 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         
         SettingsBtn = UIBarButtonItem(image: #imageLiteral(resourceName: "settings"), style: .plain, target: self, action: #selector(self.SettingsBtnTapped))
         SettingsBtn.tintColor = darkThemeColor
-        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: darkThemeColor]
+
         self.navigationItem.rightBarButtonItem = SettingsBtn
         self.navigationItem.leftBarButtonItem = allWalletsBtn
         self.tabBarController?.tabBar.barTintColor = .white
@@ -257,16 +258,26 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         if task.status == .open {
             if task.doneByID == "" || task.doneByID == nil {
                 cell.name.text = task.members[indexPath.item].userName
+                cell.image.image = task.members[indexPath.item].image
+                task.members[indexPath.item].imageCallback = {
+                    img in
+                    cell.image.image = img
+                }
+                
             }
             else if task.doneByID != "" {
                 cell.name.text = task.doneBy!.userName
+                cell.image.image = task.doneBy!.image
+                task.doneBy!.imageCallback = {
+                    img in
+                    cell.image.image = img
+                }
             }
         }
         else {
             cell.name.text = task.doneBy!.userName
         }
         
-        cell.image.image = #imageLiteral(resourceName: "dp-male")
         
         return cell
     }

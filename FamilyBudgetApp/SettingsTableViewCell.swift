@@ -30,7 +30,6 @@ class WalletInfoCell: UITableViewCell {
 class SettingsTableViewCell : UITableViewCell {
     
     @IBOutlet weak var settingName: UILabel!
-    @IBOutlet weak var switchBtn: UISwitch!
     
     override func awakeFromNib() {
         super.awakeFromNib()

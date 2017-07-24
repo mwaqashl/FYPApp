@@ -22,6 +22,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     @IBOutlet weak var DateAndDaysView: UIView!
     
     var budget : Budget?
+    var newBudget : Budget?
     
     var isDataAvailable = false
     
@@ -56,7 +57,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: darkThemeColor]
         
+        self.navigationController?.navigationBar.tintColor = darkThemeColor
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
@@ -116,16 +119,17 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 if self.isNew {
                     self.isEdit = true
-                    self.budget = Budget.init(budgetId: "", allocAmount: 0.0, title: "", period: 7, startDate: Date().timeIntervalSince1970, comments: nil, isOpen: true, categoryIDs: [], memberIDs: [], walletID: Resource.sharedInstance().currentWalletID!)
+                    self.newBudget = Budget.init(budgetId: "", allocAmount: 0.0, title: "", period: 7, startDate: Date().timeIntervalSince1970, comments: nil, isOpen: true, categoryIDs: [], memberIDs: [], walletID: Resource.sharedInstance().currentWalletID!)
                     if Resource.sharedInstance().currentWallet!.isPersonal {
                         self.budget!.addMember(Resource.sharedInstance().currentUserId!)
                     }
                     self.pageHeader.text = "ADD NEW BUDGET"
                 }
                 else {
-                    self.selectedMembers = self.budget!.getMemberIDs()
+                    self.newBudget = Budget.init(budgetId: self.budget!.id, allocAmount: self.budget!.allocAmount, title: self.budget!.title, period: self.budget!.period, startDate: self.budget!.startDate.timeIntervalSince1970, comments: self.budget?.comments, isOpen: self.budget!.isOpen, categoryIDs: self.budget!.getCategoryIDs(), memberIDs: self.budget!.getMemberIDs(), walletID: self.budget!.walletID)
+                    self.selectedMembers = self.newBudget!.getMemberIDs()
                     self.pselectedMembers = self.selectedMembers
-                    self.selectedCategories = self.budget!.getCategoryIDs()
+                    self.selectedCategories = self.newBudget!.getCategoryIDs()
                     self.pselectedCategories = self.selectedCategories
                     self.pageHeader.text = "EDIT BUDGET"
                 }
@@ -137,7 +141,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        if budget?.walletID != Resource.sharedInstance().currentWalletID! {
+        if newBudget?.walletID != Resource.sharedInstance().currentWalletID! {
             self.navigationController?.popViewController(animated: true)
         }
     }
@@ -208,30 +212,30 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         var error = ""
         var errorDis = ""
         
-        if budget!.title == "" {
+        if newBudget!.title == "" {
             error = "Error"
             errorDis = "Task Title cannot be empty"
         }
-        else if budget!.allocAmount == 0 || budget!.allocAmount == 0.0 {
+        else if newBudget!.allocAmount == 0 || newBudget!.allocAmount == 0.0 {
             error = "Error"
             errorDis = "Amount cannot be empty"
         }
-        else if budget!.getCategoryIDs() == [] {
+        else if newBudget!.getCategoryIDs() == [] {
             error = "Error"
             errorDis = "Category cannot be empty"
         }
-        else if budget!.members.count == 0 {
+        else if newBudget!.members.count == 0 {
             error = "Error"
             errorDis = "Select any member to assign this task"
         }
         if error == "" {
             if isNew {
-                BudgetManager.sharedInstance().addNewBudget(budget!)
+                BudgetManager.sharedInstance().addNewBudget(newBudget!)
             }
             else {
-                BudgetManager.sharedInstance().addCategoriesToBudget(budget!.id, categories: selectedCategories)
-                BudgetManager.sharedInstance().addMembersToBudget(budget!.id, members: selectedMembers)
-                BudgetManager.sharedInstance().updateBudgetInWallet(budget!)
+                BudgetManager.sharedInstance().addCategoriesToBudget(newBudget!.id, categories: selectedCategories)
+                BudgetManager.sharedInstance().addMembersToBudget(newBudget!.id, members: selectedMembers)
+                BudgetManager.sharedInstance().updateBudgetInWallet(newBudget!)
             }
             self.navigationController!.popViewController(animated: true)
         }
@@ -256,22 +260,22 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             if isCategoryView {
                 pselectedCategories = selectedCategories
                 for i in 0..<selectedCategories.count {
-                    budget!.addCategory(selectedCategories[i])
+                    newBudget!.addCategory(selectedCategories[i])
                 }
-                for category in budget!.getCategoryIDs() {
+                for category in newBudget!.getCategoryIDs() {
                     if !selectedCategories.contains(category) {
-                        budget?.removeCategory(category)
+                        newBudget?.removeCategory(category)
                     }
                 }
             }
             else {
                 pselectedMembers = selectedMembers
                 for i in 0..<selectedMembers.count {
-                    budget!.addMember(selectedMembers[i])
+                    newBudget!.addMember(selectedMembers[i])
                 }
-                for member in budget!.getMemberIDs() {
+                for member in newBudget!.getMemberIDs() {
                     if !selectedMembers.contains(member) {
-                        budget?.removeMember(member)
+                        newBudget?.removeMember(member)
                     }
                 }
             }
@@ -282,12 +286,12 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             if isDatePicker {
                 let cell = tableview.cellForRow(at: IndexPath(row: 4, section: 0)) as! DefaultTableViewCell
                 cell.textview.text = dateformat.string(from: DatePicker.date)
-                budget!.startDate = DatePicker.date
+                newBudget!.startDate = DatePicker.date
             }
             else {
                 let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "NoOfDays")!, section: 0)) as! DefaultTableViewCell
                 cell.textview.text = "\(Days[selectedIndex])"
-                budget!.period = Days[selectedIndex]
+                newBudget!.period = Days[selectedIndex]
             }
             removeView()
         }
@@ -308,11 +312,11 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         else {
             if isDatePicker {
                 let cell = tableview.cellForRow(at: IndexPath(row: 4, section: 0)) as! DefaultTableViewCell
-                cell.textview.text = dateformat.string(from: budget!.startDate)
+                cell.textview.text = dateformat.string(from: newBudget!.startDate)
             }
             else {
                 let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "NoOfDays")!, section: 0)) as! DefaultTableViewCell
-                cell.textview.text = "\(budget!.period)"
+                cell.textview.text = "\(newBudget!.period)"
             }
             removeView()
         }
@@ -330,12 +334,12 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             case "Title":
                 let cell = tableview.dequeueReusableCell(withIdentifier: "budgetTitleCell") as!     TaskTitleTableViewCell
             
-                if budget?.title == nil || budget!.title == "" {
+                if newBudget?.title == nil || newBudget!.title == "" {
                     cell.taskTitle.text = "Enter Budget Title"
                     cell.taskTitle.textColor = .gray
                 }
                 else {
-                    cell.taskTitle.text = budget!.title
+                    cell.taskTitle.text = newBudget!.title
                     cell.taskTitle.textColor = .black
                 }
                 cell.taskTitle.isEditable = isEdit
@@ -348,12 +352,12 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             case "Comments":
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: "commentsCell") as! CommentsTableViewCell
-                if budget?.comments == nil || budget!.comments == "" {
+                if newBudget?.comments == nil || newBudget!.comments == "" {
                     cell.textView.text = "Write Here"
                     cell.textView.textColor = .gray
                 }
                 else {
-                    cell.textView.text = budget!.comments
+                    cell.textView.text = newBudget!.comments
                     cell.textView.textColor = .black
                 }
                 cell.textView.isUserInteractionEnabled = isEdit
@@ -373,10 +377,10 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             
                 let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell") as! CategoryTableViewCell
             
-                cell.name.text = selectedCategories.count == 0 ? "None" : budget?.categories.first?.name ?? "None"
-                cell.icon.text = selectedCategories.count == 0 ? "" : budget?.categories.first?.icon ?? "" + (selectedCategories.count > 1 ? ", \(selectedCategories.count) more" : "")
+                cell.name.text = selectedCategories.count == 0 ? "None" : newBudget?.categories.first?.name ?? "None"
+                cell.icon.text = selectedCategories.count == 0 ? "" : newBudget?.categories.first?.icon ?? "" + (selectedCategories.count > 1 ? ", \(selectedCategories.count) more" : "")
             
-                cell.icon.textColor = selectedCategories == [] ? .black : budget?.categories.first?.color ?? .black
+                cell.icon.textColor = selectedCategories == [] ? .black : newBudget?.categories.first?.color ?? .black
                 cell.icon.layer.borderColor = cell.icon.textColor.cgColor
                 cell.icon.layer.borderWidth = 1
                 cell.icon.layer.cornerRadius = cell.icon.frame.width/2
@@ -390,14 +394,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 let cell = tableview.dequeueReusableCell(withIdentifier: "assignToCell") as! AssignToTableViewCell
             
                 cell.addmemberBtn.addTarget(self, action: #selector(self.assignToaddBtnPressed(_:)), for: .touchUpInside)
-                
-                cell.membersCollection.collectionViewLayout.invalidateLayout()
+
                 cell.membersCollection.dataSource = self
                 cell.membersCollection.dataSource = self
-                cell.membersCollection.reloadData()
-                
-                (cell.membersCollection.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
-                
                 cell.membersCollection.reloadData()
                 cell.selectionStyle = UITableViewCellSelectionStyle.none
             
@@ -411,7 +410,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.title.text = cells[indexPath.row]
             
                 if cell.title.text == "Amount" {
-                    cell.textview.text = "\(budget!.allocAmount)"
+                    cell.textview.text = "\(newBudget!.allocAmount)"
                     cell.textview.isEditable = isEdit
                     cell.textview.isUserInteractionEnabled = isEdit
                     
@@ -419,13 +418,13 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             
                 else if cell.title.text == "NoOfDays" {
-                    cell.textview.text = "\(budget!.period)"
+                    cell.textview.text = "\(newBudget!.period)"
                     cell.textview.isUserInteractionEnabled = false
                     cell.textview.isEditable = false
                 }
                 
                 else if cell.title.text == "Date" {
-                    cell.textview.text = dateformat.string(from: budget!.startDate)
+                    cell.textview.text = dateformat.string(from: newBudget!.startDate)
                     cell.textview.isUserInteractionEnabled = false
                     cell.textview.isEditable = false// Date tag 3
                 }
@@ -476,7 +475,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
             return isCategoryView ? categoriesKeys.count : walletmembers.count
         }
         else {
-            return budget?.members.count ?? 0
+            return newBudget?.members.count ?? 0
         }
     }
     
@@ -508,7 +507,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 user = walletmembers[indexPath.item]
             }
             else {
-                user = budget!.members[indexPath.item]
+                user = newBudget!.members[indexPath.item]
             }
             cell.name.text = user!.userName
             cell.image.image = user?.image ?? (user?.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
@@ -521,7 +520,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.selectedmember.layer.borderWidth = 1
                 cell.selectedmember.layer.borderColor = darkThemeColor.cgColor
                 cell.selectedmember.layer.cornerRadius = cell.selectedmember.frame.width / 2
-                if budget!.getMemberIDs().contains(walletmembers[indexPath.item].getUserID()) &&    collectionView == self.CategoryAndMembercollectionview {
+                if newBudget!.getMemberIDs().contains(walletmembers[indexPath.item].getUserID()) &&    collectionView == self.CategoryAndMembercollectionview {
                     cell.selectedmember.isHidden = false
                 }
                 else {
@@ -571,7 +570,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func textViewDidChange(_ textView: UITextView) {
         if textView.tag == 5 {
-            budget?.comments = textView.text
+            newBudget?.comments = textView.text
             
             guard let cell = tableview.cellForRow(at: IndexPath(row: cells.index(of: "Comments")!, section: 0)) as? CommentsTableViewCell else {
                 return
@@ -597,9 +596,9 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 textView.text = ""
             }
             else {
-                textView.text = budget!.comments
+                textView.text = newBudget!.comments
             }
-            UIView.animate(withDuration: 0.6) {
+            UIView.animate(withDuration: 0.3) {
                 self.view.frame.origin.y -= self.SizeOfKeyboard
             }
         }
@@ -608,27 +607,27 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                 textView.text = ""
             }
             else {
-                textView.text = budget!.title
+                textView.text = newBudget!.title
             }
         }
         else if textView.tag == 2 {
-            textView.text = textView.text == "0" || textView.text == "0.0" ? "" : floor(budget!.allocAmount) == budget!.allocAmount ? "\(Int(budget!.allocAmount))" : "\(budget!.allocAmount)"
+            textView.text = textView.text == "0" || textView.text == "0.0" ? "" : floor(newBudget!.allocAmount) == newBudget!.allocAmount ? "\(Int(newBudget!.allocAmount))" : "\(newBudget!.allocAmount)"
         }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.tag == 1 {
-            budget!.title = textView.text
-            textView.text = budget!.title != "" ? budget!.title : "Enter Budget Title"
-            textView.textColor = budget!.title != "" ? .black : .gray
+            newBudget!.title = textView.text
+            textView.text = newBudget!.title != "" ? newBudget!.title : "Enter Budget Title"
+            textView.textColor = newBudget!.title != "" ? .black : .gray
         }
         else if textView.tag == 2 {
-            budget!.allocAmount = Double(textView.text) ?? 0.0
-            textView.text = budget!.allocAmount == 0.0 ? "0" : "\(budget!.allocAmount)"
+            newBudget!.allocAmount = Double(textView.text) ?? 0.0
+            textView.text = newBudget!.allocAmount == 0.0 ? "0" : "\(newBudget!.allocAmount)"
         }
         else if textView.tag == 5 {
-            budget!.comments = textView.text
-            textView.text = budget?.comments != nil ? budget!.comments : "Write Here"
+            newBudget!.comments = textView.text
+            textView.text = newBudget?.comments != nil ? newBudget!.comments : "Write Here"
             UIView.animate(withDuration: 0.6) {
                 self.view.frame.origin.y += self.SizeOfKeyboard
             }
@@ -685,7 +684,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func budgetDeleted(_ budget: Budget) {
         if isDataAvailable {
-            if self.budget!.id == budget.id {
+            if self.newBudget!.id == budget.id {
                 let alert = UIAlertController(title: "Alert", message: "This Budget Has been deleted", preferredStyle: .alert)
                 let action = UIAlertAction(title: "OK", style: .default) { (flag) in
                     self.navigationController?.popViewController(animated: true)
@@ -699,10 +698,10 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func budgetUpdated(_ budget: Budget) {
         if isDataAvailable {
-            if self.budget!.id == budget.id {
+            if self.newBudget!.id == budget.id {
                 let alert = UIAlertController(title: "Alert", message: "This Budget Has been Updated", preferredStyle: .alert)
                 let action = UIAlertAction(title: "OK", style: .default) { (flag) in
-                    self.budget! = budget
+                    self.newBudget! = budget
                     self.tableview.reloadData()
                 }
                 alert.addAction(action)

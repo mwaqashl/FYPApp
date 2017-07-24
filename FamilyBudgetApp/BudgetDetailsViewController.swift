@@ -27,7 +27,9 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: darkThemeColor]
+        
+        self.navigationController?.navigationBar.tintColor = darkThemeColor
         dateformat.dateFormat = "dd-MMM-yyyy"
         
         Edit = UIBarButtonItem.init(image: #imageLiteral(resourceName: "edit"), style: .plain, target: self, action: #selector(self.EditBudget))
@@ -184,8 +186,13 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             cell.category.text = transaction.category.name
             
             cell.amount.attributedText = getAmountwithCurrency(Amount: transaction.amount, withSize: 20)
-             cell.imageView!.image = transaction.transactionBy.image != nil ? transaction.transactionBy.image : #imageLiteral(resourceName: "dp-male")
             
+            cell.personImage.image = transaction.transactionBy.image ?? (transaction.transactionBy.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+            transaction.transactionBy.imageCallback = {
+                img in
+                cell.personImage.image = img
+            }
+
             cell.categoryIcon.textColor = transaction.category.color
             cell.categoryIcon.layer.borderColor = cell.categoryIcon.textColor.cgColor
             cell.categoryIcon.layer.borderWidth = 1
@@ -197,11 +204,16 @@ class BudgetDetailsViewController: UIViewController, UITableViewDelegate, UITabl
             
         case "Budget Overview":
             let cell = tableView.dequeueReusableCell(withIdentifier: "BudgetCell") as! BudgetTableViewCell
+            
+            cell.AssignMembersCollectionView.collectionViewLayout.invalidateLayout()
             cell.AssignMembersCollectionView.dataSource = self
-            cell.AssignMembersCollectionView.delegate = self
+            cell.AssignMembersCollectionView.dataSource = self
+            cell.AssignMembersCollectionView.reloadData()
+            
             (cell.AssignMembersCollectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
-
-            cell.AssignMembersCollectionView.tag = indexPath.row
+            
+            cell.AssignMembersCollectionView.reloadData()
+            
             cell.BudgetTitle.text = budget!.title
             cell.Icon.text = budget!.categories.first?.icon ?? ""
             

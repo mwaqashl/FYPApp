@@ -50,12 +50,14 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: darkThemeColor]
+
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         datepicker.maximumDate = Date()
         
+        self.navigationController?.navigationBar.tintColor = darkThemeColor
         isEdit = isNew
         CategoryView.isHidden = true
         DatePickerView.isHidden = true
@@ -397,9 +399,6 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         self.present(alert, animated: true, completion: nil)
     }
     
-//    func YesPressed(action : UIAlertAction) {
-//        TransactionManager.sharedInstance().removeTransactionInWallet(transaction!, wallet: Resource.sharedInstance().currentWallet!)
-//    }
     
     func NoPressed(action : UIAlertAction) {
     }
@@ -407,12 +406,10 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     func textViewDidChange(_ textView: UITextView) {
 
         if textView.tag == 1 {
-            
             newTransaction?.amount = Double(textView.text!) ?? 0
-            
         }
         else if textView.tag == 5 {
-            transaction!.comments = textView.text
+            newTransaction!.comments = textView.text
             
             guard let cell = tableView.cellForRow(at: IndexPath(row: cells.index(of: "Comments")!, section: 0)) as? CommentsTableViewCell else {
                 return
@@ -433,7 +430,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
     
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.tag == 4 {
+        if textView.tag == 5 {
             textView.text = textView.text == "Write here" ? "" : textView.text
             UIView.animate(withDuration: 0.3) {
                 self.view.frame.origin.y -= self.SizeOfKeyboard
@@ -444,8 +441,8 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
         }
     }
     
-    // Amount tag 0
-    // Comment tag 4
+    // Amount tag 1
+    // Comment tag 5
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.tag == 1 {
@@ -457,7 +454,7 @@ class AddTransactionViewController: UIViewController, UICollectionViewDelegate, 
                 textView.text = "\(newTransaction!.amount)"
             }
         }
-        else if textView.tag == 4 {
+        else if textView.tag == 5 {
             textView.text = textView.text == "" ? "Write here" : textView.text
             newTransaction?.comments = textView.text
 //            self.view.frame.origin.y += SizeOfKeyboard
