@@ -22,28 +22,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         WalletObserver.sharedInstance().autoObserve = true
         WalletObserver.sharedInstance().startObserving()
         
-        HelperObservers.sharedInstance().getUserAndWallet { (flag) in
-            
-            if flag {
-                
-                self.walletIDs = [Resource.sharedInstance().currentUserId!]
-                
-                for wallet in  Resource.sharedInstance().userWallets.filter({ (_wallet) -> Bool in
-                    return _wallet.value.memberTypes.contains(where: { (_member) -> Bool in
-                    return _member.key == Resource.sharedInstance().currentUserId!
-                    }) && !_wallet.value.isPersonal
-                }) {
-                    
-                    self.walletIDs.append(wallet.key)
-                    
-                }
-                
-                self.tableView.delegate = self
-                self.tableView.dataSource = self
-                
-            }
-            
-        }
+        
         
         // Do any additional setup after loading the view.
     }
@@ -52,6 +31,31 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         if Resource.sharedInstance().currentWalletID == nil {
             tableView.delegate = nil
             tableView.dataSource = nil
+        }
+        else {
+            HelperObservers.sharedInstance().getUserAndWallet { (flag) in
+                
+                if flag {
+                    
+                    self.walletIDs = [Resource.sharedInstance().currentUserId!]
+                    
+                    for wallet in  Resource.sharedInstance().userWallets.filter({ (_wallet) -> Bool in
+                        return _wallet.value.memberTypes.contains(where: { (_member) -> Bool in
+                            return _member.key == Resource.sharedInstance().currentUserId!
+                        }) && !_wallet.value.isPersonal
+                    }) {
+                        
+                        self.walletIDs.append(wallet.key)
+                        
+                    }
+                    
+                    self.tableView.delegate = self
+                    self.tableView.dataSource = self
+                    self.tableView.reloadData()
+                    
+                }
+                
+            }
         }
     }
     
@@ -129,7 +133,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.membersCollectionView.isHidden = false
             cell.membersLabel.isHidden = false
         }
-        
+
+        cell.closeIcon.isHidden = this!.isOpen
         cell.icon.text = this?.icon
         cell.name.text = this?.name
         cell.balance.text = "\(this!.balance)"

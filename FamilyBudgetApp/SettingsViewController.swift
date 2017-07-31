@@ -128,8 +128,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func updateSettingCells(){
         
-         sections = ["Wallet","Wallet Settings","Members","leaveBtn"]
-         settingsSetionCells = ["Add Member","Assign Admin","Transfer OwnerShip","Notification","Close Wallet"]
+        self.sections = ["Wallet","Wallet Settings","Members","leaveBtn"]
+        self.settingsSetionCells = ["Add Member","Assign Admin","Transfer OwnerShip","Close Wallet"]
         
         if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
             self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
@@ -137,10 +137,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         else {
             self.sections = ["Wallet","Wallet Settings", "Members"]
+            
+            let thisWallet = Resource.sharedInstance().currentWallet!
+            self.selectedWallet = UserWallet(id: thisWallet.id, name: thisWallet.name, icon: thisWallet.icon, currencyID: thisWallet.currencyID, creatorID: thisWallet.creatorID, balance: thisWallet.balance, totInc: thisWallet.totalIncome, totExp: thisWallet.totalExpense, creationDate: thisWallet.creationDate.timeIntervalSince1970, isPersonal: thisWallet.isPersonal, memberTypes: thisWallet.memberTypes, isOpen: thisWallet.isOpen, color: thisWallet.color.stringRepresentation)
+            
             self.memberTypes = self.selectedWallet!.memberTypes
             
             if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-                self.settingsSetionCells = ["Add Member","Change Name", "Change Icon"]
+                self.settingsSetionCells = ["Add Member","Change Wallet Name", "Change Wallet Icon"]
                 self.sections.append("leaveBtn")
             }
             else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
@@ -148,12 +152,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 self.sections.append("leaveBtn")
             }
             else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
-                self.settingsSetionCells += ["Change Name", "Change Icon", "Delete Wallet"]
+                self.settingsSetionCells += ["Change Wallet Name", "Change Wallet Icon", "Delete Wallet"]
             }
             self.sections += ["User","User Settings","SignOut"]
         }
-        self.SettingsTableView.reloadData()
-
+        
+        SettingsTableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -658,7 +662,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             return colors.count
         }
         
-        return SearchMemberViewTitle.text! == "Transfer OwnerShip" ? Resource.sharedInstance().currentWallet!.members.count-1 : Resource.sharedInstance().currentWallet!.members.count
+        return Resource.sharedInstance().currentWallet!.members.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -705,18 +709,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "members", for: indexPath) as! MembersCollectionViewCell
         
-        var members : [String] = []
-        
-        if SearchMemberViewTitle.text! == "Transfer OwnerShip" {
-            members = (Resource.sharedInstance().currentWallet?.memberTypes.filter({ (member) -> Bool in
-                return member.value != .owner
-            }).map({ (member) -> String in
-                member.key
-            }))!
-        }
-        else {
-            members = Array(Resource.sharedInstance().currentWallet!.memberTypes.keys)
-        }
+        let members = Array(Resource.sharedInstance().currentWallet!.memberTypes.keys)
         
         let member = Resource.sharedInstance().users[members[indexPath.item]]!
         cell.memberImage.image = member.image ?? (member.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
@@ -946,7 +939,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             
             let wallet = Resource.sharedInstance().currentWallet!
             wallet.memberTypes = self.memberTypes
-            
+            wallet.creatorID = self.memberTypes.filter({ (_member) -> Bool in
+                return _member.value == MemberType.owner
+            }).first!.key
             WalletManager.sharedInstance().updateWallet(wallet)
             
             self.removeView()
@@ -1015,36 +1010,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
         if Resource.sharedInstance().currentWalletID == wallet.id {
-            self.sections = []
-            self.settingsSetionCells = []
-            
-            if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
-                self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
-                self.settingsSetionCells = ["Change Name", "Change Icon", "Notification"]
-            }
-            else {
-                self.sections = ["Wallet","Wallet Settings", "Members"]
-                
-                self.memberTypes = self.selectedWallet!.memberTypes
-                
-                if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-                    if Resource.sharedInstance().currentWallet!.isOpen {
-                        self.settingsSetionCells = ["Add Member"]
-                    }
-                    self.settingsSetionCells += ["Change Name", "Change Icon","Notification"]
-                    self.sections.append("leaveBtn")
-                }
-                else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
-                    self.settingsSetionCells = ["Notification"]
-                    self.sections.append("leaveBtn")
-                }
-                else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
-                    self.settingsSetionCells += ["Change Name", "Change Icon", "Delete Wallet"]
-                }
-                self.sections += ["User","User Settings","SignOut"]
-            }
-
-            self.SettingsTableView.reloadSections([sections.index(of: "Members") ?? 0], with: .fade)
+            updateSettingCells()
+            self.SettingsTableView.reloadData()
         }
     }
     

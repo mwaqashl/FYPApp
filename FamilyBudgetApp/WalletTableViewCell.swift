@@ -14,6 +14,7 @@ class WalletTableViewCell: UITableViewCell {
     @IBOutlet weak var name: UILabel!
     @IBOutlet weak var membersCollectionView: UICollectionView!
     
+    @IBOutlet weak var closeIcon: UIView!
     @IBOutlet weak var balance: UILabel!
     @IBOutlet weak var income: UILabel!
     @IBOutlet weak var expense: UILabel!
