@@ -119,7 +119,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func allWalletsBtnTapped() {
-        let cont = self.storyboard?.instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
+        
+        let cont = HomeViewController.shared
         self.present(cont, animated: true, completion: nil)
     }
     

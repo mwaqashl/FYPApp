@@ -9,6 +9,20 @@
 import UIKit
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, WalletDelegate, WalletMemberDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    
+    private static var instance: HomeViewController?
+    
+    class var shared : HomeViewController {
+        
+        guard let obj = instance else {
+            instance = UIStoryboard.init(name: "HuzaifaStroyboard", bundle: nil).instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
+            return instance!
+        }
+        return obj
+        
+    }
+    
 
     var walletIDs : [String] = []
     

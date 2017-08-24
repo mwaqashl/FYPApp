@@ -118,9 +118,9 @@ class UserManager {
     
     // call this function when user logged out to set device to inactive mode
     func userLoggedOut(_ user: String) {
-        let deviceRef = ref.child("Users").child(user).child("deviceID")
-        if let deviceToken = defaultSettings.value(forKey: "deviceToken") as? String {
-            deviceRef.child(deviceToken).removeValue()
-        }
+        let deviceRef = ref.child("Users").child(user).child("deviceID").removeValue()
+//        if let deviceToken = defaultSettings.value(forKey: "deviceToken") as? String {
+//            deviceRef.child(deviceToken).removeValue()
+//        }
     }
 }

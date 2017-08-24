@@ -115,8 +115,8 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
     }
     
     func allWalletsBtnTapped() {
-        let storyboard = UIStoryboard(name: "HuzaifaStroyboard", bundle: nil)
-        let cont = storyboard.instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
+        
+        let cont = HomeViewController.shared
         self.present(cont, animated: true, completion: nil)
     }
     

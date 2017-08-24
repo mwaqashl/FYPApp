@@ -40,7 +40,6 @@ class TaskManager {
         for member in task.memberIDs {
             addMemberToTask(task.id, member: member)
         }
-        
         for member in task.memberIDs {
             UserManager.sharedInstance().addTaskToUser(member, task: task)
         }

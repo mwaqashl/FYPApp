@@ -27,7 +27,7 @@ class NotificationManager {
         
         let params : Parameters = ["APIKey":apiKey,"title":title,"body":message,"genericId":genericID,"bundleId":bundleID,"deviceId":deviceID]
         
-        Alamofire.request(notificationRequestURL, method: .post, parameters: params).responseJSON { (res) in
+        Alamofire.request(notificationRequestURL + "sendNotification", method: .post, parameters: params).responseJSON { (res) in
             
             if res.error != nil {
                 print("Network Error", res.error?.localizedDescription)
@@ -119,7 +119,7 @@ class NotificationManager {
         let params : Parameters = ["APIKey":apiKey,"deviceId":deviceID]
         
         Alamofire.request(notificationRequestURL + "makeBadgeZero", method: .post, parameters: params).responseJSON { (res) in
-            
+            UIApplication.shared.applicationIconBadgeNumber = 0
         }
         
     }

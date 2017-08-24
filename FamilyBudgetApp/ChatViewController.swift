@@ -81,17 +81,22 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     
     func SettingsBtnTapped() {
-        let cont = self.storyboard?.instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
+        let cont = UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Settings") as! SettingsViewController
         self.present(cont, animated: true, completion: nil)
     }
     
     func allWalletsBtnTapped() {
-        let storyboard = UIStoryboard(name: "HuzaifaStroyboard", bundle: nil)
-        let cont = storyboard.instantiateViewController(withIdentifier: "allWallets") as! HomeViewController
+        
+        let cont = HomeViewController.shared
         self.present(cont, animated: true, completion: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        
+        if Resource.sharedInstance().currentWallet == nil {
+            return
+        }
+        
         
         if isDataAvailable {
             self.navigationItem.title = Resource.sharedInstance().currentWallet?.name
