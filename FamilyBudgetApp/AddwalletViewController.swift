@@ -314,8 +314,6 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             let this = all[selectedindex]
             
             wallet?.currencyID = this
-            currencyCode.text = wallet!.currency.code
-            currencyName.text = wallet!.currency.name
             
             UIView.animate(withDuration: 0.3, animations: {
                 self.currencyView.center.y += self.currencyView.frame.height
@@ -325,6 +323,8 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             }, completion: { (flag) in
                 self.currencyView.isHidden = true
                 self.backView.removeFromSuperview()
+                self.currencyCode.text = self.wallet!.currency.code
+                self.currencyName.text = self.wallet!.currency.name
             })
 
         }
@@ -346,12 +346,7 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             hideSearchView()
         }
-        else if sender.tag == 2 {
-            if wallet!.currencyID != "" {
-                currencyCode.text = wallet!.currency.code
-                currencyName.text = wallet!.currency.name
-            }
-            UIView.animate(withDuration: 0.3, animations: {
+        else if sender.tag == 2 {            UIView.animate(withDuration: 0.3, animations: {
                 self.currencyView.center.y += self.currencyView.frame.height
                 self.currencyView.alpha = 0
                 self.backView.alpha = 0
@@ -359,6 +354,11 @@ class AddwalletViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             }, completion: { (flag) in
                 self.currencyView.isHidden = true
                 self.backView.removeFromSuperview()
+                if self.wallet!.currencyID != "" {
+                    self.currencyCode.text = self.wallet!.currency.code
+                    self.currencyName.text = self.wallet!.currency.name
+                }
+
             })
 //            removeView()
         }
