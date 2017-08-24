@@ -392,7 +392,14 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             cell.title.text = "Assign By "
             cell.name.text = newTask!.creator!.userName
             let type = Resource.sharedInstance().currentWallet?.memberTypes[(newTask!.creatorID)]
-            cell.personimage.image = #imageLiteral(resourceName: "dp-male")
+            cell.personimage.image = newTask?.creator?.image ?? (newTask?.creator?.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+            cell.personimage.layer.cornerRadius = cell.personimage.frame.height/2
+            cell.personimage.clipsToBounds = true
+            newTask?.creator?.imageCallback = {
+                image in
+                cell.personimage.image = image
+            }
+
             
             if type == .admin {
                 print("admin")
@@ -416,7 +423,13 @@ class AddTaskViewController: UIViewController , UITableViewDataSource , UITableV
             cell.title.text = newTask!.status == .open ? "In Progress By " : "Completed By"
             cell.name.text = newTask!.doneBy?.userName
             let type = Resource.sharedInstance().currentWallet?.memberTypes[(newTask!.doneByID)!]
-            cell.personimage.image = #imageLiteral(resourceName: "dp-male")
+            cell.personimage.image = newTask?.doneBy?.image ?? (newTask?.doneBy?.gender == 0 ? #imageLiteral(resourceName: "dp-male") : #imageLiteral(resourceName: "dp-female"))
+            cell.personimage.layer.cornerRadius = cell.personimage.frame.height/2
+            cell.personimage.clipsToBounds = true
+            newTask?.doneBy?.imageCallback = {
+                image in
+                cell.personimage.image = image
+            }
             
             if type == .admin {
                 print("admin")

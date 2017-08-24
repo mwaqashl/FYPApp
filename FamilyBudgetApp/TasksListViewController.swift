@@ -60,7 +60,9 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
                 self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
                 self.isDataAvailable = true
                 self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
+                self.AddTaskBtn.isHidden = !Resource.sharedInstance().currentWallet!.isOpen
                 self.TaskExtraction()
+                self.tableview.reloadData()
             }
             
         }
@@ -80,13 +82,7 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
             TaskExtraction()
-//            for key in Resource.sharedInstance().tasks.keys {
-//                let task = Resource.sharedInstance().tasks[key]
-//                if task!.walletID == Resource.sharedInstance().currentWalletID {
-//                    print(task!.id)
-//                    print(task!.amount)
-//                }
-//            }
+            self.AddTaskBtn.isHidden = !Resource.sharedInstance().currentWallet!.isOpen
             tableview.reloadData()
         }
     }
@@ -155,7 +151,6 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         performSegue(withIdentifier: "addTask", sender: nil)
     }
     
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         
         let label = UILabel()
@@ -182,7 +177,6 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         }
 
     }
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
        
@@ -219,7 +213,8 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         cell.taskMembers.delegate = self
         cell.taskMembers.dataSource = self
         cell.taskMembers.tag = indexPath.row
-        (cell.taskMembers.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
+//        cell.taskMembers.collectionViewLayout.invalidateLayout()
+//        (cell.taskMembers.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = CGSize(width: 70, height: 10)
         cell.taskMembers.reloadData()
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell
@@ -276,9 +271,12 @@ class TasksListViewController: UIViewController, UICollectionViewDelegate, UICol
         }
         else {
             cell.name.text = task.doneBy!.userName
+            cell.image.image = task.doneBy!.image
+            task.doneBy!.imageCallback = {
+                img in
+                cell.image.image = img
+            }
         }
-        
-        
         return cell
     }
 

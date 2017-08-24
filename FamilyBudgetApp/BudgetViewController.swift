@@ -69,6 +69,7 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     self.AddBudgetBtn.isHidden = true
                 }
                 self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
+                self.AddBudgetBtn.isHidden = !Resource.sharedInstance().currentWallet!.isOpen
                 self.isDataAvailable = true
                 self.ExtractBudget()
                 self.ExtractTransactions()
@@ -76,6 +77,26 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if isDataAvailable {
+            if (Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .admin || Resource.sharedInstance().currentWallet!.memberTypes[Resource.sharedInstance().currentUserId!] == .owner ) && Resource.sharedInstance().currentWallet!.isOpen {
+                self.AddBudgetBtn.isHidden = false
+            }
+            else if Resource.sharedInstance().currentWallet!.isPersonal {
+                self.AddBudgetBtn.isHidden = false
+            }
+            else {
+                self.AddBudgetBtn.isHidden = true
+            }
+            self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
+            self.AddBudgetBtn.isHidden = !Resource.sharedInstance().currentWallet!.isOpen
+            self.isDataAvailable = true
+            self.ExtractBudget()
+            self.ExtractTransactions()
+            self.tableview.reloadData()
+        }
     }
     
     func getAmountwithCurrency(Amount : Double , withSize size: CGFloat) -> NSMutableAttributedString {

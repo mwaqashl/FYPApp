@@ -100,6 +100,8 @@ class WalletManager {
         
         walletRef.updateChildValues(data)
         
+        ref.child("WalletMembers/\(wallet.id)").removeValue()
+        
         for (member,type) in wallet.memberTypes {
             addMemberToWallet(wallet, member: member, type: type)
         }

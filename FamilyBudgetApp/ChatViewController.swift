@@ -10,7 +10,7 @@ import UIKit
 class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ChatDelegate, UITextViewDelegate, UserDelegate, WalletDelegate {
     
     @IBAction func SendMessage(_ sender: Any) {
-        if MessageTextField.text != ""{
+        if MessageTextField.text != "" && MessageTextField.text != "Write Message Here"{
         ChatManager.sharedInstance().addNewMessage(msg: Message.init(id: "", message: MessageTextField.text!, date: Date().timeIntervalSince1970, senderID: Resource.sharedInstance().currentUserId! , walletID: Resource.sharedInstance().currentWalletID!))
             self.view.endEditing(true)
             MessageTextField.text = "Write Message Here"

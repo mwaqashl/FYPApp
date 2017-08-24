@@ -821,7 +821,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             self.SearchMemberView.isHidden = true
             self.backView.removeFromSuperview()
         }
-        
+        self.view.endEditing(true)
+        self.searchBar.text = ""
         
     }
     
@@ -877,7 +878,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     
-    // Search Delegate
+// Search Delegate
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
@@ -943,7 +944,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                 return _member.value == MemberType.owner
             }).first!.key
             WalletManager.sharedInstance().updateWallet(wallet)
-            
             self.removeView()
             
             
@@ -1011,7 +1011,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     func memberUpdated(_ member: User, ofType: MemberType, wallet: Wallet) {
         if Resource.sharedInstance().currentWalletID == wallet.id {
             updateSettingCells()
-            self.SettingsTableView.reloadData()
+            self.SettingsTableView.reloadSections([sections.index(of: "Members") ?? 0], with: .fade)
         }
     }
     

@@ -99,6 +99,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         if Resource.sharedInstance().currentWalletID != nil {
             
             self.previousMonthBtn.isEnabled = true
+            self.nextMonthBtn.isEnabled = true
             self.navigationItem.title = Resource.sharedInstance().currentWallet!.name
             self.tabBarController?.tabBar.unselectedItemTintColor = .lightGray
             self.tabBarController?.tabBar.selectedImageTintColor = darkThemeColor
@@ -433,6 +434,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             
             if selectedMonthIndex == Months.count-1 {
                 let dic = ["Income":ForeCastIncome,"Expense":ForeCastExpense]
+                cell.noDataLabel.isHidden = ForeCastIncome != 0 || ForeCastExpense != 0
                 cell.PieChartView.isHidden = ForeCastIncome == 0 && ForeCastExpense == 0
                 DrawPieChart(data: dic, PieChart: cell.PieChartView)
                 cell.PieChartView.chartDescription?.text = ""
@@ -441,7 +443,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
             else {
                 if CategoryAndAmount.isEmpty {
                     cell.PieChartView.data = nil
-                    cell.PieChartView.noDataText = "No transaction Available"
+//                    cell.PieChartView.noDataText = "No transaction Available"
                     cell.noDataLabel.isHidden = false
                     cell.PieChartView.isHidden = true
                 }

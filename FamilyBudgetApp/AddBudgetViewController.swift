@@ -121,7 +121,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.isEdit = true
                     self.newBudget = Budget.init(budgetId: "", allocAmount: 0.0, title: "", period: 7, startDate: Date().timeIntervalSince1970, comments: nil, isOpen: true, categoryIDs: [], memberIDs: [], walletID: Resource.sharedInstance().currentWalletID!)
                     if Resource.sharedInstance().currentWallet!.isPersonal {
-                        self.budget!.addMember(Resource.sharedInstance().currentUserId!)
+                        self.newBudget!.addMember(Resource.sharedInstance().currentUserId!)
                     }
                     self.pageHeader.text = "ADD NEW BUDGET"
                 }
@@ -214,7 +214,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if newBudget!.title == "" {
             error = "Error"
-            errorDis = "Task Title cannot be empty"
+            errorDis = "Budget Title cannot be empty"
         }
         else if newBudget!.allocAmount == 0 || newBudget!.allocAmount == 0.0 {
             error = "Error"
@@ -226,7 +226,7 @@ class AddBudgetViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         else if newBudget!.members.count == 0 {
             error = "Error"
-            errorDis = "Select any member to assign this task"
+            errorDis = "Select any member to assign this Budget"
         }
         if error == "" {
             if isNew {
