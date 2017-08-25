@@ -91,36 +91,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
-//                if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
-//                    self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
-//                    self.settingsSetionCells = ["Change Wallet Name", "Change Wallet Icon"]
-//                }
-//                else {
-//                    self.sections = ["Wallet","Wallet Settings", "Members"]
-//                    
-//                    let thisWallet = Resource.sharedInstance().currentWallet!
-//                    self.selectedWallet = UserWallet(id: thisWallet.id, name: thisWallet.name, icon: thisWallet.icon, currencyID: thisWallet.currencyID, creatorID: thisWallet.creatorID, balance: thisWallet.balance, totInc: thisWallet.totalIncome, totExp: thisWallet.totalExpense, creationDate: thisWallet.creationDate.timeIntervalSince1970, isPersonal: thisWallet.isPersonal, memberTypes: thisWallet.memberTypes, isOpen: thisWallet.isOpen, color: thisWallet.color.stringRepresentation)
-//                    
-//                    self.memberTypes = self.selectedWallet!.memberTypes
-//
-//                    if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-//                        self.settingsSetionCells = ["Add Member","Change Wallet Name", "Change Wallet Icon"]
-//                        self.sections.append("leaveBtn")
-//                    }
-//                    else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
-//                        self.sections.remove(at: 1)
-//                        self.sections.append("leaveBtn")
-//                    }
-//                    else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
-//                        self.settingsSetionCells += ["Change Wallet Name", "Change Wallet Icon", "Delete Wallet"]
-//                    }
-//                    self.sections += ["User","User Settings","SignOut"]
-//                }
                 self.updateSettingCells()
             }
         }
-        
-        // Do any additional setup after loading the view.
     }
     
     func ViewTap() {
@@ -193,9 +166,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             else {
                 print("keyboard size not found")
             }
-        }
-        else {
-            print("masla ho gya ")
         }
         
     }
@@ -921,29 +891,16 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     @IBAction func closeSearchView(_ sender: UIButton) {
         
         if sender.tag == 0 {
-            
-            
-            let alert = UIAlertController(title: "Discard Changes", message: "Do you want to discard your recent changes?", preferredStyle: .alert)
-            
-            let Confirm = UIAlertAction(title: "Confirm", style: .destructive, handler: { (ac) in
-                self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
-                self.removeView()
-            })
-            let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            
-            alert.addAction(Confirm)
-            alert.addAction(cancel)
-            self.present(alert, animated: true, completion: nil)
-            
+            self.memberTypes = Resource.sharedInstance().currentWallet!.memberTypes
+            self.removeView()
         }
         else {
             
-            let wallet = Resource.sharedInstance().currentWallet!
-            wallet.memberTypes = self.memberTypes
-            wallet.creatorID = self.memberTypes.filter({ (_member) -> Bool in
+            selectedWallet!.memberTypes = self.memberTypes
+            selectedWallet!.creatorID = self.memberTypes.filter({ (_member) -> Bool in
                 return _member.value == MemberType.owner
             }).first!.key
-            WalletManager.sharedInstance().updateWallet(wallet)
+            WalletManager.sharedInstance().updateWallet(selectedWallet!)
             self.removeView()
         }
         

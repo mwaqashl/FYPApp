@@ -99,11 +99,23 @@ class WalletManager {
         ] as [String : Any]
         
         walletRef.updateChildValues(data)
+
+        var newMembers = Array(wallet.memberTypes.keys)
+        let oldMembers = Resource.sharedInstance().currentWallet!.memberTypes.keys
+        for olderMember in oldMembers {
+            if let index = newMembers.index(where: { (_member) -> Bool in
+                return _member == olderMember
+            }) {
+                addMemberToWallet(wallet, member: olderMember, type: wallet.memberTypes[olderMember]!)
+                newMembers.remove(at: index)
+            }
+            else {
+                removeMemberFromWallet(wallet.id, memberID: olderMember)
+            }
+        }
         
-        ref.child("WalletMembers/\(wallet.id)").removeValue()
-        
-        for (member,type) in wallet.memberTypes {
-            addMemberToWallet(wallet, member: member, type: type)
+        for new in newMembers {
+            addMemberToWallet(wallet, member: new, type: wallet.memberTypes[new]!)
         }
 
     }
