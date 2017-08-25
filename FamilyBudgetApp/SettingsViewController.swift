@@ -38,7 +38,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     var selectedColor : UIColor = darkThemeColor
     var pSelectedIcon = ""
     var pSelectedColor : UIColor = .brown
-    var colors : [UIColor] = [darkThemeColor, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown]
+    var colors : [UIColor] = [darkThemeColor, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .blue, .green, .yellow, .red, .brown, .orange, .purple, .magenta, .cyan]
     
     var isKeyboardOpen = false
     var isUserSearch = false
@@ -91,31 +91,32 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
         HelperObservers.sharedInstance().getUserAndWallet { (flag) in
             if flag {
-                if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
-                    self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
-                    self.settingsSetionCells = ["Change Wallet Name", "Change Wallet Icon"]
-                }
-                else {
-                    self.sections = ["Wallet","Wallet Settings", "Members"]
-                    
-                    let thisWallet = Resource.sharedInstance().currentWallet!
-                    self.selectedWallet = UserWallet(id: thisWallet.id, name: thisWallet.name, icon: thisWallet.icon, currencyID: thisWallet.currencyID, creatorID: thisWallet.creatorID, balance: thisWallet.balance, totInc: thisWallet.totalIncome, totExp: thisWallet.totalExpense, creationDate: thisWallet.creationDate.timeIntervalSince1970, isPersonal: thisWallet.isPersonal, memberTypes: thisWallet.memberTypes, isOpen: thisWallet.isOpen, color: thisWallet.color.stringRepresentation)
-                    
-                    self.memberTypes = self.selectedWallet!.memberTypes
-
-                    if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
-                        self.settingsSetionCells = ["Add Member","Change Wallet Name", "Change Wallet Icon"]
-                        self.sections.append("leaveBtn")
-                    }
-                    else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
-                        self.sections.remove(at: 1)
-                        self.sections.append("leaveBtn")
-                    }
-                    else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
-                        self.settingsSetionCells += ["Change Wallet Name", "Change Wallet Icon", "Delete Wallet"]
-                    }
-                    self.sections += ["User","User Settings","SignOut"]
-                }
+//                if Resource.sharedInstance().currentUserId == Resource.sharedInstance().currentWalletID {
+//                    self.sections = ["Wallet","Wallet Settings","User","User Settings","SignOut"]
+//                    self.settingsSetionCells = ["Change Wallet Name", "Change Wallet Icon"]
+//                }
+//                else {
+//                    self.sections = ["Wallet","Wallet Settings", "Members"]
+//                    
+//                    let thisWallet = Resource.sharedInstance().currentWallet!
+//                    self.selectedWallet = UserWallet(id: thisWallet.id, name: thisWallet.name, icon: thisWallet.icon, currencyID: thisWallet.currencyID, creatorID: thisWallet.creatorID, balance: thisWallet.balance, totInc: thisWallet.totalIncome, totExp: thisWallet.totalExpense, creationDate: thisWallet.creationDate.timeIntervalSince1970, isPersonal: thisWallet.isPersonal, memberTypes: thisWallet.memberTypes, isOpen: thisWallet.isOpen, color: thisWallet.color.stringRepresentation)
+//                    
+//                    self.memberTypes = self.selectedWallet!.memberTypes
+//
+//                    if self.memberTypes[Resource.sharedInstance().currentUserId!] == .admin {
+//                        self.settingsSetionCells = ["Add Member","Change Wallet Name", "Change Wallet Icon"]
+//                        self.sections.append("leaveBtn")
+//                    }
+//                    else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .member {
+//                        self.sections.remove(at: 1)
+//                        self.sections.append("leaveBtn")
+//                    }
+//                    else if self.memberTypes[Resource.sharedInstance().currentUserId!] == .owner {
+//                        self.settingsSetionCells += ["Change Wallet Name", "Change Wallet Icon", "Delete Wallet"]
+//                    }
+//                    self.sections += ["User","User Settings","SignOut"]
+//                }
+                self.updateSettingCells()
             }
         }
         
@@ -802,11 +803,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             showView.alpha = 1
         }
         
-        searchedUsers = Resource.sharedInstance().currentWallet!.members.filter({ (_user) -> Bool in
-            return _user.getUserID() != Resource.sharedInstance().currentUserId!
-        })
+//        searchedUsers = Resource.sharedInstance().currentWallet!.members.filter({ (_user) -> Bool in
+//            return _user.getUserID() != Resource.sharedInstance().currentUserId!
+//        })
         
-        
+        searchedUsers = []
         
         searchTableView.reloadData()
     }
@@ -877,7 +878,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    
 // Search Delegate
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -945,8 +945,6 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }).first!.key
             WalletManager.sharedInstance().updateWallet(wallet)
             self.removeView()
-            
-            
         }
         
     }

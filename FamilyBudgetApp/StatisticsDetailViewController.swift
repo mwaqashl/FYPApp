@@ -50,7 +50,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         dateFormat.dateFormat = "MMMM-yyyy"
         
         
-        MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("ForeCast Data \(dateFormat.string(from: Months[selectedMonthIndex]))") : dateFormat.string(from: Months[selectedMonthIndex])
+        MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("Forecast for next month") : dateFormat.string(from: Months[selectedMonthIndex])
         
         Delegate.sharedInstance().addTransactionDelegate(self)
         Delegate.sharedInstance().addWalletDelegate(self)
@@ -421,7 +421,7 @@ class StatisticsDetailViewController: UIViewController, UITableViewDelegate, UIT
         else if sender.tag == 2 {
             if selectedMonthIndex != Months.count-1 {
                 selectedMonthIndex+=1
-                MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("ForeCast Data \(dateFormat.string(from: Months[selectedMonthIndex]))") : dateFormat.string(from: Months[selectedMonthIndex])
+                MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("Forecast for next month") : dateFormat.string(from: Months[selectedMonthIndex])
                 ExtractIncomeExpense()
                 tableView.reloadData()
             }

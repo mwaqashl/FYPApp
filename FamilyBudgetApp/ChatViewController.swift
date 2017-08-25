@@ -11,12 +11,17 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func SendMessage(_ sender: Any) {
         if MessageTextField.text != "" && MessageTextField.text != "Write Message Here"{
-        ChatManager.sharedInstance().addNewMessage(msg: Message.init(id: "", message: MessageTextField.text!, date: Date().timeIntervalSince1970, senderID: Resource.sharedInstance().currentUserId! , walletID: Resource.sharedInstance().currentWalletID!))
-            self.view.endEditing(true)
-            MessageTextField.text = "Write Message Here"
+            let trimmedText = MessageTextField.text.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            if !trimmedText.isEmpty {
+                ChatManager.sharedInstance().addNewMessage(msg: Message.init(id: "", message: trimmedText, date: Date().timeIntervalSince1970, senderID: Resource.sharedInstance().currentUserId! , walletID: Resource.sharedInstance().currentWalletID!))
+                self.view.endEditing(true)
+                MessageTextField.text = "Write Message Here"
+            }
         }
         
     }
+    
+    
     @IBOutlet weak var MessageTextField: UITextView!
     @IBOutlet weak var tableView: UITableView!
     
@@ -312,7 +317,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     
-    
     func walletAdded(_ wallet: UserWallet) {
         
     }
@@ -361,9 +365,6 @@ class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDe
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
-    
     
 
     /*

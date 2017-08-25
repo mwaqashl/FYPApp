@@ -73,6 +73,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.isDataAvailable = true
                 self.ExtractBudget()
                 self.ExtractTransactions()
+                self.closeBudget()
+                self.SegmentBtnAction(self.segmentBtn)
                 self.tableview.reloadData()
             }
         }
@@ -95,6 +97,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.isDataAvailable = true
             self.ExtractBudget()
             self.ExtractTransactions()
+            closeBudget()
+            SegmentBtnAction(segmentBtn)
             self.tableview.reloadData()
         }
     }
@@ -204,7 +208,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
             self.CloseWalletView.isHidden = Resource.sharedInstance().currentWallet!.isOpen
             ExtractBudget()
             ExtractTransactions()
-            
+            closeBudget()
+            SegmentBtnAction(segmentBtn)
             if tableview.delegate == nil {
                 tableview.dataSource = self
                 tableview.delegate = self
@@ -219,6 +224,15 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func closeBudget(){
+        for i in budgets{
+            let endDate = i.startDate.addingTimeInterval(Double(i.daysInbudget()*24*60*60))
+            if endDate<Date() {
+                i.isOpen = false
+            }
+        }
     }
     
     @IBAction func SegmentBtnAction(_ sender: Any) {
@@ -321,7 +335,9 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.Icon.textColor = budget.categories.first?.color
         
         cell.BalanceAmount.attributedText = getAmountwithCurrency(Amount: budget.allocAmount - BudgetRelatedTransaction(budget), withSize: 21)
-
+        cell.BalanceAmount.textColor = budget.allocAmount - BudgetRelatedTransaction(budget) < 0 ? .red : darkThemeColor
+        
+        
         cell.budgetUsed.constant = CGFloat(BudgetRelatedTransaction(budget)/budget.allocAmount)*(tableview.frame.width-40)
         
         if cell.budgetUsed.constant > tableview.frame.width-40 {
@@ -360,26 +376,27 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 break
             }
         }
-        
-        if budget.isOpen && segmentBtn.selectedSegmentIndex == 0 {
-            for i in 0..<filterBudget.count {
-                if filterBudget[i].id == budget.id {
-                    filterBudget[i] = budget
-                    break
-                }
-            }
-            self.tableview.reloadSections([0], with: .automatic)
-        }
-            
-        else if !budget.isOpen && segmentBtn.selectedSegmentIndex == 1 {
-            for i in 0..<filterBudget.count {
-                if filterBudget[i].id == budget.id {
-                    filterBudget[i] = budget
-                    break
-                }
-            }
-            self.tableview.reloadSections([0], with: .automatic)
-        }
+//        closeBudget()
+//        if budget.isOpen && segmentBtn.selectedSegmentIndex == 0 {
+//            for i in 0..<filterBudget.count {
+//                if filterBudget[i].id == budget.id {
+//                    filterBudget[i] = budget
+//                    break
+//                }
+//            }
+//        }
+//            
+//        else if !budget.isOpen && segmentBtn.selectedSegmentIndex == 1 {
+//            for i in 0..<filterBudget.count {
+//                if filterBudget[i].id == budget.id {
+//                    filterBudget[i] = budget
+//                    break
+//                }
+//            }
+//        }
+        closeBudget()
+        SegmentBtnAction(segmentBtn)
+        self.tableview.reloadSections([0], with: .automatic)
     }
 
     //wallet Delegate
@@ -449,6 +466,8 @@ class BudgetViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 }){
                     budgets.append(budget)
                 }
+                closeBudget()
+                SegmentBtnAction(segmentBtn)
                 if budget.isOpen && segmentBtn.selectedSegmentIndex == 0 {
                     if !filterBudget.contains(where: { (_budget) -> Bool in
                         return _budget.id == budget.id

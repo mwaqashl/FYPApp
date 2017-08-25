@@ -479,7 +479,7 @@ class StatisticsViewController: UIViewController, UITableViewDelegate, UITableVi
         else if sender.tag == 2 {
             if selectedMonthIndex != Months.count-1 {
                 selectedMonthIndex+=1
-                MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("ForeCast Data \(dateFormat.string(from: Months[selectedMonthIndex]))") : dateFormat.string(from: Months[selectedMonthIndex])
+                MonthHeader.text = selectedMonthIndex == Months.count-1 ? ("Forecast for next month") : dateFormat.string(from: Months[selectedMonthIndex])
                 tableView.reloadData()
             }
             if selectedMonthIndex == Months.count-1 {
